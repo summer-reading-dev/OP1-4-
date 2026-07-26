@@ -1,0 +1,3857 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Summer Reading — OP1 4-Track Demos</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600&family=Archivo+Black&family=Caveat:wght@700&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --body-1:#f2ede1;
+    --body-2:#f2ede1;
+    --panel:#faf7ef;
+    --panel-line:#1a1a1a;
+    --ink:#1a1a1a;
+    --ink-dim:#5c584f;
+    --screen-bg:#0a0e0a;
+    --screen-fg:#f2ede1;
+    --t1:#d6402c;
+    --t2:#1f5fa8;
+    --t3:#e0821e;
+    --t4:#e8b32c;
+    --amber:var(--t4);
+    --amber-hi:#f2c94c;
+    --led-green:#4fae6e;
+    --led-green-dim:#cfd8cd;
+    --led-yellow:#e0c22f;
+    --led-yellow-dim:#e8dfc0;
+    --led-red:#d6402c;
+    --led-red-dim:#e8d2ce;
+    --text-dim:#5c584f;
+    --cream:#1a1a1a;
+    --cream-dim:#5c584f;
+    --panel-hi:#f7f4ea;
+    --tape-brown:#1a1a1a;
+    --tape-dark:var(--screen-bg);
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    padding:24px 16px;
+    background:#d8d2c1;
+    font-family:'JetBrains Mono', monospace;
+    color:var(--ink);
+    display:flex;
+    justify-content:center;
+  }
+  .unit{
+    width:100%;
+    max-width:760px;
+    background:var(--body-1);
+    border-radius:0;
+    padding:22px;
+    box-shadow:0 24px 50px -18px rgba(20,18,14,0.35);
+    border:3px solid var(--ink);
+    position:relative;
+  }
+  .unit::before{
+    content:"";
+    position:absolute;
+    top:0;left:22px;right:22px;height:8px;
+    background:linear-gradient(90deg,
+      var(--t1) 0%, var(--t1) 33%,
+      var(--t4) 33%, var(--t4) 66%,
+      var(--t2) 66%, var(--t2) 100%);
+    border-radius:0;
+  }
+
+  /* header / brand */
+  .brand-row{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-end;
+    padding:6px 4px 16px;
+    margin-bottom:4px;
+  }
+  .brand{
+    font-family:'Archivo Black', sans-serif;
+    font-weight:400;
+    font-size:24px;
+    letter-spacing:0px;
+    color:var(--ink);
+    text-transform:uppercase;
+  }
+  .brand span{color:var(--t1);}
+  .brand-sub{
+    font-family:'Space Grotesk', sans-serif;
+    font-size:9px;
+    font-weight:500;
+    letter-spacing:2.5px;
+    color:var(--ink-dim);
+    text-transform:uppercase;
+    margin-top:3px;
+  }
+  .counter-box{
+    background:var(--screen-bg);
+    border-radius:0;
+    padding:7px 12px;
+    text-align:right;
+  }
+  .counter-label{font-size:8px;letter-spacing:2px;color:#7f8a80;text-transform:uppercase;}
+  .counter{
+    font-size:20px;
+    font-weight:700;
+    color:var(--screen-fg);
+    letter-spacing:2px;
+  }
+
+  .track.drag-over{
+    outline:2px dashed var(--track-color);
+    outline-offset:2px;
+    background:var(--body-1);
+  }
+
+  /* screen */
+  .window{
+    background:var(--panel);
+    border:1px solid var(--panel-line);
+    border-radius:0;
+    padding:10px;
+    margin-bottom:16px;
+    position:relative;
+  }
+  .window-inner{
+    background:var(--screen-bg);
+    border-radius:0;
+    padding:14px 20px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:14px;
+  }
+  .reel-wrap{display:flex;flex-direction:column;align-items:center;gap:6px;}
+  .reel{
+    width:10px;height:10px;border-radius:50%;
+    background:#3a3f38;
+    transition:background-color .15s linear, box-shadow .15s linear;
+  }
+  .reel.spin{
+    animation:blink 1s steps(2) infinite;
+  }
+  @keyframes blink{
+    0%,50%{background:var(--t1);box-shadow:0 0 6px var(--t1);}
+    50.01%,100%{background:#3a3f38;box-shadow:none;}
+  }
+  .tape-label{font-size:8px;letter-spacing:1.5px;color:#7f8a80;text-transform:uppercase;}
+  .tape-strip{
+    flex:1;height:4px;
+    background:#2c302a;
+    border-radius:0;
+    position:relative;
+    overflow:hidden;
+  }
+  .tape-strip::after{
+    content:"";
+    position:absolute;top:0;left:0;bottom:0;
+    width:var(--progress, 0%);
+    background:linear-gradient(90deg, var(--t1), var(--t4), var(--t3), var(--t2));
+    transition:width .1s linear;
+  }
+  .cassette-title{
+    position:absolute;top:-8px;left:16px;
+    font-family:'Archivo Black',sans-serif;
+    font-weight:400;
+    font-size:9px;
+    letter-spacing:1px;
+    color:var(--ink-dim);
+    background:var(--body-1);
+    padding:0 6px;
+    text-transform:uppercase;
+  }
+  .mix-title{
+    position:absolute;top:-10px;left:16px;
+    font-family:'Archivo Black',sans-serif;
+    font-weight:400;
+    font-size:11px;
+    letter-spacing:0.5px;
+    color:var(--ink);
+    background:var(--body-1);
+    border:none;
+    outline:none;
+    padding:0 6px;
+    width:220px;
+    max-width:calc(100% - 32px);
+    box-sizing:border-box;
+    text-transform:uppercase;
+  }
+  .mix-title::placeholder{
+    color:var(--ink-dim);
+    font-weight:400;
+  }
+  .mix-title:focus{color:var(--t4);}
+
+  /* master trim */
+  .trim-screen{
+    background:var(--panel);
+    border:1px solid var(--panel-line);
+    border-radius:0;
+    padding:10px;
+    margin-bottom:16px;
+    position:relative;
+  }
+  .trim-inner{
+    background:var(--screen-bg);
+    border-radius:0;
+    padding:10px 14px;
+  }
+  .trim-tempo-row{
+    display:flex;
+    align-items:center;
+    gap:6px;
+    flex-wrap:wrap;
+    margin:6px 2px 10px;
+  }
+  .trim-tempo-row label{
+    font-family:'Space Grotesk',sans-serif;
+    font-size:9px;
+    font-weight:700;
+    letter-spacing:1px;
+    color:var(--ink-dim);
+    text-transform:uppercase;
+  }
+  .bpm-input{
+    width:56px;
+    font-family:'JetBrains Mono',monospace;
+    font-size:12px;
+    font-weight:700;
+    color:var(--ink);
+    background:var(--body-1);
+    border:2px solid var(--panel-line);
+    border-radius:0;
+    padding:3px 6px;
+    outline:none;
+  }
+  .bpm-input:focus{border-color:var(--t2);}
+  .bpb-select{
+    font-family:'JetBrains Mono',monospace;
+    font-size:11px;
+    font-weight:700;
+    color:var(--ink);
+    background:var(--body-1);
+    border:2px solid var(--panel-line);
+    border-radius:0;
+    padding:3px 4px;
+    outline:none;
+    cursor:pointer;
+  }
+  .grid-toggle-btn{
+    width:auto;
+    padding:0 8px;
+    margin-left:2px;
+    letter-spacing:0.5px;
+  }
+  .grid-toggle-btn.on{background:var(--t2);color:#fff;border-color:var(--t2);}
+  .tap-tempo-btn{
+    width:auto;
+    padding:0 8px;
+    letter-spacing:0.5px;
+  }
+  .tap-tempo-btn.tapped{background:var(--t4);color:#fff;border-color:var(--t4);}
+  .bar-count-readout{
+    font-family:'JetBrains Mono',monospace;
+    font-size:9px;
+    color:var(--ink-dim);
+    letter-spacing:0.5px;
+    margin-left:auto;
+  }
+  .trim-zoom-row{
+    display:flex;
+    align-items:center;
+    gap:6px;
+    margin:0 2px 10px;
+  }
+  .trim-zoom-row label{
+    font-family:'Space Grotesk',sans-serif;
+    font-size:9px;
+    font-weight:700;
+    letter-spacing:1px;
+    color:var(--ink-dim);
+    text-transform:uppercase;
+  }
+  .zoom-btn{
+    width:24px;
+    font-family:'Space Grotesk',sans-serif;
+    font-size:14px;
+    line-height:1;
+  }
+  .zoom-level-readout{
+    font-family:'JetBrains Mono',monospace;
+    font-size:11px;
+    font-weight:700;
+    color:var(--ink);
+    min-width:34px;
+    text-align:center;
+  }
+  .zoom-fit-btn{
+    width:auto;
+    padding:0 8px;
+    letter-spacing:0.5px;
+    margin-left:2px;
+  }
+  .minimap-wrap{
+    display:none;
+    background:var(--screen-bg);
+    padding:4px 14px 8px;
+    margin-top:-6px;
+  }
+  #masterMinimap{
+    display:block;
+    width:100%;
+    height:22px;
+    cursor:grab;
+    touch-action:none;
+  }
+  #masterMinimap:active{cursor:grabbing;}
+  #masterWave{
+    display:block;
+    width:100%;
+    height:120px;
+    cursor:pointer;
+    touch-action:none;
+  }
+  .trim-footer{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-top:8px;
+    padding:0 2px;
+  }
+  .trim-footer span{
+    font-size:10px;
+    color:var(--ink-dim);
+    letter-spacing:0.5px;
+  }
+  .trim-reset-btn{
+    font-family:'Space Grotesk',sans-serif;
+    font-size:9px;
+    font-weight:700;
+    letter-spacing:0.5px;
+    text-transform:uppercase;
+    color:var(--ink-dim);
+    background:transparent;
+    border:1px solid var(--panel-line);
+    border-radius:0;
+    padding:3px 10px;
+    cursor:pointer;
+  }
+  .trim-reset-btn:hover{background:var(--t4);border-color:var(--t4);color:#fff;}
+  .trim-hint{
+    font-size:9px;
+    color:var(--ink-dim);
+    letter-spacing:0.3px;
+    line-height:1.5;
+    margin-top:8px;
+    padding:0 2px;
+  }
+
+  /* master EQ */
+  .eq-screen{
+    background:var(--panel);
+    border:1px solid var(--panel-line);
+    border-radius:0;
+    padding:14px 14px 10px;
+    margin-bottom:16px;
+    position:relative;
+  }
+  .eq-body{
+    display:flex;
+    align-items:center;
+    gap:16px;
+    flex-wrap:wrap;
+  }
+  .eq-band{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:4px;
+    flex:1;
+    min-width:90px;
+  }
+  .eq-band label{
+    font-size:9px;
+    font-weight:700;
+    color:var(--ink-dim);
+    letter-spacing:1px;
+  }
+  .eq-value{
+    font-size:9px;
+    color:var(--ink-dim);
+    font-family:'JetBrains Mono',monospace;
+  }
+  .eq-slider{
+    -webkit-appearance:none;
+    width:100%;
+    height:4px;
+    background:#0c0c0a;
+    border-radius:0;
+    box-shadow:inset 0 1px 3px rgba(0,0,0,0.7);
+    outline:none;
+  }
+  .eq-slider::-webkit-slider-thumb{
+    -webkit-appearance:none;
+    width:14px;height:20px;
+    border-radius:2px;
+    background:linear-gradient(180deg,#cfc7b4,#8f8a78);
+    border:1px solid #000;
+    cursor:pointer;
+    box-shadow:0 1px 2px rgba(0,0,0,0.6);
+  }
+  .eq-slider::-moz-range-thumb{
+    width:14px;height:20px;border-radius:2px;
+    background:linear-gradient(180deg,#cfc7b4,#8f8a78);
+    border:1px solid #000;cursor:pointer;
+  }
+  .eq-flat-btn{
+    font-family:'Space Grotesk',sans-serif;
+    font-size:9px;
+    font-weight:700;
+    letter-spacing:0.5px;
+    text-transform:uppercase;
+    color:var(--ink-dim);
+    background:transparent;
+    border:1px solid var(--panel-line);
+    border-radius:0;
+    padding:6px 12px;
+    cursor:pointer;
+    align-self:center;
+  }
+  .eq-flat-btn:hover{background:var(--t2);border-color:var(--t2);color:#fff;}
+
+  /* visualizer */
+  .viz-screen{
+    background:var(--panel);
+    border:2px solid var(--panel-line);
+    border-radius:0;
+    padding:10px;
+    margin-bottom:16px;
+    position:relative;
+  }
+  .viz-inner{
+    background:#050505;
+    border-radius:0;
+    padding:8px 10px;
+    box-shadow:inset 0 2px 6px rgba(0,0,0,0.6);
+  }
+  #visualizer{
+    display:block;
+    width:100%;
+    height:80px;
+  }
+
+  /* notes */
+  .notes-panel{
+    background:var(--panel);
+    border:1px solid var(--panel-line);
+    border-radius:0;
+    padding:14px;
+    margin-bottom:16px;
+    position:relative;
+  }
+  .notes-input{
+    width:100%;
+    min-height:80px;
+    resize:vertical;
+    background:var(--screen-bg);
+    color:var(--screen-fg);
+    border:none;
+    border-radius:0;
+    padding:10px 12px;
+    font-family:'JetBrains Mono',monospace;
+    font-size:12px;
+    line-height:1.5;
+    outline:none;
+    box-sizing:border-box;
+  }
+  .notes-input::placeholder{color:#7f8a80;}
+  .notes-hint{
+    font-size:9px;
+    color:var(--ink-dim);
+    letter-spacing:0.3px;
+    margin-top:6px;
+    padding:0 2px;
+  }
+
+  /* reel export */
+  .reel-panel{
+    background:var(--panel);
+    border:1px solid var(--panel-line);
+    border-radius:0;
+    padding:14px;
+    margin-bottom:16px;
+    position:relative;
+  }
+  .reel-body{
+    display:flex;
+    gap:16px;
+    align-items:flex-start;
+    flex-wrap:wrap;
+  }
+  .reel-frame{
+    background:var(--body-1);
+    border:1px solid var(--panel-line);
+    border-radius:0;
+    padding:6px;
+    flex-shrink:0;
+  }
+  #reelCanvas{
+    display:block;
+    width:135px;
+    height:240px;
+    border-radius:0;
+    background:var(--body-1);
+  }
+  .reel-controls{
+    flex:1;
+    min-width:180px;
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+    padding-top:2px;
+  }
+  .reel-photo-name{
+    font-size:9px;
+    color:var(--ink-dim);
+    letter-spacing:0.3px;
+    display:block;
+  }
+  .reel-list-label{
+    font-size:9px;
+    font-weight:600;
+    letter-spacing:0.3px;
+    color:var(--ink-dim);
+    text-transform:uppercase;
+    margin-top:4px;
+  }
+  .reel-list-input{
+    width:100%;
+    resize:vertical;
+    background:var(--panel);
+    color:var(--ink);
+    border:2px solid var(--panel-line);
+    border-radius:0;
+    padding:8px 10px;
+    font-family:'JetBrains Mono',monospace;
+    font-size:11px;
+    line-height:1.6;
+    outline:none;
+    box-sizing:border-box;
+  }
+  .reel-list-input::placeholder{color:var(--ink-dim);opacity:0.6;}
+  .reel-hint{
+    font-size:9px;
+    color:var(--ink-dim);
+    letter-spacing:0.3px;
+    line-height:1.5;
+  }
+  #reelExportBtn{width:fit-content;}
+  #reelExportBtn:disabled{opacity:.5;cursor:not-allowed;}
+
+  /* tracks */
+  .tracks{display:flex;flex-direction:column;gap:8px;margin-bottom:18px;}
+  .track{
+    background:var(--panel);
+    border:2px solid var(--panel-line);
+    border-radius:0;
+    padding:12px 14px 12px 12px;
+    display:grid;
+    grid-template-columns:60px 1fr auto;
+    align-items:center;
+    gap:12px;
+    border-left:7px solid var(--track-color);
+  }
+  .track.key-selected{
+    box-shadow: inset 0 0 0 3px var(--track-color);
+  }
+  .key-select-hint{
+    display:none;
+    font-family:'JetBrains Mono',monospace;
+    font-size:7px;
+    font-weight:700;
+    line-height:1.4;
+    color:#fff;
+    background:var(--track-color);
+    padding:2px 4px;
+    letter-spacing:0.3px;
+  }
+  .track.key-selected .key-select-hint{display:inline-block;}
+  .track:nth-child(1){--track-color:var(--t1);}
+  .track:nth-child(2){--track-color:var(--t2);}
+  .track:nth-child(3){--track-color:var(--t3);}
+  .track:nth-child(4){--track-color:var(--t4);}
+  .track-num{
+    font-family:'Space Grotesk',sans-serif;
+    font-size:12px;
+    font-weight:600;
+    color:var(--ink-dim);
+    letter-spacing:0.5px;
+    text-transform:uppercase;
+    display:flex;flex-direction:column;gap:6px;
+  }
+  .track-num b{
+    font-family:'Archivo Black',sans-serif;
+    font-weight:400;
+    color:var(--track-color);
+    font-size:20px;
+  }
+  .track-title{
+    background:transparent;
+    border:none;
+    border-bottom:2px solid var(--panel-line);
+    color:var(--ink);
+    font-family:'Archivo Black',sans-serif;
+    font-weight:400;
+    font-size:11px;
+    letter-spacing:0.3px;
+    text-transform:uppercase;
+    padding:2px 0;
+    width:64px;
+    outline:none;
+  }
+  .track-title::placeholder{color:var(--ink-dim);}
+  .track-title:focus{border-bottom-color:var(--track-color);}
+  .track-mid{display:flex;flex-direction:column;gap:8px;min-width:0;}
+  .load-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+  .load-bar{
+    background:var(--panel);
+    border:2px solid var(--panel-line);
+    border-radius:0;
+    padding:12px 14px;
+    margin-bottom:16px;
+    display:flex;
+    align-items:center;
+    gap:12px;
+    flex-wrap:wrap;
+  }
+  .load-bar-btn{
+    padding:9px 16px;
+    font-size:11px;
+  }
+  .load-bar-btn:hover{background:var(--t2);color:#fff;border-color:var(--t2);}
+  .load-bar-hint{
+    font-family:'Space Grotesk',sans-serif;
+    font-size:10px;
+    color:var(--ink-dim);
+    line-height:1.4;
+    flex:1;
+    min-width:180px;
+  }
+  .file-btn{
+    background:var(--body-1);
+    border:2px solid var(--panel-line);
+    color:var(--ink);
+    font-family:'Space Grotesk',sans-serif;
+    font-weight:600;
+    font-size:10px;
+    letter-spacing:0.5px;
+    text-transform:uppercase;
+    padding:6px 12px;
+    border-radius:0;
+    cursor:pointer;
+  }
+  .file-btn:hover{background:var(--track-color);color:#fff;border-color:var(--track-color);}
+  @keyframes mic-pulse{
+    0%,100%{box-shadow:0 0 0 0 rgba(224,72,58,0.5);}
+    50%{box-shadow:0 0 0 6px rgba(224,72,58,0);}
+  }
+  .file-btn input{display:none;}
+  .track-filename{
+    font-size:10px;
+    color:var(--ink-dim);
+    overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+    max-width:160px;
+  }
+  .track-filename.loaded{color:var(--track-color);font-weight:600;}
+  .meter{
+    display:flex;gap:2px;height:14px;align-items:flex-end;
+  }
+  .meter i{
+    display:block;width:6px;height:100%;
+    border-radius:0;
+    background:var(--led-green-dim);
+    transition:background-color .05s linear;
+  }
+  .meter i:nth-child(6){background:var(--led-yellow-dim);}
+  .meter i:nth-child(7){background:var(--led-yellow-dim);}
+  .meter i:nth-child(8){background:var(--led-red-dim);}
+  .meter i.on{background:var(--led-green);box-shadow:0 0 4px var(--led-green);}
+  .meter i:nth-child(6).on, .meter i:nth-child(7).on{background:var(--led-yellow);box-shadow:0 0 4px var(--led-yellow);}
+  .meter i:nth-child(8).on{background:var(--led-red);box-shadow:0 0 5px var(--led-red);}
+
+  .wave-canvas{
+    display:block;
+    width:100%;
+    height:72px;
+    background:var(--screen-bg);
+    border-radius:0;
+    cursor:pointer;
+  }
+  .wave-canvas-wrap{
+    position:relative;
+    touch-action:none;
+  }
+  .track-zoom-reset{
+    display:none;
+    position:absolute;
+    top:4px;
+    right:4px;
+    font-family:'Space Grotesk',sans-serif;
+    font-size:8px;
+    font-weight:700;
+    letter-spacing:0.5px;
+    color:#fff;
+    background:rgba(232,179,44,0.9);
+    border:1px solid rgba(0,0,0,0.4);
+    border-radius:0;
+    padding:2px 6px;
+    cursor:pointer;
+  }
+  .track-zoom-reset.visible{display:block;}
+
+  .track-controls{display:flex;align-items:center;gap:10px;}
+  .fader-wrap{display:flex;flex-direction:column;align-items:center;gap:4px;}
+  .fader-wrap label{font-size:8px;color:var(--ink-dim);letter-spacing:1px;}
+  input[type=range].fader{
+    -webkit-appearance:none;
+    width:70px;height:4px;
+    background:var(--panel-line);
+    border-radius:0;
+    outline:none;
+  }
+  input[type=range].fader::-webkit-slider-thumb{
+    -webkit-appearance:none;
+    width:14px;height:14px;
+    border-radius:50%;
+    background:var(--track-color, var(--ink));
+    border:2px solid var(--panel);
+    cursor:pointer;
+    box-shadow:0 1px 3px rgba(0,0,0,0.3);
+  }
+  input[type=range].fader::-moz-range-thumb{
+    width:14px;height:14px;border-radius:50%;
+    background:var(--track-color, var(--ink));
+    border:2px solid var(--panel);cursor:pointer;
+  }
+  input[type=range].pan-fader{width:46px;}
+  .mini-btn{
+    width:24px;height:22px;
+    border-radius:0;
+    border:2px solid var(--panel-line);
+    background:var(--body-1);
+    color:var(--ink-dim);
+    font-family:'Space Grotesk',sans-serif;
+    font-size:10px;font-weight:700;
+    cursor:pointer;
+  }
+  .mini-btn.active-mute{background:var(--t1);color:#fff;border-color:var(--t1);}
+  .mini-btn.active-solo{background:var(--t4);color:#fff;border-color:var(--t4);}
+
+  /* transport */
+  .transport{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:10px;
+    padding:14px 10px 4px;
+    flex-wrap:wrap;
+  }
+  .tbtn{
+    font-family:'Space Grotesk',sans-serif;
+    font-weight:700;
+    font-size:11px;
+    letter-spacing:0.5px;
+    text-transform:uppercase;
+    color:var(--ink);
+    background:var(--panel);
+    border:2px solid var(--panel-line);
+    border-radius:0;
+    padding:10px 18px;
+    cursor:pointer;
+    display:flex;align-items:center;gap:6px;
+    transition:transform .08s ease;
+  }
+  .tbtn:active{transform:scale(0.96);}
+  .tbtn:disabled{opacity:.35;cursor:not-allowed;}
+  .tbtn.play{background:var(--t3);border-color:var(--t3);color:#fff;}
+  .tbtn.stop{background:var(--panel);border-color:var(--ink-dim);color:var(--ink);}
+  .tbtn.bounce{background:var(--t1);border-color:var(--t1);color:#fff;}
+  #rewBtn{border-color:var(--t2);color:var(--t2);}
+  .tbtn.clear{background:transparent;border-color:var(--t1);color:var(--t1);}
+  .tbtn.clear:hover{background:var(--t1);color:#fff;}
+  .tbtn.loop-active{background:var(--t2);border-color:var(--t2);color:#fff;}
+  .master-fader{display:flex;flex-direction:column;align-items:center;gap:4px;margin-left:8px;}
+  .master-fader label{font-size:8px;color:var(--ink-dim);letter-spacing:1px;}
+
+  .status-line{
+    text-align:center;
+    font-size:10px;
+    color:var(--ink-dim);
+    letter-spacing:0.5px;
+    margin-top:10px;
+    min-height:14px;
+  }
+  .status-line.err{color:var(--t1);}
+  .status-line a{color:var(--t3);text-decoration:underline;}
+
+  @media (max-width:480px){
+    .track{grid-template-columns:1fr;gap:8px;}
+    .track-controls{justify-content:space-between;flex-wrap:wrap;row-gap:8px;}
+  }
+</style>
+</head>
+<body>
+
+<div class="unit">
+  <div class="brand-row">
+    <div>
+      <div class="brand">Summer Reading</div>
+      <div class="brand-sub">OP1 4-Track Demos</div>
+    </div>
+    <div class="counter-box">
+      <div class="counter-label">Tape Counter</div>
+      <div class="counter" id="counter">0000</div>
+    </div>
+  </div>
+
+  <div class="window">
+    <input type="text" class="mix-title" id="mixTitleInput" placeholder="Side A — Untitled Mix" maxlength="40">
+    <div class="window-inner">
+      <div class="reel-wrap">
+        <div class="reel" id="reelL"></div>
+        <div class="tape-label">L</div>
+      </div>
+      <div class="tape-strip" id="tapeStrip"></div>
+      <div class="reel-wrap">
+        <div class="reel" id="reelR"></div>
+        <div class="tape-label">R</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="load-bar">
+    <label class="file-btn load-bar-btn">LOAD WAV FILES<input type="file" accept="audio/wav,audio/x-wav,.wav" multiple id="globalFileInput"></label>
+    <span class="load-bar-hint">Pick or drop one or more WAVs. Files named like <code>track_1.wav</code> auto-route to that track; others fill the next empty track. You can still drag a file onto a track below to replace just that one.</span>
+  </div>
+
+  <div class="tracks" id="tracks"></div>
+
+  <div class="trim-screen">
+    <div class="cassette-title">Master Mix — Trim</div>
+    <div class="trim-tempo-row">
+      <label for="bpmInput">BPM</label>
+      <input type="number" id="bpmInput" class="bpm-input" min="20" max="300" step="1" placeholder="— —" inputmode="numeric">
+      <button class="mini-btn tap-tempo-btn" id="tapTempoBtn" title="Tap in time with the beat">TAP</button>
+      <label for="beatsPerBarSelect">/ BAR</label>
+      <select id="beatsPerBarSelect" class="bpb-select">
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4" selected>4</option>
+        <option value="6">6</option>
+        <option value="8">8</option>
+      </select>
+      <button class="mini-btn grid-toggle-btn on" id="gridToggleBtn" title="Show/hide bar grid">GRID</button>
+      <span class="bar-count-readout" id="barCountReadout"></span>
+    </div>
+    <div class="trim-zoom-row">
+      <label>ZOOM</label>
+      <button class="mini-btn zoom-btn" id="zoomOutBtn" title="Zoom out">−</button>
+      <span class="zoom-level-readout" id="zoomLevelReadout">1.0×</span>
+      <button class="mini-btn zoom-btn" id="zoomInBtn" title="Zoom in">+</button>
+      <button class="mini-btn zoom-fit-btn" id="zoomFitBtn" title="Reset zoom to fit whole mix">FIT</button>
+    </div>
+    <div class="trim-inner">
+      <canvas id="masterWave" width="520" height="120"></canvas>
+    </div>
+    <div class="minimap-wrap" id="minimapWrap">
+      <canvas id="masterMinimap" width="520" height="22"></canvas>
+    </div>
+    <div class="trim-footer">
+      <span id="trimStartLabel">0:00.0</span>
+      <button class="trim-reset-btn" id="trimResetBtn">Reset trim</button>
+      <span id="trimEndLabel">0:00.0</span>
+    </div>
+    <div class="trim-hint">Click or drag anywhere on the waveform to jump playback there. Amber circles trim the selection. Drag the white squares at mid-height in from either end to set a fade-in/fade-out for the whole mix. Use ZOOM (or scroll/pinch on the waveform) to zoom in for finer edits, and drag the strip below to pan around. Set a BPM above to lay a bar grid over the master mix and every track for editing reference.</div>
+  </div>
+
+  <div class="eq-screen">
+    <div class="cassette-title">Master EQ</div>
+    <div class="eq-body">
+      <div class="eq-band">
+        <span class="eq-value" id="eqLowValue">0 dB</span>
+        <input type="range" class="eq-slider" id="eqLowSlider" min="-12" max="12" step="1" value="0">
+        <label>LOW</label>
+      </div>
+      <div class="eq-band">
+        <span class="eq-value" id="eqMidValue">0 dB</span>
+        <input type="range" class="eq-slider" id="eqMidSlider" min="-12" max="12" step="1" value="0">
+        <label>MID</label>
+      </div>
+      <div class="eq-band">
+        <span class="eq-value" id="eqHighValue">0 dB</span>
+        <input type="range" class="eq-slider" id="eqHighSlider" min="-12" max="12" step="1" value="0">
+        <label>HIGH</label>
+      </div>
+      <button class="eq-flat-btn" id="eqFlatBtn">Flat</button>
+    </div>
+  </div>
+
+  <div class="viz-screen">
+    <div class="cassette-title">Output</div>
+    <div class="viz-inner">
+      <canvas id="visualizer" width="520" height="80"></canvas>
+    </div>
+  </div>
+
+  <div class="notes-panel">
+    <div class="cassette-title">Notes</div>
+    <textarea id="notesInput" class="notes-input" placeholder="Lyrics, credits, mix notes, reminders…" maxlength="4000"></textarea>
+    <div class="notes-hint">Saved alongside the mixdown as a .txt file when you export.</div>
+  </div>
+
+  <div class="reel-panel">
+    <div class="cassette-title">Reels Export</div>
+    <div class="reel-body">
+      <div class="reel-frame">
+        <canvas id="reelCanvas" width="720" height="1280"></canvas>
+      </div>
+      <div class="reel-controls">
+        <label class="file-btn reel-photo-btn">ADD PHOTO/VIDEO<input type="file" accept="image/*,video/*" id="reelImageInput"></label>
+        <span class="reel-photo-name" id="reelPhotoName">no media — screen shows generated art instead</span>
+        <label class="reel-list-label">Summer Reading List (up to 4, one per line)</label>
+        <textarea id="readingListInput" class="reel-list-input" placeholder="Leave blank for the default list: Acid Communism, Magnifica Humanitas, Phenomenology of Spirit, Eros and Civilization" maxlength="200" rows="4"></textarea>
+        <button class="tbtn bounce" id="reelExportBtn">🎬 CREATE 30S REEL</button>
+        <div class="reel-hint">Load a photo for a still screen, or a video to have it play (muted) behind the mix while the reel records. Videos over 30s jump to a random 5-second clip from throughout the footage every 5 seconds instead of just playing the start. Uses your current trim selection, capped at 30 seconds.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="transport">
+    <button class="tbtn" id="rewBtn" title="Rewind">⏮ REW</button>
+    <button class="tbtn play" id="playBtn">▶ PLAY</button>
+    <button class="tbtn stop" id="stopBtn">■ STOP</button>
+    <button class="tbtn" id="loopBtn" title="Loop the trimmed selection">🔁 LOOP</button>
+    <button class="tbtn bounce" id="bounceBtn">⏺ MIXDOWN → WAV</button>
+    <button class="tbtn clear" id="clearBtn">✕ CLEAR ALL</button>
+    <div class="master-fader">
+      <label>MASTER</label>
+      <input type="range" class="fader" id="masterFader" min="0" max="1.2" step="0.01" value="1">
+    </div>
+  </div>
+
+  <div class="status-line" id="status">Load a WAV file into each track, or drag one straight onto a track.</div>
+</div>
+
+<script>
+(() => {
+  const NUM_TRACKS = 4;
+  const TRACK_COLORS = ['#d6402c', '#1f5fa8', '#e0821e', '#e8b32c'];
+  const tracksEl = document.getElementById('tracks');
+  const globalFileInput = document.getElementById('globalFileInput');
+  const counterEl = document.getElementById('counter');
+  const tapeStrip = document.getElementById('tapeStrip');
+  const reelL = document.getElementById('reelL');
+  const reelR = document.getElementById('reelR');
+  const statusEl = document.getElementById('status');
+  const playBtn = document.getElementById('playBtn');
+  const stopBtn = document.getElementById('stopBtn');
+  const rewBtn = document.getElementById('rewBtn');
+  const loopBtn = document.getElementById('loopBtn');
+  const bounceBtn = document.getElementById('bounceBtn');
+  const clearBtn = document.getElementById('clearBtn');
+  const masterFader = document.getElementById('masterFader');
+  const eqLowSlider = document.getElementById('eqLowSlider');
+  const eqMidSlider = document.getElementById('eqMidSlider');
+  const eqHighSlider = document.getElementById('eqHighSlider');
+  const eqLowValue = document.getElementById('eqLowValue');
+  const eqMidValue = document.getElementById('eqMidValue');
+  const eqHighValue = document.getElementById('eqHighValue');
+  const eqFlatBtn = document.getElementById('eqFlatBtn');
+  const mixTitleInput = document.getElementById('mixTitleInput');
+  const notesInput = document.getElementById('notesInput');
+  const reelCanvas = document.getElementById('reelCanvas');
+  const reelCtx = reelCanvas.getContext('2d');
+  const reelImageInput = document.getElementById('reelImageInput');
+  const reelPhotoName = document.getElementById('reelPhotoName');
+  const readingListInput = document.getElementById('readingListInput');
+  const reelExportBtn = document.getElementById('reelExportBtn');
+
+  let reelImage = null;
+  let reelVideo = null;
+  let reelMediaType = null; // 'image' | 'video' | null
+  let isRecordingReel = false;
+
+  const visCanvas = document.getElementById('visualizer');
+  const visCtx = visCanvas.getContext('2d');
+  const masterWaveCanvas = document.getElementById('masterWave');
+  const masterWaveCtx = masterWaveCanvas.getContext('2d');
+
+  // Matches a canvas's internal pixel buffer to its actual on-screen size
+  // (times devicePixelRatio) so hand-drawn waveforms render crisp instead
+  // of blurry/blocky when the CSS box is bigger than the backing bitmap.
+  function fitCanvasResolution(canvas){
+    if(!canvas) return false;
+    const rect = canvas.getBoundingClientRect();
+    if(rect.width < 1 || rect.height < 1) return false;
+    const dpr = Math.min(window.devicePixelRatio || 1, 3);
+    canvas._dpr = dpr;
+    const w = Math.max(1, Math.round(rect.width * dpr));
+    const h = Math.max(1, Math.round(rect.height * dpr));
+    if(canvas.width === w && canvas.height === h) return false;
+    canvas.width = w;
+    canvas.height = h;
+    return true;
+  }
+
+  const trimStartLabel = document.getElementById('trimStartLabel');
+  const trimEndLabel = document.getElementById('trimEndLabel');
+  const trimResetBtn = document.getElementById('trimResetBtn');
+  const bpmInput = document.getElementById('bpmInput');
+  const tapTempoBtn = document.getElementById('tapTempoBtn');
+  const beatsPerBarSelect = document.getElementById('beatsPerBarSelect');
+  const gridToggleBtn = document.getElementById('gridToggleBtn');
+  const barCountReadout = document.getElementById('barCountReadout');
+  const zoomOutBtn = document.getElementById('zoomOutBtn');
+  const zoomInBtn = document.getElementById('zoomInBtn');
+  const zoomFitBtn = document.getElementById('zoomFitBtn');
+  const zoomLevelReadout = document.getElementById('zoomLevelReadout');
+  const minimapWrap = document.getElementById('minimapWrap');
+  const masterMinimapCanvas = document.getElementById('masterMinimap');
+  const masterMinimapCtx = masterMinimapCanvas.getContext('2d');
+
+  let songBPM = 0;
+  let beatsPerBar = 4;
+  let showBarGrid = true;
+
+  function barBeatSeconds(){
+    if(!songBPM || songBPM <= 0) return null;
+    const beatSec = 60 / songBPM;
+    return { beatSec, barSec: beatSec * beatsPerBar };
+  }
+
+  function updateBarCountReadout(){
+    const timing = barBeatSeconds();
+    const totalDur = maxDuration();
+    if(!timing || totalDur <= 0){
+      barCountReadout.textContent = '';
+      return;
+    }
+    const bars = totalDur / timing.barSec;
+    barCountReadout.textContent = `≈ ${bars.toFixed(1)} bars`;
+  }
+
+  // Draws vertical bar/beat lines over a waveform canvas at the given BPM.
+  // durForCanvas is the time (seconds) that the canvas's full width represents.
+  // withLabels/withBeatTicks are on for the (larger) master canvas, off for
+  // the compact per-track canvases to avoid clutter.
+  function drawBarGrid(ctx, w, h, dpr, withLabels, withBeatTicks, viewStart, viewSpan){
+    if(!showBarGrid || viewSpan <= 0) return;
+    const timing = barBeatSeconds();
+    if(!timing) return;
+    const { beatSec, barSec } = timing;
+    const viewEnd = viewStart + viewSpan;
+
+    if(withBeatTicks && beatSec > 0){
+      ctx.fillStyle = 'rgba(255,255,255,0.14)';
+      const tickLen = Math.min(h * 0.18, 10 * dpr);
+      const firstBeatIdx = Math.max(0, Math.ceil(viewStart / beatSec - 1e-9));
+      for(let i = firstBeatIdx; i * beatSec <= viewEnd + 1e-6; i++){
+        const t = i * beatSec;
+        if(Math.abs((t / barSec) - Math.round(t / barSec)) < 1e-6) continue; // skip bar lines here
+        const x = ((t - viewStart) / viewSpan) * w;
+        ctx.fillRect(x, 0, Math.max(1, dpr), tickLen);
+        ctx.fillRect(x, h - tickLen, Math.max(1, dpr), tickLen);
+      }
+    }
+
+    if(barSec > 0){
+      ctx.strokeStyle = 'rgba(255,255,255,0.38)';
+      ctx.lineWidth = Math.max(1, 1.25 * dpr);
+      const totalBarsInView = viewSpan / barSec;
+      const labelEvery = totalBarsInView > 64 ? 8 : totalBarsInView > 32 ? 4 : totalBarsInView > 16 ? 2 : 1;
+      const firstBarIdx = Math.max(0, Math.ceil(viewStart / barSec - 1e-9));
+      for(let i = firstBarIdx; i * barSec <= viewEnd + 1e-6; i++){
+        const t = i * barSec;
+        const x = ((t - viewStart) / viewSpan) * w;
+        ctx.beginPath();
+        ctx.moveTo(x, 0);
+        ctx.lineTo(x, h);
+        ctx.stroke();
+        if(withLabels && i % labelEvery === 0){
+          ctx.fillStyle = 'rgba(255,255,255,0.55)';
+          ctx.font = `${9 * dpr}px JetBrains Mono`;
+          ctx.fillText(String(i + 1), x + 3 * dpr, 10 * dpr);
+        }
+      }
+    }
+  }
+
+  bpmInput.addEventListener('input', () => {
+    const v = parseFloat(bpmInput.value);
+    songBPM = (isFinite(v) && v > 0) ? Math.max(20, Math.min(300, v)) : 0;
+    updateBarCountReadout();
+    renderMasterWave(elapsedBeforeStop);
+    for(const t of tracks) renderTrackWave(t, elapsedBeforeStop);
+  });
+
+  let tapTimes = [];
+  tapTempoBtn.addEventListener('click', () => {
+    const now = performance.now();
+    if(tapTimes.length && now - tapTimes[tapTimes.length - 1] > 2200){
+      tapTimes = []; // gap too long, start a fresh tap sequence
+    }
+    tapTimes.push(now);
+    if(tapTimes.length > 8) tapTimes.shift();
+
+    tapTempoBtn.classList.add('tapped');
+    setTimeout(() => tapTempoBtn.classList.remove('tapped'), 120);
+
+    if(tapTimes.length >= 2){
+      const intervals = [];
+      for(let i = 1; i < tapTimes.length; i++) intervals.push(tapTimes[i] - tapTimes[i-1]);
+      const avgMs = intervals.reduce((a,b) => a+b, 0) / intervals.length;
+      const bpm = Math.max(20, Math.min(300, Math.round(60000 / avgMs)));
+      bpmInput.value = bpm;
+      songBPM = bpm;
+      updateBarCountReadout();
+      renderMasterWave(elapsedBeforeStop);
+      for(const t of tracks) renderTrackWave(t, elapsedBeforeStop);
+    }
+  });
+
+  beatsPerBarSelect.addEventListener('change', () => {
+    beatsPerBar = parseInt(beatsPerBarSelect.value, 10) || 4;
+    updateBarCountReadout();
+    renderMasterWave(elapsedBeforeStop);
+    for(const t of tracks) renderTrackWave(t, elapsedBeforeStop);
+  });
+
+  gridToggleBtn.addEventListener('click', () => {
+    showBarGrid = !showBarGrid;
+    gridToggleBtn.classList.toggle('on', showBarGrid);
+    renderMasterWave(elapsedBeforeStop);
+    for(const t of tracks) renderTrackWave(t, elapsedBeforeStop);
+  });
+
+  let audioCtx = null;
+  const tracks = [];
+  let isPlaying = false;
+  let isLooping = false;
+  let playStartCtxTime = 0;
+  let elapsedBeforeStop = 0;
+  let rafId = null;
+  let masterGainLive = null;
+  let masterAnalyserLive = null;
+  let masterFreqData = null;
+  let barPeaks = null;
+  let reelMasterAnalyser = null;
+  let reelFreqData = null;
+  let reelBarPeaks = null;
+
+  let trimStart = 0;
+  let trimEnd = 0;
+  let trimIsDefault = true;
+  let masterPeaks = null;
+  let trimDragging = null;
+  let mixFadeIn = 0;
+  let mixFadeOut = 0;
+  let fadeDragging = null;
+  let seekDragging = false;
+  let seekRafPending = false;
+  let lastSeekX = 0;
+  let masterViewStart = 0;
+  let masterViewEnd = 0;
+  let masterViewPeaks = null;
+  let minimapDragging = false;
+  const MASTER_MIN_VIEW_SPAN = 0.5;
+  const TRACK_MIN_VIEW_SPAN = 0.5;
+  let eqLowGain = 0;
+  let eqMidGain = 0;
+  let eqHighGain = 0;
+  let liveEQLow = null, liveEQMid = null, liveEQHigh = null;
+
+  function ensureCtx(){
+    if(!audioCtx){
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    }
+    if(audioCtx.state === 'suspended') audioCtx.resume();
+    return audioCtx;
+  }
+
+  function setStatus(msg, isErr){
+    statusEl.textContent = msg;
+    statusEl.classList.toggle('err', !!isErr);
+  }
+
+  function fmtCounter(seconds){
+    const n = Math.max(0, Math.floor(seconds * 10));
+    return String(n).padStart(4,'0').slice(-4);
+  }
+
+  function maxDuration(){
+    let m = 0;
+    for(const t of tracks) if(t.buffer) m = Math.max(m, t.buffer.duration);
+    return m;
+  }
+
+  // ---- Mix title ----
+  function sanitizeFilename(str, fallback){
+    if(!str) return fallback;
+    const safe = str
+      .replace(/[\\/:*?"<>|]/g, '')
+      .replace(/\s+/g, '-')
+      .replace(/-+/g, '-')
+      .replace(/^-|-$/g, '');
+    return safe || fallback;
+  }
+
+  function getMixTitle(){
+    return mixTitleInput.value.trim();
+  }
+
+  function mixFilenameBase(){
+    return sanitizeFilename(getMixTitle(), 'porta-four-mixdown');
+  }
+
+  function trackFilenameBase(track){
+    const fallback = `track-${track.index + 1}`;
+    const title = (track.title || '').trim();
+    if(title) return sanitizeFilename(title, fallback);
+    if(track.name) return sanitizeFilename(track.name.replace(/\.[^/.]+$/, ''), fallback);
+    return fallback;
+  }
+
+  function syncPageTitle(){
+    const title = getMixTitle();
+    document.title = title ? `${title} — Summer Reading` : 'Summer Reading — OP1 4-Track Demos';
+  }
+
+  mixTitleInput.addEventListener('input', () => {
+    syncPageTitle();
+    if(!isRecordingReel) drawReelFrame(0, 0);
+  });
+  notesInput.addEventListener('input', () => {
+    if(!isRecordingReel) drawReelFrame(0, 0);
+  });
+  readingListInput.addEventListener('input', () => {
+    if(!isRecordingReel) drawReelFrame(0, 0);
+  });
+  syncPageTitle();
+
+  // ---- Master mix trim ----
+  function formatTime(seconds){
+    seconds = Math.max(0, seconds || 0);
+    const m = Math.floor(seconds / 60);
+    const s = (seconds % 60).toFixed(1).padStart(4, '0');
+    return `${m}:${s}`;
+  }
+
+  function computeMasterPeaksForRange(buckets, rangeStart, rangeEnd){
+    const loaded = tracks.filter(t => t.buffer);
+    const rangeDur = rangeEnd - rangeStart;
+    if(rangeDur <= 0 || !loaded.length) return null;
+
+    const combined = new Array(buckets);
+    for(let b=0;b<buckets;b++) combined[b] = [0, 0];
+
+    for(const t of loaded){
+      const data = t.buffer.getChannelData(0);
+      const sr = t.buffer.sampleRate;
+      const len = data.length;
+      for(let b=0;b<buckets;b++){
+        const tStart = rangeStart + (b/buckets) * rangeDur;
+        const tEnd = rangeStart + ((b+1)/buckets) * rangeDur;
+        let sStart = Math.floor(tStart * sr);
+        let sEnd = Math.floor(tEnd * sr);
+        if(sStart >= len || sEnd <= 0) continue;
+        if(sStart < 0) sStart = 0;
+        if(sEnd > len) sEnd = len;
+        let mn = 0, mx = 0;
+        const span = sEnd - sStart;
+        const step = Math.max(1, Math.floor(span / 48));
+        for(let s=sStart; s<sEnd; s+=step){
+          const v = data[s];
+          if(v < mn) mn = v;
+          if(v > mx) mx = v;
+        }
+        combined[b][0] += mn;
+        combined[b][1] += mx;
+      }
+    }
+
+    for(const pair of combined){
+      pair[0] = Math.max(-1, pair[0]);
+      pair[1] = Math.min(1, pair[1]);
+    }
+
+    let maxAmp = 0;
+    for(const [mn, mx] of combined){
+      if(-mn > maxAmp) maxAmp = -mn;
+      if(mx > maxAmp) maxAmp = mx;
+    }
+    if(maxAmp > 0.01 && maxAmp < 0.9){
+      const boost = Math.min(2.5, 0.9 / maxAmp);
+      for(const pair of combined){
+        pair[0] = Math.max(-1, pair[0] * boost);
+        pair[1] = Math.min(1, pair[1] * boost);
+      }
+    }
+    return combined;
+  }
+
+  function computeMasterPeaks(buckets){
+    const totalDur = maxDuration();
+    if(totalDur <= 0) return null;
+    return computeMasterPeaksForRange(buckets, 0, totalDur);
+  }
+
+  // --- Master waveform zoom/pan -------------------------------------
+  function masterViewSpan(){
+    return Math.max(0.0001, masterViewEnd - masterViewStart);
+  }
+  function masterTimeToX(t, w){
+    return ((t - masterViewStart) / masterViewSpan()) * w;
+  }
+  function masterXToTime(x, w){
+    return masterViewStart + (x / w) * masterViewSpan();
+  }
+  function clampMasterView(){
+    const totalDur = maxDuration();
+    if(totalDur <= 0){ masterViewStart = 0; masterViewEnd = 0; return; }
+    let span = masterViewEnd - masterViewStart;
+    if(!(span > 0)){ masterViewStart = 0; masterViewEnd = totalDur; return; }
+    span = Math.min(span, totalDur);
+    if(masterViewStart < 0){ masterViewStart = 0; }
+    masterViewEnd = masterViewStart + span;
+    if(masterViewEnd > totalDur){
+      masterViewEnd = totalDur;
+      masterViewStart = Math.max(0, masterViewEnd - span);
+    }
+  }
+  function recomputeMasterViewPeaks(){
+    const w = masterWaveCanvas.width;
+    if(maxDuration() <= 0 || masterViewEnd <= masterViewStart){
+      masterViewPeaks = null;
+      return;
+    }
+    masterViewPeaks = computeMasterPeaksForRange(w, masterViewStart, masterViewEnd);
+  }
+  function updateZoomReadout(){
+    const totalDur = maxDuration();
+    if(!zoomLevelReadout) return;
+    if(totalDur <= 0){ zoomLevelReadout.textContent = '1.0×'; return; }
+    const zoomLevel = totalDur / masterViewSpan();
+    zoomLevelReadout.textContent = zoomLevel.toFixed(zoomLevel >= 10 ? 0 : 1) + '×';
+  }
+  function setMasterZoom(factor, centerTime){
+    const totalDur = maxDuration();
+    if(totalDur <= 0) return;
+    if(masterViewEnd <= masterViewStart){ masterViewStart = 0; masterViewEnd = totalDur; }
+    const curSpan = masterViewEnd - masterViewStart;
+    let newSpan = curSpan / factor;
+    newSpan = Math.max(MASTER_MIN_VIEW_SPAN, Math.min(totalDur, newSpan));
+    const center = (centerTime !== undefined) ? centerTime : (masterViewStart + masterViewEnd) / 2;
+    const frac = curSpan > 0 ? (center - masterViewStart) / curSpan : 0.5;
+    let newStart = center - frac * newSpan;
+    let newEnd = newStart + newSpan;
+    if(newStart < 0){ newEnd -= newStart; newStart = 0; }
+    if(newEnd > totalDur){ newStart -= (newEnd - totalDur); newEnd = totalDur; }
+    masterViewStart = Math.max(0, newStart);
+    masterViewEnd = Math.min(totalDur, newEnd);
+    recomputeMasterViewPeaks();
+    updateZoomReadout();
+    renderMasterWave(elapsedBeforeStop);
+    renderMasterMinimap();
+  }
+  function resetMasterZoom(){
+    const totalDur = maxDuration();
+    masterViewStart = 0;
+    masterViewEnd = totalDur;
+    recomputeMasterViewPeaks();
+    updateZoomReadout();
+    renderMasterWave(elapsedBeforeStop);
+    renderMasterMinimap();
+  }
+  function panMasterViewTo(centerTime){
+    const totalDur = maxDuration();
+    if(totalDur <= 0) return;
+    const span = masterViewSpan();
+    let newStart = centerTime - span / 2;
+    newStart = Math.max(0, Math.min(totalDur - span, newStart));
+    masterViewStart = newStart;
+    masterViewEnd = newStart + span;
+    recomputeMasterViewPeaks();
+    renderMasterWave(elapsedBeforeStop);
+    renderMasterMinimap();
+  }
+  function panMasterViewBy(deltaSeconds){
+    const totalDur = maxDuration();
+    if(totalDur <= 0) return;
+    const span = masterViewSpan();
+    let newStart = masterViewStart + deltaSeconds;
+    newStart = Math.max(0, Math.min(totalDur - span, newStart));
+    masterViewStart = newStart;
+    masterViewEnd = newStart + span;
+    recomputeMasterViewPeaks();
+    renderMasterWave(elapsedBeforeStop);
+    renderMasterMinimap();
+  }
+
+  function drawTrimHandle(x, h){
+    const dpr = masterWaveCanvas._dpr || 1;
+    const r = 5 * dpr;
+    masterWaveCtx.strokeStyle = '#f2c94c';
+    masterWaveCtx.lineWidth = 2 * dpr;
+    masterWaveCtx.beginPath();
+    masterWaveCtx.moveTo(x, 0);
+    masterWaveCtx.lineTo(x, h);
+    masterWaveCtx.stroke();
+    masterWaveCtx.fillStyle = '#f2c94c';
+    masterWaveCtx.beginPath();
+    masterWaveCtx.arc(x, r + 2, r, 0, Math.PI*2);
+    masterWaveCtx.arc(x, h - r - 2, r, 0, Math.PI*2);
+    masterWaveCtx.fill();
+  }
+
+  function renderMasterWave(elapsed){
+    const w = masterWaveCanvas.width, h = masterWaveCanvas.height;
+    masterWaveCtx.clearRect(0, 0, w, h);
+    const totalDur = maxDuration();
+
+    if(!masterPeaks || totalDur <= 0){
+      const emptyDpr = masterWaveCanvas._dpr || 1;
+      masterWaveCtx.fillStyle = 'rgba(242,237,225,0.35)';
+      masterWaveCtx.font = `${9 * emptyDpr}px JetBrains Mono`;
+      masterWaveCtx.fillText('— load tracks to see the master mix —', 8 * emptyDpr, h/2 + 3 * emptyDpr);
+      trimStartLabel.textContent = formatTime(0);
+      trimEndLabel.textContent = formatTime(0);
+      return;
+    }
+
+    const mid = h / 2;
+    const startX = masterTimeToX(trimStart, w);
+    const endX = masterTimeToX(trimEnd, w);
+
+    masterWaveCtx.fillStyle = 'rgba(255,255,255,0.08)';
+    masterWaveCtx.fillRect(0, mid - 0.5, w, 1);
+
+    const barDpr = masterWaveCanvas._dpr || 1;
+    const barMargin = 6 * barDpr;
+    const viewBars = masterViewPeaks || masterPeaks;
+    const bw = w / viewBars.length;
+    for(let i=0;i<viewBars.length;i++){
+      const [mn, mx] = viewBars[i];
+      const x = i * bw;
+      const inside = x >= startX && x <= endX;
+      masterWaveCtx.fillStyle = inside ? '#e8b32c' : 'rgba(242,237,225,0.3)';
+      const yTop = mid + mx * (h/2 - barMargin);
+      const yBot = mid + mn * (h/2 - barMargin);
+      masterWaveCtx.fillRect(x, Math.min(yTop, yBot), Math.max(1, bw - 1), Math.max(1, Math.abs(yBot - yTop)));
+    }
+
+    masterWaveCtx.fillStyle = 'rgba(0,0,0,0.4)';
+    if(startX > 0) masterWaveCtx.fillRect(0, 0, startX, h);
+    if(endX < w) masterWaveCtx.fillRect(endX, 0, w - endX, h);
+
+    const dpr = masterWaveCanvas._dpr || 1;
+    drawBarGrid(masterWaveCtx, w, h, dpr, true, true, masterViewStart, masterViewSpan());
+
+    if(isPlaying){
+      const phx = masterTimeToX(elapsed, w);
+      if(phx >= -2 && phx <= w + 2){
+        masterWaveCtx.fillStyle = 'rgba(255,255,255,0.9)';
+        masterWaveCtx.fillRect(phx, 0, Math.max(1, dpr), h);
+      }
+    }
+
+    // fade-in / fade-out ramp lines + handles
+    const fadeSpan = Math.max(0, trimEnd - trimStart);
+    const fadeInSec = Math.min(mixFadeIn, fadeSpan);
+    const fadeOutSec = Math.min(mixFadeOut, fadeSpan);
+    const fadeInHandleX = masterTimeToX(trimStart + fadeInSec, w);
+    const fadeOutHandleX = masterTimeToX(trimEnd - fadeOutSec, w);
+
+    masterWaveCtx.strokeStyle = 'rgba(255,255,255,0.8)';
+    masterWaveCtx.lineWidth = 1.5 * dpr;
+    masterWaveCtx.beginPath();
+    masterWaveCtx.moveTo(startX, h);
+    masterWaveCtx.lineTo(fadeInHandleX, 0);
+    masterWaveCtx.stroke();
+    masterWaveCtx.beginPath();
+    masterWaveCtx.moveTo(endX, h);
+    masterWaveCtx.lineTo(fadeOutHandleX, 0);
+    masterWaveCtx.stroke();
+
+    const fadeHandleSize = 7 * dpr;
+    masterWaveCtx.fillStyle = '#fff';
+    masterWaveCtx.strokeStyle = 'rgba(0,0,0,0.5)';
+    masterWaveCtx.lineWidth = 1 * dpr;
+    masterWaveCtx.fillRect(fadeInHandleX - fadeHandleSize/2, mid - fadeHandleSize/2, fadeHandleSize, fadeHandleSize);
+    masterWaveCtx.strokeRect(fadeInHandleX - fadeHandleSize/2, mid - fadeHandleSize/2, fadeHandleSize, fadeHandleSize);
+    masterWaveCtx.fillRect(fadeOutHandleX - fadeHandleSize/2, mid - fadeHandleSize/2, fadeHandleSize, fadeHandleSize);
+    masterWaveCtx.strokeRect(fadeOutHandleX - fadeHandleSize/2, mid - fadeHandleSize/2, fadeHandleSize, fadeHandleSize);
+
+    drawTrimHandle(startX, h);
+    drawTrimHandle(endX, h);
+
+    trimStartLabel.textContent = formatTime(trimStart);
+    trimEndLabel.textContent = formatTime(trimEnd);
+  }
+
+  function renderMasterMinimap(){
+    fitCanvasResolution(masterMinimapCanvas);
+    const w = masterMinimapCanvas.width, h = masterMinimapCanvas.height;
+    masterMinimapCtx.clearRect(0, 0, w, h);
+    const totalDur = maxDuration();
+
+    if(!masterPeaks || totalDur <= 0){
+      minimapWrap.style.display = 'none';
+      return;
+    }
+    const span = masterViewSpan();
+    const zoomed = span < totalDur - 0.001;
+    minimapWrap.style.display = zoomed ? 'block' : 'none';
+    if(!zoomed) return;
+
+    const mmDpr = masterMinimapCanvas._dpr || 1;
+    const mid = h / 2;
+    const bw = w / masterPeaks.length;
+    for(let i=0;i<masterPeaks.length;i++){
+      const [mn, mx] = masterPeaks[i];
+      const x = i * bw;
+      const yTop = mid + mx * (h/2 - 2*mmDpr);
+      const yBot = mid + mn * (h/2 - 2*mmDpr);
+      masterMinimapCtx.fillStyle = 'rgba(242,237,225,0.35)';
+      masterMinimapCtx.fillRect(x, Math.min(yTop,yBot), Math.max(1, bw - 1), Math.max(1, Math.abs(yBot-yTop)));
+    }
+
+    const vx = (masterViewStart / totalDur) * w;
+    const vw = Math.max(3*mmDpr, (span / totalDur) * w);
+    masterMinimapCtx.fillStyle = 'rgba(232,179,44,0.28)';
+    masterMinimapCtx.fillRect(vx, 0, vw, h);
+    masterMinimapCtx.strokeStyle = '#e8b32c';
+    masterMinimapCtx.lineWidth = Math.max(1, mmDpr);
+    masterMinimapCtx.strokeRect(vx + 0.5, 0.5, vw - 1, h - 1);
+  }
+
+  function updateTrimBoundsAfterChange(){
+    const newDur = maxDuration();
+    fitCanvasResolution(masterWaveCanvas);
+    masterPeaks = computeMasterPeaks(masterWaveCanvas.width);
+    if(newDur <= 0){
+      trimStart = 0;
+      trimEnd = 0;
+      trimIsDefault = true;
+    }else if(trimIsDefault){
+      trimStart = 0;
+      trimEnd = newDur;
+    }else{
+      trimEnd = Math.min(trimEnd, newDur);
+      if(trimStart > trimEnd - 0.05) trimStart = Math.max(0, trimEnd - 0.05);
+    }
+
+    if(newDur <= 0){
+      masterViewStart = 0;
+      masterViewEnd = 0;
+    }else if(masterViewEnd <= 0 || masterViewEnd - masterViewStart >= newDur - 0.001){
+      // Not zoomed in (or first time seeing audio) — keep the view synced
+      // to the full mix as the duration changes.
+      masterViewStart = 0;
+      masterViewEnd = newDur;
+    }else{
+      clampMasterView();
+    }
+    recomputeMasterViewPeaks();
+    renderMasterWave(elapsedBeforeStop);
+    renderMasterMinimap();
+    updateBarCountReadout();
+    updateZoomReadout();
+  }
+
+  function getMasterWaveX(evt){
+    const rect = masterWaveCanvas.getBoundingClientRect();
+    const clientX = evt.touches ? evt.touches[0].clientX : evt.clientX;
+    const scaleX = masterWaveCanvas.width / rect.width;
+    return (clientX - rect.left) * scaleX;
+  }
+
+  function getMasterWaveY(evt){
+    const rect = masterWaveCanvas.getBoundingClientRect();
+    const clientY = evt.touches ? evt.touches[0].clientY : evt.clientY;
+    const scaleY = masterWaveCanvas.height / rect.height;
+    return (clientY - rect.top) * scaleY;
+  }
+
+  const HANDLE_GRAB_PX_BASE = 12;
+  function handleGrabPx(){
+    return HANDLE_GRAB_PX_BASE * (masterWaveCanvas._dpr || 1);
+  }
+
+  masterWaveCanvas.addEventListener('pointerdown', (e) => {
+    const totalDur = maxDuration();
+    if(totalDur <= 0) return;
+    const x = getMasterWaveX(e);
+    const y = getMasterWaveY(e);
+    const w = masterWaveCanvas.width, h = masterWaveCanvas.height;
+    const mid = h / 2;
+    const startX = masterTimeToX(trimStart, w);
+    const endX = masterTimeToX(trimEnd, w);
+    const fadeSpan = Math.max(0, trimEnd - trimStart);
+    const fadeInHandleX = masterTimeToX(trimStart + Math.min(mixFadeIn, fadeSpan), w);
+    const fadeOutHandleX = masterTimeToX(trimEnd - Math.min(mixFadeOut, fadeSpan), w);
+    const nearMid = Math.abs(y - mid) <= handleGrabPx();
+
+    if(nearMid && Math.abs(x - fadeInHandleX) <= handleGrabPx() && Math.abs(x - fadeInHandleX) <= Math.abs(x - fadeOutHandleX)){
+      fadeDragging = 'in';
+      masterWaveCanvas.setPointerCapture(e.pointerId);
+      return;
+    }
+    if(nearMid && Math.abs(x - fadeOutHandleX) <= handleGrabPx()){
+      fadeDragging = 'out';
+      masterWaveCanvas.setPointerCapture(e.pointerId);
+      return;
+    }
+
+    if(Math.abs(x - startX) <= handleGrabPx() && Math.abs(x - startX) <= Math.abs(x - endX)){
+      trimDragging = 'start';
+      trimIsDefault = false;
+      masterWaveCanvas.setPointerCapture(e.pointerId);
+      return;
+    }
+    if(Math.abs(x - endX) <= handleGrabPx()){
+      trimDragging = 'end';
+      trimIsDefault = false;
+      masterWaveCanvas.setPointerCapture(e.pointerId);
+      return;
+    }
+
+    // Not on a trim/fade handle — click (or drag) anywhere else on the
+    // waveform to jump playback to that point in the mix.
+    seekDragging = true;
+    masterWaveCanvas.setPointerCapture(e.pointerId);
+    seekToWaveX(x, w);
+  });
+
+  masterWaveCanvas.addEventListener('pointermove', (e) => {
+    const totalDur = maxDuration();
+    if(totalDur <= 0) return;
+    const w = masterWaveCanvas.width;
+
+    if(fadeDragging){
+      const x = getMasterWaveX(e);
+      const startX = masterTimeToX(trimStart, w);
+      const endX = masterTimeToX(trimEnd, w);
+      const fadeSpan = Math.max(0, trimEnd - trimStart);
+      const px = Math.max(startX, Math.min(x, endX));
+      const span = masterViewSpan();
+      if(fadeDragging === 'in'){
+        mixFadeIn = Math.max(0, Math.min(fadeSpan, ((px - startX) / w) * span));
+      }else{
+        mixFadeOut = Math.max(0, Math.min(fadeSpan, ((endX - px) / w) * span));
+      }
+      renderMasterWave(elapsedBeforeStop);
+      return;
+    }
+
+    if(seekDragging){
+      lastSeekX = getMasterWaveX(e);
+      if(!seekRafPending){
+        seekRafPending = true;
+        requestAnimationFrame(() => {
+          seekRafPending = false;
+          if(seekDragging) seekToWaveX(lastSeekX, masterWaveCanvas.width);
+        });
+      }
+      return;
+    }
+
+    if(!trimDragging) return;
+    const x = getMasterWaveX(e);
+    const time = Math.max(0, Math.min(totalDur, masterXToTime(x, w)));
+    const minGap = 0.05;
+
+    if(trimDragging === 'start'){
+      trimStart = Math.max(0, Math.min(time, trimEnd - minGap));
+    }else{
+      trimEnd = Math.min(totalDur, Math.max(time, trimStart + minGap));
+    }
+    renderMasterWave(elapsedBeforeStop);
+  });
+
+  // Jumps playback to an absolute time in the song, clamped to the current
+  // trim selection. Restarts audio from the new position if the mix is
+  // currently playing; otherwise just repositions the playhead everywhere
+  // (master waveform + every track).
+  function commitSeek(rawTime){
+    const totalDur = maxDuration();
+    if(totalDur <= 0) return;
+    const span = Math.max(0.0001, trimEnd - trimStart);
+    const epsilon = Math.min(0.02, span / 4);
+    const time = Math.max(trimStart, Math.min(trimEnd - epsilon, rawTime));
+    elapsedBeforeStop = time;
+    counterEl.textContent = fmtCounter(time);
+    const pct = Math.min(100, Math.max(0, ((time - trimStart) / span) * 100));
+    tapeStrip.style.setProperty('--progress', pct + '%');
+    renderAllWaves(time);
+    renderMasterWave(time);
+    if(isPlaying) play();
+  }
+
+  // Jumps playback to the time represented by raw canvas x-position x
+  // (out of width w, within the current zoomed view window).
+  function seekToWaveX(x, w){
+    if(w <= 0) return;
+    commitSeek(masterXToTime(x, w));
+  }
+
+  // Trackpad pinch gestures arrive as wheel events with ctrlKey set — use
+  // those (and Ctrl/Cmd+scroll) to zoom around the cursor. Plain scrolling
+  // pans the view left/right once zoomed in.
+  masterWaveCanvas.addEventListener('wheel', (e) => {
+    const totalDur = maxDuration();
+    if(totalDur <= 0) return;
+    e.preventDefault();
+    const w = masterWaveCanvas.width;
+    if(e.ctrlKey || e.metaKey){
+      const x = getMasterWaveX(e);
+      const cursorTime = masterXToTime(x, w);
+      const factor = Math.pow(1.0025, -e.deltaY);
+      setMasterZoom(factor, cursorTime);
+    }else{
+      const span = masterViewSpan();
+      const deltaTime = ((e.deltaX !== 0 ? e.deltaX : e.deltaY) / w) * span;
+      panMasterViewBy(deltaTime);
+    }
+  }, { passive: false });
+
+  function endTrimDrag(){
+    trimDragging = null;
+    fadeDragging = null;
+    seekDragging = false;
+  }
+  masterWaveCanvas.addEventListener('pointerup', endTrimDrag);
+  masterWaveCanvas.addEventListener('pointercancel', endTrimDrag);
+
+  zoomInBtn.addEventListener('click', () => setMasterZoom(1.6));
+  zoomOutBtn.addEventListener('click', () => setMasterZoom(1/1.6));
+  zoomFitBtn.addEventListener('click', () => resetMasterZoom());
+
+  function getMinimapX(e){
+    const rect = masterMinimapCanvas.getBoundingClientRect();
+    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+    const scaleX = masterMinimapCanvas.width / rect.width;
+    return (clientX - rect.left) * scaleX;
+  }
+  masterMinimapCanvas.addEventListener('pointerdown', (e) => {
+    if(maxDuration() <= 0) return;
+    minimapDragging = true;
+    masterMinimapCanvas.setPointerCapture(e.pointerId);
+    const totalDur = maxDuration();
+    panMasterViewTo((getMinimapX(e) / masterMinimapCanvas.width) * totalDur);
+  });
+  masterMinimapCanvas.addEventListener('pointermove', (e) => {
+    if(!minimapDragging) return;
+    const totalDur = maxDuration();
+    if(totalDur <= 0) return;
+    panMasterViewTo((getMinimapX(e) / masterMinimapCanvas.width) * totalDur);
+  });
+  function endMinimapDrag(){ minimapDragging = false; }
+  masterMinimapCanvas.addEventListener('pointerup', endMinimapDrag);
+  masterMinimapCanvas.addEventListener('pointercancel', endMinimapDrag);
+
+  trimResetBtn.addEventListener('click', () => {
+    const totalDur = maxDuration();
+    trimStart = 0;
+    trimEnd = totalDur;
+    trimIsDefault = true;
+    renderMasterWave(elapsedBeforeStop);
+    setStatus(totalDur > 0 ? 'Trim reset to the full mix length.' : 'Nothing loaded yet.');
+  });
+
+  function anySolo(){
+    return tracks.some(t => t.solo);
+  }
+
+  function effectiveGain(t){
+    if(t.muted) return 0;
+    if(anySolo() && !t.solo) return 0;
+    return t.volume;
+  }
+
+  // Schedules gain automation for the master mix's fade-in/fade-out, applied
+  // identically to every track since they all start together on the shared
+  // timeline. mixDur is the total length of the playing selection (seconds);
+  // startAtRealTime is the AudioContext (or OfflineAudioContext) time the
+  // whole mix begins playing at. Works for both live and offline rendering.
+  // elapsedFromStart: seconds into the mix's fade window this segment begins at (0 = true start).
+  // remaining: seconds left until the mix's end from this segment's start point.
+  function applyMixFadeAutomation(gainNode, baseGain, fadeIn, fadeOut, elapsedFromStart, remaining, startAtRealTime){
+    let rampFloor = startAtRealTime;
+    if(fadeIn > 0 && elapsedFromStart < fadeIn){
+      const startGain = baseGain * Math.max(0, elapsedFromStart / fadeIn);
+      const fadeInEnd = startAtRealTime + (fadeIn - elapsedFromStart);
+      gainNode.gain.setValueAtTime(startGain, startAtRealTime);
+      gainNode.gain.linearRampToValueAtTime(baseGain, fadeInEnd);
+      rampFloor = fadeInEnd;
+    }else{
+      gainNode.gain.setValueAtTime(baseGain, startAtRealTime);
+    }
+    if(fadeOut > 0 && remaining > 0){
+      const fadeOutStart = startAtRealTime + Math.max(0, remaining - fadeOut);
+      const fadeOutEnd = startAtRealTime + remaining;
+      if(fadeOutStart > rampFloor){
+        gainNode.gain.setValueAtTime(baseGain, fadeOutStart);
+        gainNode.gain.linearRampToValueAtTime(0.0001, fadeOutEnd);
+      }else if(fadeOutEnd > rampFloor){
+        // already inside the fade-out window when this segment starts/resumes
+        gainNode.gain.linearRampToValueAtTime(0.0001, fadeOutEnd);
+      }
+    }
+  }
+
+  // Builds a Low/Mid/High 3-band EQ chain on the given context (live or offline).
+  // Returns {low, mid, high} filter nodes already connected in series; connect
+  // your source into .low and take output from .high.
+  function buildEQChain(ctx, lowDb, midDb, highDb){
+    const low = ctx.createBiquadFilter();
+    low.type = 'lowshelf';
+    low.frequency.value = 250;
+    low.gain.value = lowDb;
+
+    const mid = ctx.createBiquadFilter();
+    mid.type = 'peaking';
+    mid.frequency.value = 1000;
+    mid.Q.value = 0.9;
+    mid.gain.value = midDb;
+
+    const high = ctx.createBiquadFilter();
+    high.type = 'highshelf';
+    high.frequency.value = 4000;
+    high.gain.value = highDb;
+
+    low.connect(mid);
+    mid.connect(high);
+    return {low, mid, high};
+  }
+
+  function buildMeterSegments(container){
+    for(let i=0;i<8;i++){
+      const seg = document.createElement('i');
+      container.appendChild(seg);
+    }
+  }
+
+  function updateMeter(t){
+    if(!t.meterEl) return;
+    const segs = t.meterEl.children;
+    let level = 0;
+    if(t.analyser && isPlaying){
+      const data = t.timeData;
+      t.analyser.getByteTimeDomainData(data);
+      let sum = 0;
+      for(let i=0;i<data.length;i++){
+        const v = (data[i]-128)/128;
+        sum += v*v;
+      }
+      const rms = Math.sqrt(sum/data.length);
+      level = Math.min(1, rms * 3.2) * (t.muted || (anySolo() && !t.solo) ? 0 : 1);
+    }
+    const litCount = Math.round(level * 8);
+    t.level = level;
+    for(let i=0;i<segs.length;i++){
+      segs[i].classList.toggle('on', i < litCount);
+    }
+  }
+
+  function buildTrackUI(index){
+    const wrap = document.createElement('div');
+    wrap.className = 'track';
+    wrap.innerHTML = `
+      <div class="track-num">TRACK<b>${index+1}</b>
+        <span class="key-select-hint">↑↓ VOL<br>←→ PAN</span>
+        <input type="text" class="track-title" id="title-${index}" placeholder="untitled" maxlength="20">
+      </div>
+      <div class="track-mid">
+        <div class="load-row">
+          <span class="track-filename" id="fname-${index}">no file loaded</span>
+        </div>
+        <div class="meter" id="meter-${index}"></div>
+        <div class="wave-canvas-wrap" title="Click or drag to seek. Ctrl/Cmd + scroll (or pinch) to zoom in on this track. Scroll to pan once zoomed.">
+          <canvas class="wave-canvas" id="wave-${index}" width="260" height="72"></canvas>
+          <button class="track-zoom-reset" id="zoomReset-${index}" title="Reset zoom">FIT</button>
+        </div>
+      </div>
+      <div class="track-controls">
+        <div class="fader-wrap">
+          <label>VOL</label>
+          <input type="range" class="fader" id="vol-${index}" min="0" max="1.3" step="0.01" value="1">
+        </div>
+        <div class="fader-wrap">
+          <label>PAN</label>
+          <input type="range" class="fader pan-fader" id="pan-${index}" min="-1" max="1" step="0.01" value="0">
+        </div>
+        <button class="mini-btn" id="mute-${index}">M</button>
+        <button class="mini-btn" id="solo-${index}">S</button>
+        <button class="mini-btn" id="dl-${index}" title="Download this track as WAV">⬇</button>
+      </div>
+    `;
+    tracksEl.appendChild(wrap);
+
+    const meterEl = document.getElementById(`meter-${index}`);
+    buildMeterSegments(meterEl);
+
+    const track = {
+      index, buffer:null, name:null,
+      volume: 1,
+      muted:false, solo:false, pan:0,
+      meterEl, timeData:new Uint8Array(256),
+      analyser:null, sourceNode:null, gainNode:null, pannerNode:null,
+      waveCanvas: document.getElementById(`wave-${index}`), peaks:null,
+      viewStart:0, viewEnd:0, viewPeaks:null,
+      seekDragging:false, seekRafPending:false, lastSeekX:0,
+      title:'',
+      level:0
+    };
+    tracks.push(track);
+
+    const zoomResetBtn = document.getElementById(`zoomReset-${index}`);
+    zoomResetBtn.addEventListener('click', () => resetTrackZoom(track));
+
+    track.waveCanvas.addEventListener('wheel', (e) => {
+      if(!track.buffer) return;
+      e.preventDefault();
+      const w = track.waveCanvas.width;
+      const rect = track.waveCanvas.getBoundingClientRect();
+      const scaleX = w / rect.width;
+      const x = (e.clientX - rect.left) * scaleX;
+      if(e.ctrlKey || e.metaKey){
+        const cursorTime = trackXToTime(track, x, w);
+        const factor = Math.pow(1.0025, -e.deltaY);
+        setTrackZoom(track, factor, cursorTime);
+      }else{
+        const span = trackViewSpan(track);
+        const deltaTime = ((e.deltaX !== 0 ? e.deltaX : e.deltaY) / w) * span;
+        panTrackViewBy(track, deltaTime);
+      }
+    }, { passive: false });
+
+    function getTrackWaveX(evt){
+      const rect = track.waveCanvas.getBoundingClientRect();
+      const clientX = evt.touches ? evt.touches[0].clientX : evt.clientX;
+      const scaleX = track.waveCanvas.width / rect.width;
+      return (clientX - rect.left) * scaleX;
+    }
+
+    track.waveCanvas.addEventListener('pointerdown', (e) => {
+      if(!track.buffer) return;
+      track.seekDragging = true;
+      track.waveCanvas.setPointerCapture(e.pointerId);
+      commitSeek(trackXToTime(track, getTrackWaveX(e), track.waveCanvas.width));
+    });
+    track.waveCanvas.addEventListener('pointermove', (e) => {
+      if(!track.seekDragging) return;
+      track.lastSeekX = getTrackWaveX(e);
+      if(!track.seekRafPending){
+        track.seekRafPending = true;
+        requestAnimationFrame(() => {
+          track.seekRafPending = false;
+          if(track.seekDragging) commitSeek(trackXToTime(track, track.lastSeekX, track.waveCanvas.width));
+        });
+      }
+    });
+    function endTrackSeekDrag(){ track.seekDragging = false; }
+    track.waveCanvas.addEventListener('pointerup', endTrackSeekDrag);
+    track.waveCanvas.addEventListener('pointercancel', endTrackSeekDrag);
+
+    const dropZone = wrap.querySelector('.track-mid');
+    dropZone.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      wrap.classList.add('drag-over');
+    });
+    dropZone.addEventListener('dragleave', () => {
+      wrap.classList.remove('drag-over');
+    });
+    dropZone.addEventListener('drop', async (e) => {
+      e.preventDefault();
+      wrap.classList.remove('drag-over');
+      const files = Array.from(e.dataTransfer.files || []).filter(f => /\.wav$/i.test(f.name));
+      if(!files.length){
+        setStatus(`That doesn't look like a .wav file — drop a WAV instead.`, true);
+        return;
+      }
+      await loadFilesAuto(files, index);
+    });
+
+    document.getElementById(`title-${index}`).addEventListener('input', (e) => {
+      track.title = e.target.value;
+      if(!isRecordingReel) drawReelFrame(0, 0);
+    });
+
+    document.getElementById(`vol-${index}`).addEventListener('input', (e) => {
+      track.volume = parseFloat(e.target.value);
+      if(track.gainNode) track.gainNode.gain.value = effectiveGain(track);
+      if(!isRecordingReel) drawReelFrame(0, 0);
+    });
+
+    document.getElementById(`pan-${index}`).addEventListener('input', (e) => {
+      track.pan = parseFloat(e.target.value);
+      if(track.pannerNode) track.pannerNode.pan.value = track.pan;
+    });
+
+    document.getElementById(`mute-${index}`).addEventListener('click', () => {
+      track.muted = !track.muted;
+      document.getElementById(`mute-${index}`).classList.toggle('active-mute', track.muted);
+      refreshLiveGains();
+    });
+
+    document.getElementById(`solo-${index}`).addEventListener('click', () => {
+      track.solo = !track.solo;
+      document.getElementById(`solo-${index}`).classList.toggle('active-solo', track.solo);
+      refreshLiveGains();
+    });
+
+    document.getElementById(`dl-${index}`).addEventListener('click', () => {
+      downloadTrack(track);
+    });
+  }
+
+  function downloadTrack(track){
+    if(!track.buffer){
+      setStatus(`Track ${track.index + 1} has no audio loaded — nothing to download.`, true);
+      return;
+    }
+    const wavBlob = audioBufferToWavBlob(track.buffer);
+    const url = URL.createObjectURL(wavBlob);
+    const filename = trackFilenameBase(track) + '.wav';
+
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+
+    setStatus(`Downloaded "${filename}".`);
+  }
+
+  // ---- Reels export ----
+  const REEL_COLORS = {
+    body1: '#f2efe6', body2: '#ece7d8',
+    panel: '#f2efe6', panelLine: '#1a1a1a',
+    ink: '#1a1a1a', inkDim: '#5a564c',
+    screenBg: '#1a1a1a', screenFg: '#f2efe6',
+    t1: '#d7263d', t2: '#1d3557', t3: '#1a1a1a', t4: '#f4c430'
+  };
+  const BAUHAUS_RED = '#d7263d';
+  const BAUHAUS_BLUE = '#1d3557';
+  const BAUHAUS_YELLOW = '#f4c430';
+  const BAUHAUS_BLACK = '#1a1a1a';
+  const REEL_TRACK_COLORS = [BAUHAUS_RED, BAUHAUS_BLUE, BAUHAUS_YELLOW, BAUHAUS_BLACK];
+
+  reelImageInput.addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if(!file){
+      e.target.value = '';
+      return;
+    }
+    const isImage = file.type && file.type.startsWith('image/');
+    const isVideo = file.type && file.type.startsWith('video/');
+    if(!isImage && !isVideo){
+      setStatus(`"${file.name}" doesn't look like a photo or video — try a JPG, PNG, or MP4.`, true);
+      e.target.value = '';
+      return;
+    }
+    setStatus(`Loading "${file.name}"…`);
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      if(isImage){
+        const img = new Image();
+        img.onload = () => {
+          if(reelVideo){ reelVideo.pause(); reelVideo = null; }
+          reelImage = img;
+          reelMediaType = 'image';
+          reelPhotoName.textContent = file.name;
+          drawReelFrame(0, 0);
+          setStatus(`"${file.name}" added to the reel screen.`);
+        };
+        img.onerror = () => {
+          setStatus(`Could not load "${file.name}" — try a different image (JPG or PNG work best).`, true);
+        };
+        img.src = reader.result;
+      }else{
+        const vid = document.createElement('video');
+        vid.muted = true;
+        vid.loop = true;
+        vid.playsInline = true;
+        vid.preload = 'auto';
+        vid.onloadeddata = () => {
+          if(reelVideo){ reelVideo.pause(); }
+          reelImage = null;
+          reelVideo = vid;
+          reelMediaType = 'video';
+          reelPhotoName.textContent = file.name;
+          vid.currentTime = 0;
+          drawReelFrame(0, 0);
+          setStatus(`"${file.name}" added to the reel screen — it'll play during the export.`);
+        };
+        vid.onerror = () => {
+          setStatus(`Could not load "${file.name}" — try a different video (MP4 works best).`, true);
+        };
+        vid.src = reader.result;
+      }
+    };
+    reader.onerror = () => {
+      setStatus(`Could not read "${file.name}" — try a different file.`, true);
+    };
+    reader.readAsDataURL(file);
+    e.target.value = '';
+  });
+
+  function fitText(ctx, text, maxWidth, startSize, minSize, weight, family){
+    let size = startSize;
+    while(size > minSize){
+      ctx.font = `${weight} ${size}px '${family}', sans-serif`;
+      if(ctx.measureText(text).width <= maxWidth) break;
+      size -= 2;
+    }
+    return size;
+  }
+
+  function wrapLines(ctx, text, maxWidth, font){
+    ctx.font = font;
+    const paragraphs = text.split('\n');
+    const lines = [];
+    for(const para of paragraphs){
+      if(para.trim() === ''){ lines.push(''); continue; }
+      const words = para.split(/\s+/);
+      let line = '';
+      for(const word of words){
+        const test = line ? line + ' ' + word : word;
+        if(ctx.measureText(test).width > maxWidth && line){
+          lines.push(line);
+          line = word;
+        }else{
+          line = test;
+        }
+      }
+      if(line) lines.push(line);
+    }
+    return lines;
+  }
+
+  function fitTitleTwoLines(ctx, text, maxWidth, startSize, minSize, family){
+    const words = text.split(/\s+/).filter(Boolean);
+    let line1, line2;
+    if(words.length <= 1){
+      line1 = words[0] || '';
+      line2 = '';
+    }else{
+      const splitAt = Math.ceil(words.length / 2);
+      line1 = words.slice(0, splitAt).join(' ');
+      line2 = words.slice(splitAt).join(' ');
+    }
+
+    let size = startSize;
+    while(size > minSize){
+      ctx.font = `400 ${size}px '${family}', sans-serif`;
+      const w1 = ctx.measureText(line1).width;
+      const w2 = line2 ? ctx.measureText(line2).width : 0;
+      if(w1 <= maxWidth && w2 <= maxWidth) break;
+      size -= 2;
+    }
+
+    ctx.font = `400 ${size}px '${family}', sans-serif`;
+    if(ctx.measureText(line1).width > maxWidth){
+      while(ctx.measureText(line1 + '…').width > maxWidth && line1.length > 1) line1 = line1.slice(0, -1);
+      line1 += '…';
+    }
+    if(line2 && ctx.measureText(line2).width > maxWidth){
+      while(ctx.measureText(line2 + '…').width > maxWidth && line2.length > 1) line2 = line2.slice(0, -1);
+      line2 += '…';
+    }
+
+    return {lines: line2 ? [line1, line2] : [line1], size};
+  }
+
+  function roundRect(ctx, x, y, w, h, r){
+    r = Math.min(r, h/2, w/2);
+    ctx.beginPath();
+    ctx.moveTo(x + r, y);
+    ctx.arcTo(x + w, y, x + w, y + h, r);
+    ctx.arcTo(x + w, y + h, x, y + h, r);
+    ctx.arcTo(x, y + h, x, y, r);
+    ctx.arcTo(x, y, x + w, y, r);
+    ctx.closePath();
+  }
+
+  function drawReelScreenArt(x, y, w, h){
+    reelCtx.fillStyle = REEL_COLORS.body1;
+    reelCtx.fillRect(x, y, w, h);
+
+    reelCtx.save();
+    reelCtx.beginPath();
+    reelCtx.rect(x, y, w, h);
+    reelCtx.clip();
+
+    const drift = Math.sin((visPhase || 0) * 0.6) * w * 0.03;
+
+    // large circle, lower-left
+    reelCtx.fillStyle = BAUHAUS_RED;
+    reelCtx.beginPath();
+    reelCtx.arc(x + w*0.22 + drift, y + h*0.72, w*0.26, 0, Math.PI*2);
+    reelCtx.fill();
+
+    // triangle, upper-right
+    reelCtx.fillStyle = BAUHAUS_YELLOW;
+    reelCtx.beginPath();
+    reelCtx.moveTo(x + w*0.62 - drift, y + h*0.12);
+    reelCtx.lineTo(x + w*0.98 - drift, y + h*0.12);
+    reelCtx.lineTo(x + w*0.80 - drift, y + h*0.46);
+    reelCtx.closePath();
+    reelCtx.fill();
+
+    // offset black square
+    reelCtx.fillStyle = BAUHAUS_BLACK;
+    reelCtx.fillRect(x + w*0.44 + drift*0.5, y + h*0.30, w*0.22, w*0.22);
+
+    // thin blue ring accent
+    reelCtx.strokeStyle = BAUHAUS_BLUE;
+    reelCtx.lineWidth = 5;
+    reelCtx.beginPath();
+    reelCtx.arc(x + w*0.78, y + h*0.80, w*0.14, 0, Math.PI*2);
+    reelCtx.stroke();
+
+    reelCtx.restore();
+  }
+
+  const REEL_QUOTES = [
+    '"TECHNOLOGY SHOULD NOT BE CONSIDERED A FORCE ANTAGONISTIC TO HUMANITY"',
+    '"TO DISARM DOES NOT MEAN REJECTING TECHNOLOGY, BUT PREVENTING IT FROM DOMINATING HUMANITY"',
+    '"HUMANITY FLOURISHES NOT DESPITE LIMITATIONS, BUT OFTEN THROUGH THEM"',
+    '"THERE IS NO ALGORITHM THAT CAN MAKE WAR MORALLY ACCEPTABLE"',
+    '"A MORE MORAL AI IS NOT ENOUGH IF THAT MORALITY IS DETERMINED BY A FEW"'
+  ];
+  const REEL_TICKER_TEXT = REEL_QUOTES.join('   —   POPE LEO XIV, MAGNIFICA HUMANITAS   •   ') +
+    '   —   POPE LEO XIV, MAGNIFICA HUMANITAS   •   ';
+
+  function glitchRegion(x, y, w, h, progress){
+    if(progress <= 0) return;
+    const slices = Math.max(1, Math.floor(progress * 10));
+    for(let i=0;i<slices;i++){
+      const sh = Math.max(2, Math.random()*14*progress + 2);
+      const sy = y + Math.random()*Math.max(1, h-sh);
+      const shift = (Math.random()-0.5) * 50 * progress;
+      reelCtx.drawImage(reelCanvas, x, sy, w, sh, x+shift, sy, w, sh);
+    }
+    if(progress > 0.25){
+      reelCtx.save();
+      reelCtx.globalAlpha = 0.25 * progress;
+      reelCtx.globalCompositeOperation = 'lighter';
+      reelCtx.drawImage(reelCanvas, x, y, w, h, x + 4*progress, y, w, h);
+      reelCtx.drawImage(reelCanvas, x, y, w, h, x - 4*progress, y, w, h);
+      reelCtx.restore();
+    }
+    const noiseCount = Math.floor(progress * 6);
+    for(let i=0;i<noiseCount;i++){
+      const bw = 10 + Math.random()*40;
+      const bh = 3 + Math.random()*8;
+      const bx = x + Math.random()*Math.max(1, w-bw);
+      const by = y + Math.random()*Math.max(1, h-bh);
+      reelCtx.fillStyle = Math.random() < 0.5 ? 'rgba(255,255,255,0.5)' : 'rgba(0,0,0,0.5)';
+      reelCtx.fillRect(bx, by, bw, bh);
+    }
+  }
+
+  function drawMiniWaveform(peaks, x, y, w, h, color, playedFrac, unplayedColor, playheadColor){
+    unplayedColor = unplayedColor || 'rgba(238,242,234,0.3)';
+    playheadColor = playheadColor || 'rgba(255,255,255,0.9)';
+    const mid = y + h/2;
+    const n = peaks.length;
+    const colW = w / n;
+    for(let i=0;i<n;i++){
+      const [mn, mx] = peaks[i];
+      const bx = x + i*colW;
+      const yTop = mid + mx * (h/2 - 2);
+      const yBot = mid + mn * (h/2 - 2);
+      const played = bx < x + w*playedFrac;
+      reelCtx.fillStyle = played ? color : unplayedColor;
+      reelCtx.fillRect(bx, Math.min(yTop, yBot), Math.max(1, colW-1), Math.max(1, Math.abs(yBot-yTop)));
+    }
+    const phx = x + w*Math.max(0, Math.min(1, playedFrac));
+    reelCtx.fillStyle = playheadColor;
+    reelCtx.fillRect(phx, y, 1.5, h);
+  }
+
+  function drawReelFrame(elapsed, clipLength){
+    const w = reelCanvas.width, h = reelCanvas.height;
+    const pad = Math.round(w * 0.065);
+    const regions = [];
+
+    reelCtx.clearRect(0, 0, w, h);
+
+    // flat cream background — Bauhaus favors flat fields over gradients
+    reelCtx.fillStyle = REEL_COLORS.body1;
+    reelCtx.fillRect(0, 0, w, h);
+
+    // large decorative circle, matching the mockup's Bauhaus header
+    reelCtx.save();
+    reelCtx.beginPath();
+    reelCtx.rect(0, 0, w, h);
+    reelCtx.clip();
+    reelCtx.fillStyle = BAUHAUS_YELLOW;
+    reelCtx.beginPath();
+    reelCtx.arc(w - pad - 30, 90, 70, 0, Math.PI*2);
+    reelCtx.fill();
+    reelCtx.restore();
+
+    // brand header
+    let y = 46;
+    reelCtx.textAlign = 'left';
+    reelCtx.textBaseline = 'alphabetic';
+    reelCtx.font = `400 26px 'Archivo Black', sans-serif`;
+    reelCtx.fillStyle = BAUHAUS_BLACK;
+    reelCtx.fillText('SUMMER READING', pad, y);
+    reelCtx.font = `700 13px 'Space Grotesk', sans-serif`;
+    reelCtx.fillStyle = BAUHAUS_BLACK;
+    reelCtx.fillText('OP1 4-TRACK DEMOS', pad, y + 22);
+    regions.push({x:0, y:0, w:w, h:y+34, stagger:0});
+
+    reelCtx.fillStyle = BAUHAUS_BLACK;
+    reelCtx.fillRect(pad, y+38, w-pad*2, 4);
+
+    // title — large two-line typographic treatment, black then red, title on the left, SIDE A centered
+    y += 90;
+    const rawTitle = (getMixTitle() || 'UNTITLED MIX').toUpperCase();
+    const titleMaxW = w - pad*2;
+    const titleFit = fitTitleTwoLines(reelCtx, rawTitle, titleMaxW, 42, 20, 'Archivo Black');
+    reelCtx.textAlign = 'left';
+    reelCtx.font = `400 ${titleFit.size}px 'Archivo Black', sans-serif`;
+    reelCtx.fillStyle = BAUHAUS_BLACK;
+    reelCtx.fillText(titleFit.lines[0], pad, y);
+    let titleBottom = y;
+    if(titleFit.lines[1]){
+      reelCtx.fillStyle = BAUHAUS_RED;
+      reelCtx.fillText(titleFit.lines[1], pad, y + titleFit.size + 4);
+      titleBottom = y + titleFit.size + 4;
+    }
+
+    const sideAY = titleBottom + 56;
+    reelCtx.fillStyle = BAUHAUS_BLUE;
+    reelCtx.beginPath();
+    reelCtx.moveTo(w/2 - 20, sideAY - 20);
+    reelCtx.lineTo(w/2 + 20, sideAY - 20);
+    reelCtx.lineTo(w/2, sideAY - 52);
+    reelCtx.closePath();
+    reelCtx.fill();
+
+    reelCtx.textAlign = 'center';
+    reelCtx.font = `700 13px 'Space Grotesk', sans-serif`;
+    reelCtx.fillStyle = BAUHAUS_BLACK;
+    reelCtx.fillText('SIDE A', w/2, sideAY);
+    reelCtx.textAlign = 'left';
+    regions.push({x:pad, y:y-52, w:w-pad*2, h:sideAY - (y-52) + 10, stagger:0.6});
+
+    y = sideAY;
+
+    // screen panel (photo or generated art)
+    const screenY = y + 16;
+    const screenH = Math.round(h * 0.20);
+    reelCtx.fillStyle = REEL_COLORS.panel;
+    reelCtx.fillRect(pad, screenY, w - pad*2, screenH);
+    reelCtx.strokeStyle = BAUHAUS_BLACK;
+    reelCtx.lineWidth = 4;
+    reelCtx.strokeRect(pad, screenY, w - pad*2, screenH);
+
+    const innerPad = 10;
+    const sx = pad + innerPad, sy = screenY + innerPad;
+    const sw = w - pad*2 - innerPad*2, sh = screenH - innerPad*2;
+    reelCtx.save();
+    reelCtx.beginPath();
+    reelCtx.rect(sx, sy, sw, sh);
+    reelCtx.clip();
+    if(reelMediaType === 'video' && reelVideo && reelVideo.videoWidth){
+      const vidRatio = reelVideo.videoWidth / reelVideo.videoHeight;
+      const boxRatio = sw / sh;
+      let dw, dh, dx, dy;
+      if(vidRatio > boxRatio){ dh = sh; dw = sh * vidRatio; dx = sx - (dw-sw)/2; dy = sy; }
+      else{ dw = sw; dh = sw / vidRatio; dx = sx; dy = sy - (dh-sh)/2; }
+      reelCtx.drawImage(reelVideo, dx, dy, dw, dh);
+    }else if(reelMediaType === 'image' && reelImage){
+      const imgRatio = reelImage.width / reelImage.height;
+      const boxRatio = sw / sh;
+      let dw, dh, dx, dy;
+      if(imgRatio > boxRatio){ dh = sh; dw = sh * imgRatio; dx = sx - (dw-sw)/2; dy = sy; }
+      else{ dw = sw; dh = sw / imgRatio; dx = sx; dy = sy - (dh-sh)/2; }
+      reelCtx.drawImage(reelImage, dx, dy, dw, dh);
+    }else{
+      drawReelScreenArt(sx, sy, sw, sh);
+      reelCtx.textAlign = 'center';
+      reelCtx.font = `700 12px 'JetBrains Mono', monospace`;
+      const labelText = '— NO PHOTO OR VIDEO ADDED —';
+      const labelW = reelCtx.measureText(labelText).width + 24;
+      reelCtx.fillStyle = BAUHAUS_BLACK;
+      reelCtx.fillRect(sx + sw/2 - labelW/2, sy + sh/2 - 14, labelW, 28);
+      reelCtx.fillStyle = REEL_COLORS.body1;
+      reelCtx.fillText(labelText, sx + sw/2, sy + sh/2 + 4);
+    }
+    reelCtx.restore();
+    regions.push({x:pad, y:screenY, w:w-pad*2, h:screenH, stagger:1.2});
+
+    // notes screen — "last transmission" terminal treatment
+    const notesY = screenY + screenH + 26;
+    const notesH = 130;
+    reelCtx.fillStyle = REEL_COLORS.panel;
+    reelCtx.fillRect(pad, notesY, w - pad*2, notesH);
+    reelCtx.strokeStyle = BAUHAUS_BLACK;
+    reelCtx.lineWidth = 4;
+    reelCtx.strokeRect(pad, notesY, w - pad*2, notesH);
+    reelCtx.fillStyle = BAUHAUS_YELLOW;
+    reelCtx.fillRect(pad, notesY, 40, 10);
+
+    const termYellow = '#ffd633';
+    const termDimYellow = 'rgba(255,214,51,0.5)';
+    const termBox = { x: pad+innerPad, y: notesY+innerPad, w: w-pad*2-innerPad*2, h: notesH-innerPad*2 };
+    reelCtx.save();
+    reelCtx.beginPath();
+    reelCtx.rect(termBox.x, termBox.y, termBox.w, termBox.h);
+    reelCtx.clip();
+    reelCtx.fillStyle = '#0a0e0a';
+    reelCtx.fillRect(termBox.x, termBox.y, termBox.w, termBox.h);
+
+    const termInnerX = termBox.x + 16;
+    let nty = termBox.y + 20;
+    reelCtx.textAlign = 'left';
+    reelCtx.shadowColor = termYellow;
+    reelCtx.shadowBlur = 6;
+    reelCtx.font = `700 12px 'JetBrains Mono', monospace`;
+    reelCtx.fillStyle = termYellow;
+    reelCtx.fillText('>> TRANSMISSION — SESSION NOTES', termInnerX, nty);
+    nty += 16;
+    reelCtx.font = `500 10px 'JetBrains Mono', monospace`;
+    reelCtx.fillStyle = termDimYellow;
+    reelCtx.shadowBlur = 2;
+    reelCtx.fillText('SIGNAL: INTERMITTENT — LAST KNOWN TRANSMISSION', termInnerX, nty);
+    nty += 18;
+
+    const notesText = notesInput.value.trim();
+    const notesTextAreaY = nty;
+    const notesTextAreaH = termBox.h - (notesTextAreaY - termBox.y) - 10;
+    const lineHeight = 20;
+    const notesFont = `700 14px 'JetBrains Mono', monospace`;
+
+    if(notesText){
+      const lines = wrapLines(reelCtx, notesText, termBox.w - 32, notesFont);
+      const totalH = lines.length * lineHeight;
+      const scrollRange = Math.max(0, totalH - notesTextAreaH + 20);
+      const progress = clipLength > 0 ? Math.max(0, Math.min(1, elapsed / clipLength)) : 0;
+      const scrollY = scrollRange * progress;
+
+      reelCtx.font = notesFont;
+      lines.forEach((line, i) => {
+        const ly = notesTextAreaY + 14 + i * lineHeight - scrollY;
+        if(ly > notesTextAreaY - lineHeight && ly < notesTextAreaY + notesTextAreaH + lineHeight){
+          reelCtx.shadowColor = termYellow;
+          reelCtx.shadowBlur = 5;
+          reelCtx.fillStyle = termYellow;
+          const flicker = Math.random() > 0.96;
+          reelCtx.globalAlpha = flicker ? 0.4 : 1;
+          reelCtx.fillText(line, termInnerX, ly);
+          reelCtx.globalAlpha = 1;
+        }
+      });
+    }else{
+      reelCtx.shadowBlur = 2;
+      reelCtx.font = `500 12px 'JetBrains Mono', monospace`;
+      reelCtx.fillStyle = termDimYellow;
+      reelCtx.fillText('>> NO SIGNAL — NOTES EMPTY', termInnerX, notesTextAreaY + 14);
+    }
+    reelCtx.shadowBlur = 0;
+
+    const cursorOn = Math.floor(elapsed * 2) % 2 === 0;
+    if(cursorOn){
+      reelCtx.fillStyle = termYellow;
+      reelCtx.shadowColor = termYellow;
+      reelCtx.shadowBlur = 6;
+      reelCtx.fillRect(termBox.x + termBox.w - 22, termBox.y + termBox.h - 20, 9, 13);
+      reelCtx.shadowBlur = 0;
+    }
+
+    // scanlines
+    reelCtx.globalAlpha = 0.12;
+    reelCtx.fillStyle = '#000';
+    for(let sy2 = termBox.y; sy2 < termBox.y + termBox.h; sy2 += 3){
+      reelCtx.fillRect(termBox.x, sy2, termBox.w, 1);
+    }
+    reelCtx.globalAlpha = 1;
+
+    // baseline static
+    reelCtx.globalAlpha = 0.5;
+    for(let i=0;i<5;i++){
+      const nx = termBox.x + Math.random()*termBox.w;
+      const ny = termBox.y + Math.random()*termBox.h;
+      const nw = 10 + Math.random()*30;
+      reelCtx.fillStyle = Math.random() < 0.5 ? 'rgba(255,214,51,0.4)' : 'rgba(0,0,0,0.4)';
+      reelCtx.fillRect(nx, ny, nw, 1.5);
+    }
+    reelCtx.globalAlpha = 1;
+
+    // vignette
+    const notesVgrad = reelCtx.createRadialGradient(
+      termBox.x+termBox.w/2, termBox.y+termBox.h/2, termBox.h*0.2,
+      termBox.x+termBox.w/2, termBox.y+termBox.h/2, termBox.w*0.7
+    );
+    notesVgrad.addColorStop(0, 'rgba(0,0,0,0)');
+    notesVgrad.addColorStop(1, 'rgba(0,0,0,0.45)');
+    reelCtx.fillStyle = notesVgrad;
+    reelCtx.fillRect(termBox.x, termBox.y, termBox.w, termBox.h);
+
+    reelCtx.restore();
+    regions.push({x:pad, y:notesY, w:w-pad*2, h:notesH, stagger:1.8});
+
+    // spectrum analyzer — same LED-bar look as the app's Output screen
+    const specY = notesY + notesH + 20;
+    const specH = 104;
+    reelCtx.fillStyle = REEL_COLORS.panel;
+    reelCtx.fillRect(pad, specY, w - pad*2, specH);
+    reelCtx.strokeStyle = BAUHAUS_BLACK;
+    reelCtx.lineWidth = 4;
+    reelCtx.strokeRect(pad, specY, w - pad*2, specH);
+
+    const specBox = { x: pad+innerPad, y: specY+innerPad, w: w-pad*2-innerPad*2, h: specH-innerPad*2 };
+    reelCtx.save();
+    reelCtx.beginPath();
+    reelCtx.rect(specBox.x, specBox.y, specBox.w, specBox.h);
+    reelCtx.clip();
+    reelCtx.fillStyle = '#050505';
+    reelCtx.fillRect(specBox.x, specBox.y, specBox.w, specBox.h);
+
+    const specBarCount = 28;
+    const specGap = 2;
+    const specBarW = (specBox.w - specGap*(specBarCount-1)) / specBarCount;
+    const specSegH = 4;
+    const specSegGap = 2;
+    const specMaxSegs = Math.max(1, Math.floor(specBox.h / (specSegH+specSegGap)));
+
+    if(!reelBarPeaks || reelBarPeaks.length !== specBarCount){
+      reelBarPeaks = new Array(specBarCount).fill(0);
+    }
+    const specLevels = new Array(specBarCount).fill(0);
+    if(isRecordingReel && reelMasterAnalyser){
+      reelMasterAnalyser.getByteFrequencyData(reelFreqData);
+      const bins = reelFreqData.length;
+      for(let i=0;i<specBarCount;i++){
+        const t0 = i/specBarCount, t1 = (i+1)/specBarCount;
+        const b0 = Math.floor(Math.pow(t0, 1.8) * bins);
+        const b1 = Math.max(b0+1, Math.floor(Math.pow(t1, 1.8) * bins));
+        let sum = 0, count = 0;
+        for(let b=b0; b<b1 && b<bins; b++){ sum += reelFreqData[b]; count++; }
+        specLevels[i] = count ? (sum/count)/255 : 0;
+      }
+    }
+
+    for(let i=0;i<specBarCount;i++){
+      const bx = specBox.x + i * (specBarW + specGap);
+      const lit = Math.round(specLevels[i] * specMaxSegs);
+      if(lit >= reelBarPeaks[i]) reelBarPeaks[i] = lit;
+      else reelBarPeaks[i] = Math.max(lit, reelBarPeaks[i] - 0.4);
+
+      for(let s=0; s<specMaxSegs; s++){
+        const segY = specBox.y + specBox.h - (s+1) * (specSegH+specSegGap);
+        const frac = s / specMaxSegs;
+        let onColor, offColor;
+        if(frac < 0.55){ onColor = '#3ddc5a'; offColor = '#123318'; }
+        else if(frac < 0.8){ onColor = '#e8d21e'; offColor = '#3a3510'; }
+        else{ onColor = '#e0332a'; offColor = '#3a1210'; }
+        reelCtx.fillStyle = (s < lit) ? onColor : offColor;
+        reelCtx.fillRect(bx, segY, specBarW, specSegH);
+      }
+      const peakSeg = Math.round(reelBarPeaks[i]);
+      if(peakSeg > 0){
+        const capY = specBox.y + specBox.h - peakSeg * (specSegH+specSegGap);
+        reelCtx.fillStyle = '#f4f1e8';
+        reelCtx.fillRect(bx, capY - specSegH, specBarW, 2);
+      }
+    }
+    reelCtx.restore();
+    regions.push({x:pad, y:specY, w:w-pad*2, h:specH, stagger:2.1});
+
+    // track rows
+    const loadedTracks = tracks.filter(t => t.buffer);
+    let rowY = specY + specH + 20;
+    const rowH = 56;
+    const rowGap = 10;
+    const cardX = pad, cardW = w - pad*2;
+
+    loadedTracks.forEach((t, rowIndex) => {
+      const blockColor = REEL_TRACK_COLORS[t.index % REEL_TRACK_COLORS.length];
+      const onYellow = blockColor === BAUHAUS_YELLOW;
+      const textColor = onYellow ? BAUHAUS_BLACK : REEL_COLORS.body1;
+      const dimColor = onYellow ? 'rgba(26,26,26,0.35)' : 'rgba(242,239,230,0.3)';
+      const name = (t.title && t.title.trim()) || `Track ${t.index + 1}`;
+
+      reelCtx.fillStyle = blockColor;
+      reelCtx.fillRect(cardX, rowY, cardW, rowH);
+      reelCtx.strokeStyle = BAUHAUS_BLACK;
+      reelCtx.lineWidth = 3;
+      reelCtx.strokeRect(cardX, rowY, cardW, rowH);
+
+      const nameMaxW = 96;
+      reelCtx.textAlign = 'left';
+      reelCtx.textBaseline = 'middle';
+      reelCtx.font = `700 14px 'Space Grotesk', sans-serif`;
+      reelCtx.fillStyle = textColor;
+      let displayName = name.toUpperCase();
+      while(reelCtx.measureText(displayName).width > nameMaxW && displayName.length > 1){
+        displayName = displayName.slice(0, -1);
+      }
+      if(displayName !== name.toUpperCase()) displayName = displayName.slice(0, -1) + '…';
+      reelCtx.fillText(displayName, cardX + 16, rowY + rowH/2);
+      reelCtx.textBaseline = 'alphabetic';
+
+      const waveX = cardX + 16 + nameMaxW + 12;
+      const waveW = cardW - (16 + nameMaxW + 12) - 16;
+      const waveH = 30;
+      const waveY = rowY + (rowH - waveH)/2;
+
+      if(t.peaks && t.peaks.length){
+        const trackPlayedFrac = t.buffer ? Math.max(0, Math.min(1, (trimStart + elapsed) / t.buffer.duration)) : 0;
+        drawMiniWaveform(t.peaks, waveX, waveY, waveW, waveH, textColor, trackPlayedFrac, dimColor, BAUHAUS_BLACK);
+      }
+
+      if(isRecordingReel && t.level > 0.04){
+        reelCtx.strokeStyle = onYellow ? BAUHAUS_BLACK : REEL_COLORS.body1;
+        reelCtx.globalAlpha = Math.min(0.8, t.level);
+        reelCtx.lineWidth = 3;
+        reelCtx.strokeRect(waveX - 4, waveY - 4, waveW + 8, waveH + 8);
+        reelCtx.globalAlpha = 1;
+      }
+
+      regions.push({x:cardX, y:rowY, w:cardW, h:rowH, stagger:2.6 + rowIndex*0.3});
+      rowY += rowH + rowGap;
+    });
+
+    // quote ticker
+    const tickerY = rowY + 8;
+    const tickerH = 32;
+    reelCtx.fillStyle = BAUHAUS_BLACK;
+    reelCtx.fillRect(pad, tickerY, w - pad*2, tickerH);
+    reelCtx.save();
+    reelCtx.beginPath();
+    reelCtx.rect(pad, tickerY, w - pad*2, tickerH);
+    reelCtx.clip();
+    reelCtx.textAlign = 'left';
+    reelCtx.font = `700 13px 'JetBrains Mono', monospace`;
+    reelCtx.fillStyle = BAUHAUS_YELLOW;
+    const tickerTextY = tickerY + tickerH/2 + 4;
+    const tickerFullWidth = reelCtx.measureText(REEL_TICKER_TEXT).width + 60;
+    const tickerOffset = elapsed * 55;
+    let tx = pad - (tickerOffset % tickerFullWidth);
+    while(tx < pad + (w - pad*2)){
+      reelCtx.fillText(REEL_TICKER_TEXT, tx, tickerTextY);
+      tx += tickerFullWidth;
+    }
+    reelCtx.restore();
+    regions.push({x:pad, y:tickerY, w:w-pad*2, h:tickerH, stagger:3.9});
+
+    // playback progress bar
+    const barY2 = tickerY + tickerH + 14;
+    if(clipLength > 0){
+      const pct = Math.max(0, Math.min(1, elapsed / clipLength));
+      reelCtx.fillStyle = BAUHAUS_BLACK;
+      reelCtx.globalAlpha = 0.15;
+      reelCtx.fillRect(pad, barY2, w - pad*2, 5);
+      reelCtx.globalAlpha = 1;
+      reelCtx.fillStyle = BAUHAUS_RED;
+      reelCtx.fillRect(pad, barY2, (w - pad*2) * pct, 5);
+    }
+
+    // summer reading list
+    const listY = barY2 + 20;
+    let rawListLines = readingListInput.value.split('\n').map(s => s.trim()).filter(Boolean).slice(0, 4);
+    if(!rawListLines.length){
+      rawListLines = [
+        'Acid Communism — Mark Fisher',
+        'Magnifica Humanitas',
+        'Phenomenology of Spirit — Hegel',
+        'Eros and Civilization — Marcuse'
+      ];
+    }
+    let listItemY = listY;
+
+    if(rawListLines.length){
+      reelCtx.textAlign = 'left';
+      reelCtx.font = `400 15px 'Archivo Black', sans-serif`;
+      reelCtx.fillStyle = BAUHAUS_BLACK;
+      reelCtx.fillText('SUMMER READING LIST', pad, listY);
+      reelCtx.fillStyle = BAUHAUS_BLACK;
+      reelCtx.fillRect(pad, listY+10, w-pad*2, 3);
+
+      const listColors = [BAUHAUS_RED, BAUHAUS_BLUE, BAUHAUS_YELLOW, BAUHAUS_BLACK];
+      const listItemH = 22;
+      const badgeSize = 20;
+      const maxTitleW = w - pad*2 - badgeSize - 14;
+      listItemY = listY + 16;
+      rawListLines.forEach((rawTitle, i) => {
+        reelCtx.fillStyle = listColors[i];
+        reelCtx.fillRect(pad, listItemY, badgeSize, badgeSize);
+        const badgeTextCol = (listColors[i] === BAUHAUS_BLACK || listColors[i] === BAUHAUS_BLUE) ? REEL_COLORS.body1 : BAUHAUS_BLACK;
+        reelCtx.fillStyle = badgeTextCol;
+        reelCtx.font = `400 13px 'Archivo Black', sans-serif`;
+        reelCtx.textAlign = 'center';
+        reelCtx.textBaseline = 'middle';
+        reelCtx.fillText(String(i+1), pad + badgeSize/2, listItemY + badgeSize/2 + 1);
+
+        reelCtx.textAlign = 'left';
+        reelCtx.textBaseline = 'alphabetic';
+        reelCtx.font = `500 14px 'Archivo', sans-serif`;
+        reelCtx.fillStyle = BAUHAUS_BLACK;
+        let title = rawTitle.toUpperCase();
+        while(reelCtx.measureText(title).width > maxTitleW && title.length > 1){
+          title = title.slice(0, -1);
+        }
+        if(title !== rawTitle.toUpperCase()) title = title.slice(0, -1) + '…';
+        reelCtx.fillText(title, pad + badgeSize + 14, listItemY + badgeSize/2 + 5);
+
+        listItemY += listItemH;
+      });
+      regions.push({x:pad, y:listY-20, w:w-pad*2, h:(listItemY-listY+20), stagger:4.3});
+
+      // teacher's red-pen grade stamp
+      const stampCX = w - pad - 44;
+      const stampCY = listY - 8;
+      const stampRed = '#c22a1f';
+      reelCtx.save();
+      reelCtx.strokeStyle = stampRed;
+      reelCtx.lineWidth = 2.5;
+      reelCtx.lineCap = 'round';
+      for(let pass=0; pass<2; pass++){
+        reelCtx.beginPath();
+        const wobble = pass * 2;
+        reelCtx.ellipse(stampCX + wobble, stampCY + wobble*0.5, 40, 30, -0.12, 0, Math.PI*2);
+        reelCtx.stroke();
+      }
+      reelCtx.fillStyle = stampRed;
+      reelCtx.font = `700 34px 'Caveat', cursive`;
+      reelCtx.textAlign = 'center';
+      reelCtx.textBaseline = 'middle';
+      reelCtx.save();
+      reelCtx.translate(stampCX, stampCY - 2);
+      reelCtx.rotate(-0.08);
+      reelCtx.fillText('A+', 0, 0);
+      reelCtx.restore();
+      reelCtx.font = `700 17px 'Caveat', cursive`;
+      reelCtx.save();
+      reelCtx.translate(stampCX, stampCY + 40);
+      reelCtx.rotate(-0.05);
+      reelCtx.fillText('great picks!', 0, 0);
+      reelCtx.restore();
+      reelCtx.textAlign = 'left';
+      reelCtx.textBaseline = 'alphabetic';
+      reelCtx.restore();
+    }
+
+    // right-edge countdown timer border
+    const borderW = 18;
+    const borderX = w - borderW;
+    reelCtx.fillStyle = BAUHAUS_BLACK;
+    reelCtx.fillRect(borderX, 0, borderW, h);
+    if(clipLength > 0){
+      const seconds = Math.min(clipLength, elapsed);
+      const fillH = h * (seconds / clipLength);
+      reelCtx.fillStyle = BAUHAUS_RED;
+      reelCtx.fillRect(borderX, h - fillH, borderW, fillH);
+
+      const badgeSize = 36;
+      let badgeY = h - fillH - badgeSize/2;
+      badgeY = Math.max(badgeSize/2, Math.min(h - badgeSize/2, badgeY));
+      reelCtx.fillStyle = BAUHAUS_YELLOW;
+      reelCtx.beginPath();
+      reelCtx.arc(borderX + borderW/2, badgeY, badgeSize/2, 0, Math.PI*2);
+      reelCtx.fill();
+      reelCtx.strokeStyle = BAUHAUS_BLACK;
+      reelCtx.lineWidth = 2.5;
+      reelCtx.stroke();
+      reelCtx.fillStyle = BAUHAUS_BLACK;
+      reelCtx.font = `700 15px 'Space Grotesk', sans-serif`;
+      reelCtx.textAlign = 'center';
+      reelCtx.textBaseline = 'middle';
+      reelCtx.save();
+      reelCtx.translate(borderX + borderW/2, badgeY);
+      reelCtx.rotate(-Math.PI/2);
+      reelCtx.fillText(Math.round(seconds), 0, 1);
+      reelCtx.restore();
+      reelCtx.textBaseline = 'alphabetic';
+    }
+    regions.push({x:borderX, y:0, w:borderW, h:h, stagger:4.5});
+
+    // glitch-out ending over the last 5 seconds, landing on hard black at clipLength
+    if(clipLength >= 5){
+      const glitchStart = clipLength - 5;
+      if(elapsed >= glitchStart){
+        regions.forEach((r) => {
+          const start = glitchStart + (r.stagger || 0);
+          if(elapsed < start) return;
+          const progress = Math.max(0, Math.min(1, (elapsed - start) / 1.2));
+          glitchRegion(r.x, r.y, r.w, r.h, progress);
+        });
+      }
+      const blackStart = clipLength - 1;
+      if(elapsed >= blackStart){
+        const bp = Math.max(0, Math.min(1, (elapsed - blackStart) / 1));
+        if(elapsed >= clipLength - 0.03){
+          reelCtx.fillStyle = '#000';
+          reelCtx.fillRect(0, 0, w, h);
+        }else if(elapsed >= clipLength - 0.15){
+          reelCtx.fillStyle = '#fff';
+          reelCtx.fillRect(0, 0, w, h);
+        }else{
+          const freq = 3 + bp * 22;
+          const cyclePos = (elapsed * freq) % 1;
+          const blackDuty = 0.12 + bp * 0.75;
+          if(cyclePos < blackDuty){
+            reelCtx.fillStyle = '#000';
+            reelCtx.fillRect(0, 0, w, h);
+          }
+        }
+      }
+    }
+  }
+
+  function detectTrackIndex(filename){
+    // Looks for patterns like "track_1", "track-2", "Track 3", "trk4" first…
+    let m = filename.match(/tr(?:ac)?k[\s_-]*(\d)/i);
+    if(m){
+      const n = parseInt(m[1], 10);
+      if(n >= 1 && n <= NUM_TRACKS) return n - 1;
+    }
+    // …then fall back to the first standalone digit 1-4 in the filename.
+    m = filename.match(/(\d)/);
+    if(m){
+      const n = parseInt(m[1], 10);
+      if(n >= 1 && n <= NUM_TRACKS) return n - 1;
+    }
+    return null;
+  }
+
+  function firstEmptyTrackIndex(){
+    const idx = tracks.findIndex(t => !t.buffer);
+    return idx === -1 ? 0 : idx;
+  }
+
+  globalFileInput.addEventListener('change', async (e) => {
+    const files = Array.from(e.target.files || []);
+    if(!files.length) return;
+    await loadFilesAuto(files, firstEmptyTrackIndex());
+    globalFileInput.value = '';
+  });
+
+  async function loadFilesAuto(files, dropIndex){
+    const assignments = []; // {file, index, matched}
+    const usedByMatch = new Set();
+
+    for(const file of files){
+      const detected = detectTrackIndex(file.name);
+      if(detected !== null){
+        assignments.push({file, index: detected, matched: true});
+        usedByMatch.add(detected);
+      }
+    }
+
+    // Files with no detectable number get placed starting at the drop target,
+    // skipping any slot already claimed by a name match.
+    let cursor = dropIndex;
+    for(const file of files){
+      if(detectTrackIndex(file.name) !== null) continue;
+      while(usedByMatch.has(cursor) && usedByMatch.size < NUM_TRACKS){
+        cursor = (cursor + 1) % NUM_TRACKS;
+      }
+      assignments.push({file, index: cursor, matched: false});
+      usedByMatch.add(cursor);
+      cursor = (cursor + 1) % NUM_TRACKS;
+    }
+
+    let matchedCount = 0, loadedCount = 0;
+    for(const {file, index, matched} of assignments){
+      const ok = await loadFileIntoTrack(index, file);
+      if(ok){
+        loadedCount++;
+        if(matched) matchedCount++;
+      }
+    }
+
+    if(files.length > 1){
+      setStatus(`Loaded ${loadedCount} of ${files.length} file(s)` +
+        (matchedCount ? ` — ${matchedCount} matched by name to their track.` : '.'));
+    }
+  }
+
+  function applyBufferToTrack(index, audioBuf, displayName, titleGuess){
+    const track = tracks[index];
+    track.buffer = audioBuf;
+    track.name = displayName;
+    fitCanvasResolution(track.waveCanvas);
+    track.peaks = computePeaks(audioBuf, track.waveCanvas.width);
+    track.viewStart = 0;
+    track.viewEnd = audioBuf.duration;
+    track.viewPeaks = track.peaks;
+    updateTrackZoomUI(track);
+    renderTrackWave(track, elapsedBeforeStop);
+    const fnameEl = document.getElementById(`fname-${index}`);
+    fnameEl.textContent = displayName + ` (${audioBuf.duration.toFixed(1)}s)`;
+    fnameEl.classList.add('loaded');
+    const titleInput = document.getElementById(`title-${index}`);
+    if(!track.title && titleGuess){
+      titleInput.value = titleGuess;
+      track.title = titleGuess;
+    }
+    drawVisualizer();
+    updateTrimBoundsAfterChange();
+    if(!isRecordingReel) drawReelFrame(0, 0);
+  }
+
+  async function loadFileIntoTrack(index, file){
+    try{
+      ensureCtx();
+      const arrayBuf = await file.arrayBuffer();
+      const audioBuf = await audioCtx.decodeAudioData(arrayBuf.slice(0));
+      const titleGuess = file.name.replace(/\.[^/.]+$/, '');
+      applyBufferToTrack(index, audioBuf, file.name, titleGuess);
+      setStatus(`Loaded "${file.name}" into Track ${index+1}.`);
+      return true;
+    }catch(err){
+      setStatus(`Couldn't read "${file.name}" as WAV audio — try a standard PCM .wav.`, true);
+      return false;
+    }
+  }
+
+  function refreshLiveGains(){
+    for(const t of tracks){
+      if(t.gainNode) t.gainNode.gain.value = effectiveGain(t);
+    }
+  }
+
+  function updateTapeStripWidthHint(){
+    // purely cosmetic reset; progress bar fills during playback
+  }
+
+  function computePeaksForRange(buffer, buckets, rangeStart, rangeEnd){
+    const data = buffer.getChannelData(0);
+    const sr = buffer.sampleRate;
+    const len = data.length;
+    const rangeDur = rangeEnd - rangeStart;
+    const peaks = [];
+    let maxAmp = 0;
+    for(let i=0;i<buckets;i++){
+      const tStart = rangeStart + (i/buckets) * rangeDur;
+      const tEnd = rangeStart + ((i+1)/buckets) * rangeDur;
+      let sStart = Math.floor(tStart * sr);
+      let sEnd = Math.floor(tEnd * sr);
+      let min = 1, max = -1;
+      if(sStart < len && sEnd > 0){
+        if(sStart < 0) sStart = 0;
+        if(sEnd > len) sEnd = len;
+        const span = sEnd - sStart;
+        const step = Math.max(1, Math.floor(span / 48));
+        for(let s=sStart; s<sEnd; s+=step){
+          const v = data[s];
+          if(v < min) min = v;
+          if(v > max) max = v;
+        }
+      }else{
+        min = 0; max = 0;
+      }
+      peaks.push([min, max]);
+      if(-min > maxAmp) maxAmp = -min;
+      if(max > maxAmp) maxAmp = max;
+    }
+    // Boost quiet recordings so the shape reads clearly instead of a flat
+    // line, without exaggerating already-hot tracks.
+    if(maxAmp > 0.01 && maxAmp < 0.9){
+      const boost = Math.min(3, 0.9 / maxAmp);
+      for(const p of peaks){
+        p[0] = Math.max(-1, p[0] * boost);
+        p[1] = Math.min(1, p[1] * boost);
+      }
+    }
+    return peaks;
+  }
+
+  function computePeaks(buffer, buckets){
+    return computePeaksForRange(buffer, buckets, 0, buffer.duration);
+  }
+
+  // --- Per-track waveform zoom/pan -----------------------------------
+  function trackViewSpan(t){
+    return Math.max(0.0001, t.viewEnd - t.viewStart);
+  }
+  function trackTimeToX(t, time, w){
+    return ((time - t.viewStart) / trackViewSpan(t)) * w;
+  }
+  function trackXToTime(t, x, w){
+    return t.viewStart + (x / w) * trackViewSpan(t);
+  }
+  function clampTrackView(t){
+    const dur = t.buffer ? t.buffer.duration : 0;
+    if(dur <= 0){ t.viewStart = 0; t.viewEnd = 0; return; }
+    let span = t.viewEnd - t.viewStart;
+    if(!(span > 0)){ t.viewStart = 0; t.viewEnd = dur; return; }
+    span = Math.min(span, dur);
+    if(t.viewStart < 0) t.viewStart = 0;
+    t.viewEnd = t.viewStart + span;
+    if(t.viewEnd > dur){
+      t.viewEnd = dur;
+      t.viewStart = Math.max(0, t.viewEnd - span);
+    }
+  }
+  function recomputeTrackViewPeaks(t){
+    if(!t.buffer || t.viewEnd <= t.viewStart){ t.viewPeaks = null; return; }
+    t.viewPeaks = computePeaksForRange(t.buffer, t.waveCanvas.width, t.viewStart, t.viewEnd);
+  }
+  function updateTrackZoomUI(t){
+    const btn = document.getElementById(`zoomReset-${t.index}`);
+    if(!btn) return;
+    const dur = t.buffer ? t.buffer.duration : 0;
+    const zoomed = t.buffer && trackViewSpan(t) < dur - 0.001;
+    btn.classList.toggle('visible', !!zoomed);
+  }
+  function setTrackZoom(t, factor, centerTime){
+    const dur = t.buffer ? t.buffer.duration : 0;
+    if(dur <= 0) return;
+    if(t.viewEnd <= t.viewStart){ t.viewStart = 0; t.viewEnd = dur; }
+    const curSpan = t.viewEnd - t.viewStart;
+    let newSpan = curSpan / factor;
+    newSpan = Math.max(TRACK_MIN_VIEW_SPAN, Math.min(dur, newSpan));
+    const center = (centerTime !== undefined) ? centerTime : (t.viewStart + t.viewEnd) / 2;
+    const frac = curSpan > 0 ? (center - t.viewStart) / curSpan : 0.5;
+    let newStart = center - frac * newSpan;
+    let newEnd = newStart + newSpan;
+    if(newStart < 0){ newEnd -= newStart; newStart = 0; }
+    if(newEnd > dur){ newStart -= (newEnd - dur); newEnd = dur; }
+    t.viewStart = Math.max(0, newStart);
+    t.viewEnd = Math.min(dur, newEnd);
+    recomputeTrackViewPeaks(t);
+    updateTrackZoomUI(t);
+    renderTrackWave(t, elapsedBeforeStop);
+  }
+  function resetTrackZoom(t){
+    const dur = t.buffer ? t.buffer.duration : 0;
+    t.viewStart = 0;
+    t.viewEnd = dur;
+    recomputeTrackViewPeaks(t);
+    updateTrackZoomUI(t);
+    renderTrackWave(t, elapsedBeforeStop);
+  }
+  function panTrackViewBy(t, deltaSeconds){
+    const dur = t.buffer ? t.buffer.duration : 0;
+    if(dur <= 0) return;
+    const span = trackViewSpan(t);
+    let newStart = t.viewStart + deltaSeconds;
+    newStart = Math.max(0, Math.min(dur - span, newStart));
+    t.viewStart = newStart;
+    t.viewEnd = newStart + span;
+    recomputeTrackViewPeaks(t);
+    renderTrackWave(t, elapsedBeforeStop);
+  }
+
+  function renderTrackWave(t, elapsed){
+    const canvas = t.waveCanvas;
+    if(!canvas) return;
+    const ctx = canvas.getContext('2d');
+    const w = canvas.width, h = canvas.height;
+    ctx.clearRect(0, 0, w, h);
+
+    const trackDpr = canvas._dpr || 1;
+
+    if(!t.peaks){
+      ctx.fillStyle = 'rgba(238,242,234,0.35)';
+      ctx.font = `${9 * trackDpr}px JetBrains Mono`;
+      ctx.fillText('— no audio loaded —', 8 * trackDpr, h/2 + 3 * trackDpr);
+      return;
+    }
+
+    const viewBars = t.viewPeaks || t.peaks;
+    const playedX = trackTimeToX(t, elapsed, w);
+    const mid = h / 2;
+    const trackColor = TRACK_COLORS[t.index % TRACK_COLORS.length];
+    const margin = 3 * trackDpr;
+
+    ctx.fillStyle = 'rgba(255,255,255,0.08)';
+    ctx.fillRect(0, mid - trackDpr/2, w, Math.max(1, trackDpr));
+
+    for(let i=0;i<viewBars.length;i++){
+      const [min, max] = viewBars[i];
+      const x = (i / viewBars.length) * w;
+      const yMin = mid + min * (h/2 - margin);
+      const yMax = mid + max * (h/2 - margin);
+      ctx.fillStyle = x < playedX ? trackColor : 'rgba(238,242,234,0.3)';
+      ctx.fillRect(x, Math.min(yMin,yMax), Math.max(1, w/viewBars.length - 1), Math.max(1, Math.abs(yMax-yMin)));
+    }
+
+    drawBarGrid(ctx, w, h, trackDpr, false, false, t.viewStart, trackViewSpan(t));
+
+    if(playedX >= -2 && playedX <= w + 2){
+      ctx.fillStyle = 'rgba(255,255,255,0.95)';
+      ctx.fillRect(playedX, 0, Math.max(1, trackDpr), h);
+    }
+  }
+
+  function renderAllWaves(elapsed){
+    for(const t of tracks) renderTrackWave(t, elapsed);
+  }
+
+  // ---- Visualizer: colorful live waveform ----
+  let visPhase = 0;
+
+  function drawVisualizer(){
+    const w = visCanvas.width, h = visCanvas.height;
+
+    // hard black background, like an old hardware spectrum display
+    visCtx.fillStyle = '#050505';
+    visCtx.fillRect(0, 0, w, h);
+
+    const barCount = 24;
+    const gap = 2;
+    const barW = (w - gap*(barCount-1)) / barCount;
+    const segH = 4;
+    const segGap = 2;
+    const maxSegs = Math.max(1, Math.floor(h / (segH+segGap)));
+
+    if(!barPeaks || barPeaks.length !== barCount){
+      barPeaks = new Array(barCount).fill(0);
+    }
+
+    const levels = new Array(barCount).fill(0);
+    if(isPlaying && masterAnalyserLive){
+      masterAnalyserLive.getByteFrequencyData(masterFreqData);
+      const bins = masterFreqData.length;
+      for(let i=0;i<barCount;i++){
+        // exponential bin mapping so bass/mid bars aren't dwarfed by empty high-frequency bins
+        const t0 = i/barCount, t1 = (i+1)/barCount;
+        const b0 = Math.floor(Math.pow(t0, 1.8) * bins);
+        const b1 = Math.max(b0+1, Math.floor(Math.pow(t1, 1.8) * bins));
+        let sum = 0, count = 0;
+        for(let b=b0; b<b1 && b<bins; b++){ sum += masterFreqData[b]; count++; }
+        levels[i] = count ? (sum/count)/255 : 0;
+      }
+    }
+
+    for(let i=0;i<barCount;i++){
+      const x = i * (barW + gap);
+      const lit = Math.round(levels[i] * maxSegs);
+
+      if(lit >= barPeaks[i]){
+        barPeaks[i] = lit;
+      }else{
+        barPeaks[i] = Math.max(lit, barPeaks[i] - 0.4);
+      }
+
+      for(let s=0; s<maxSegs; s++){
+        const segY = h - (s+1) * (segH+segGap);
+        const frac = s / maxSegs;
+        let onColor, offColor;
+        if(frac < 0.55){ onColor = '#3ddc5a'; offColor = '#123318'; }
+        else if(frac < 0.8){ onColor = '#e8d21e'; offColor = '#3a3510'; }
+        else{ onColor = '#e0332a'; offColor = '#3a1210'; }
+
+        visCtx.fillStyle = (s < lit) ? onColor : offColor;
+        visCtx.fillRect(x, segY, barW, segH);
+      }
+
+      const peakSeg = Math.round(barPeaks[i]);
+      if(peakSeg > 0){
+        const capY = h - peakSeg * (segH+segGap);
+        visCtx.fillStyle = '#f4f1e8';
+        visCtx.fillRect(x, capY - segH, barW, 2);
+      }
+    }
+  }
+
+  function visLoop(){
+    visPhase += 0.045;
+    drawVisualizer();
+    requestAnimationFrame(visLoop);
+  }
+
+  for(let i=0;i<NUM_TRACKS;i++) buildTrackUI(i);
+
+  fitCanvasResolution(masterWaveCanvas);
+  fitCanvasResolution(masterMinimapCanvas);
+  for(const t of tracks) fitCanvasResolution(t.waveCanvas);
+  for(const t of tracks) renderTrackWave(t, 0);
+  renderMasterWave(0);
+  renderMasterMinimap();
+  drawReelFrame(0, 0);
+  requestAnimationFrame(visLoop);
+
+  let waveResizeTimer = null;
+  window.addEventListener('resize', () => {
+    clearTimeout(waveResizeTimer);
+    waveResizeTimer = setTimeout(() => {
+      let changed = fitCanvasResolution(masterWaveCanvas);
+      if(masterPeaks) masterPeaks = computeMasterPeaks(masterWaveCanvas.width);
+      recomputeMasterViewPeaks();
+      renderMasterWave(elapsedBeforeStop);
+      renderMasterMinimap();
+      for(const t of tracks){
+        const trackChanged = fitCanvasResolution(t.waveCanvas);
+        if(trackChanged && t.buffer){
+          t.peaks = computePeaks(t.buffer, t.waveCanvas.width);
+          recomputeTrackViewPeaks(t);
+        }
+        renderTrackWave(t, elapsedBeforeStop);
+      }
+    }, 150);
+  });
+
+
+  // --- Keyboard track select + volume/pan ----------------------------
+  // Press 1-4 to select a track, then Up/Down adjusts its volume and
+  // Left/Right adjusts its pan. Ignored while typing in any text field.
+  let selectedTrackIndex = null;
+
+  function selectTrackByKey(idx){
+    selectedTrackIndex = idx;
+    const trackEls = tracksEl.querySelectorAll('.track');
+    trackEls.forEach((el, i) => el.classList.toggle('key-selected', i === idx));
+  }
+
+  function nudgeInput(id, delta){
+    const input = document.getElementById(id);
+    if(!input) return;
+    const min = parseFloat(input.min), max = parseFloat(input.max);
+    let v = parseFloat(input.value) + delta;
+    v = Math.max(min, Math.min(max, v));
+    v = Math.round(v * 100) / 100;
+    if(v === parseFloat(input.value)) return;
+    input.value = v;
+    input.dispatchEvent(new Event('input', { bubbles: true }));
+  }
+
+  document.addEventListener('keydown', (e) => {
+    const active = document.activeElement;
+    const tag = active ? active.tagName : '';
+    const isFormField = tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || (active && active.isContentEditable);
+    if(isFormField) return;
+
+    if(e.key >= '1' && e.key <= '4'){
+      const idx = parseInt(e.key, 10) - 1;
+      if(idx < tracks.length){
+        selectTrackByKey(idx);
+        e.preventDefault();
+      }
+      return;
+    }
+
+    if(selectedTrackIndex === null || !tracks[selectedTrackIndex]) return;
+    const idx = selectedTrackIndex;
+
+    switch(e.key){
+      case 'ArrowUp':
+        e.preventDefault();
+        nudgeInput(`vol-${idx}`, 0.05);
+        break;
+      case 'ArrowDown':
+        e.preventDefault();
+        nudgeInput(`vol-${idx}`, -0.05);
+        break;
+      case 'ArrowRight':
+        e.preventDefault();
+        nudgeInput(`pan-${idx}`, 0.1);
+        break;
+      case 'ArrowLeft':
+        e.preventDefault();
+        nudgeInput(`pan-${idx}`, -0.1);
+        break;
+      case 'Escape':
+        selectTrackByKey(null);
+        break;
+    }
+  });
+
+  masterFader.addEventListener('input', (e) => {
+    if(masterGainLive) masterGainLive.gain.value = parseFloat(e.target.value);
+  });
+
+  function fmtDb(v){
+    return (v > 0 ? '+' : '') + v + ' dB';
+  }
+
+  eqLowSlider.addEventListener('input', (e) => {
+    eqLowGain = parseFloat(e.target.value);
+    eqLowValue.textContent = fmtDb(eqLowGain);
+    if(liveEQLow) liveEQLow.gain.value = eqLowGain;
+  });
+  eqMidSlider.addEventListener('input', (e) => {
+    eqMidGain = parseFloat(e.target.value);
+    eqMidValue.textContent = fmtDb(eqMidGain);
+    if(liveEQMid) liveEQMid.gain.value = eqMidGain;
+  });
+  eqHighSlider.addEventListener('input', (e) => {
+    eqHighGain = parseFloat(e.target.value);
+    eqHighValue.textContent = fmtDb(eqHighGain);
+    if(liveEQHigh) liveEQHigh.gain.value = eqHighGain;
+  });
+  eqFlatBtn.addEventListener('click', () => {
+    eqLowGain = 0; eqMidGain = 0; eqHighGain = 0;
+    eqLowSlider.value = 0; eqMidSlider.value = 0; eqHighSlider.value = 0;
+    eqLowValue.textContent = fmtDb(0);
+    eqMidValue.textContent = fmtDb(0);
+    eqHighValue.textContent = fmtDb(0);
+    if(liveEQLow) liveEQLow.gain.value = 0;
+    if(liveEQMid) liveEQMid.gain.value = 0;
+    if(liveEQHigh) liveEQHigh.gain.value = 0;
+    setStatus('Master EQ reset to flat.');
+  });
+
+  function stopAllSources(){
+    for(const t of tracks){
+      if(t.sourceNode){
+        try{ t.sourceNode.stop(); }catch(e){}
+        t.sourceNode.disconnect();
+        t.sourceNode = null;
+      }
+    }
+    if(rafId){ cancelAnimationFrame(rafId); rafId = null; }
+  }
+
+  function play(){
+    if(maxDuration() === 0){
+      setStatus('Load at least one WAV file before pressing play.', true);
+      return;
+    }
+    if(trimEnd - trimStart <= 0){
+      setStatus('Trim selection is empty — widen the trim range before playing.', true);
+      return;
+    }
+    if(elapsedBeforeStop < trimStart || elapsedBeforeStop >= trimEnd){
+      elapsedBeforeStop = trimStart;
+    }
+
+    ensureCtx();
+    stopAllSources();
+
+    masterGainLive = audioCtx.createGain();
+    masterGainLive.gain.value = parseFloat(masterFader.value);
+
+    const liveEQ = buildEQChain(audioCtx, eqLowGain, eqMidGain, eqHighGain);
+    liveEQLow = liveEQ.low;
+    liveEQMid = liveEQ.mid;
+    liveEQHigh = liveEQ.high;
+    masterGainLive.connect(liveEQ.low);
+    liveEQ.high.connect(audioCtx.destination);
+
+    masterAnalyserLive = audioCtx.createAnalyser();
+    masterAnalyserLive.fftSize = 128;
+    masterAnalyserLive.smoothingTimeConstant = 0.6;
+    masterFreqData = new Uint8Array(masterAnalyserLive.frequencyBinCount);
+    liveEQ.high.connect(masterAnalyserLive);
+
+    const startAt = audioCtx.currentTime + 0.06;
+    for(const t of tracks){
+      if(!t.buffer) continue;
+      const trackDur = t.buffer.duration;
+      if(elapsedBeforeStop >= trackDur) continue;
+      const playDuration = Math.min(trimEnd, trackDur) - elapsedBeforeStop;
+      if(playDuration <= 0) continue;
+
+      const src = audioCtx.createBufferSource();
+      src.buffer = t.buffer;
+      const gain = audioCtx.createGain();
+      applyMixFadeAutomation(gain, effectiveGain(t), mixFadeIn, mixFadeOut, elapsedBeforeStop - trimStart, trimEnd - elapsedBeforeStop, startAt);
+      const panner = audioCtx.createStereoPanner();
+      panner.pan.value = t.pan || 0;
+      const analyser = audioCtx.createAnalyser();
+      analyser.fftSize = 1024;
+      t.timeData = new Uint8Array(analyser.fftSize);
+      src.connect(gain);
+      gain.connect(panner);
+      panner.connect(analyser);
+      panner.connect(masterGainLive);
+      src.start(startAt, elapsedBeforeStop, playDuration);
+      t.sourceNode = src;
+      t.gainNode = gain;
+      t.pannerNode = panner;
+      t.analyser = analyser;
+      src.onended = () => {
+        if(t.sourceNode === src) t.sourceNode = null;
+      };
+    }
+
+    isPlaying = true;
+    playStartCtxTime = startAt;
+    reelL.classList.add('spin');
+    reelR.classList.add('spin');
+    playBtn.disabled = true;
+    setStatus('Playing…');
+    tickLoop(trimEnd);
+  }
+
+  function tickLoop(endAt){
+    const step = () => {
+      const elapsed = elapsedBeforeStop + Math.max(0, audioCtx.currentTime - playStartCtxTime);
+      counterEl.textContent = fmtCounter(elapsed);
+      const span = Math.max(0.0001, trimEnd - trimStart);
+      const pct = Math.min(100, Math.max(0, ((elapsed - trimStart) / span) * 100));
+      tapeStrip.style.setProperty('--progress', pct + '%');
+      for(const t of tracks) updateMeter(t);
+      renderAllWaves(elapsed);
+      renderMasterWave(elapsed);
+      drawVisualizer();
+      if(elapsed >= endAt){
+        if(isLooping){
+          elapsedBeforeStop = trimStart;
+          play();
+          return;
+        }
+        stop();
+        return;
+      }
+      if(isPlaying) rafId = requestAnimationFrame(step);
+    };
+    rafId = requestAnimationFrame(step);
+  }
+
+  function stop(){
+    if(isPlaying){
+      elapsedBeforeStop += Math.max(0, (audioCtx ? audioCtx.currentTime : 0) - playStartCtxTime);
+    }
+    isPlaying = false;
+    stopAllSources();
+    reelL.classList.remove('spin');
+    reelR.classList.remove('spin');
+    playBtn.disabled = false;
+    for(const t of tracks) updateMeter(t);
+    renderAllWaves(elapsedBeforeStop);
+    renderMasterWave(elapsedBeforeStop);
+    drawVisualizer();
+    setStatus('Stopped.');
+  }
+
+  function rewind(){
+    stop();
+    elapsedBeforeStop = trimStart;
+    counterEl.textContent = fmtCounter(trimStart);
+    tapeStrip.style.setProperty('--progress', '0%');
+    renderAllWaves(trimStart);
+    renderMasterWave(trimStart);
+    setStatus('Rewound to trim start.');
+  }
+
+  playBtn.addEventListener('click', play);
+  stopBtn.addEventListener('click', stop);
+  loopBtn.addEventListener('click', () => {
+    isLooping = !isLooping;
+    loopBtn.classList.toggle('loop-active', isLooping);
+    setStatus(isLooping ? 'Loop on — playback will repeat the trimmed selection.' : 'Loop off.');
+  });
+  rewBtn.addEventListener('click', rewind);
+
+  // ---- Mixdown / bounce to WAV ----
+  async function bounce(){
+    if(maxDuration() === 0){
+      setStatus('Load at least one WAV file before mixing down.', true);
+      return;
+    }
+    const span = trimEnd - trimStart;
+    if(span <= 0){
+      setStatus('Trim selection is empty — widen the trim range before mixing down.', true);
+      return;
+    }
+    bounceBtn.disabled = true;
+    setStatus('Rendering trimmed mix…');
+
+    try{
+      const sampleRate = 44100;
+      const channels = 2;
+      const length = Math.ceil(span * sampleRate) + 1;
+      const offlineCtx = new OfflineAudioContext(channels, length, sampleRate);
+      const masterGain = offlineCtx.createGain();
+      masterGain.gain.value = parseFloat(masterFader.value);
+      const bounceEQ = buildEQChain(offlineCtx, eqLowGain, eqMidGain, eqHighGain);
+      masterGain.connect(bounceEQ.low);
+      bounceEQ.high.connect(offlineCtx.destination);
+
+      for(const t of tracks){
+        if(!t.buffer) continue;
+        const gainVal = effectiveGain(t);
+        if(gainVal === 0) continue;
+        const trackDur = t.buffer.duration;
+        if(trimStart >= trackDur) continue;
+        const playDuration = Math.min(trimEnd, trackDur) - trimStart;
+        if(playDuration <= 0) continue;
+        const src = offlineCtx.createBufferSource();
+        src.buffer = t.buffer;
+        const gain = offlineCtx.createGain();
+        applyMixFadeAutomation(gain, gainVal, mixFadeIn, mixFadeOut, 0, span, 0);
+        const panner = offlineCtx.createStereoPanner();
+        panner.pan.value = t.pan || 0;
+        src.connect(gain);
+        gain.connect(panner);
+        panner.connect(masterGain);
+        src.start(0, trimStart, playDuration);
+      }
+
+      const rendered = await offlineCtx.startRendering();
+      const wavBlob = audioBufferToWavBlob(rendered);
+      const url = URL.createObjectURL(wavBlob);
+      const baseName = mixFilenameBase();
+      const filename = baseName + '.wav';
+
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+
+      const notes = notesInput.value.trim();
+      let statusMsg = `Mixdown complete (${formatTime(trimStart)}–${formatTime(trimEnd)}) — download started. `;
+      if(notes){
+        const notesBlob = new Blob([notes], {type: 'text/plain'});
+        const notesUrl = URL.createObjectURL(notesBlob);
+        const notesA = document.createElement('a');
+        notesA.href = notesUrl;
+        notesA.download = baseName + '.txt';
+        document.body.appendChild(notesA);
+        notesA.click();
+        document.body.removeChild(notesA);
+        statusMsg = `Mixdown complete (${formatTime(trimStart)}–${formatTime(trimEnd)}) — WAV and notes .txt downloaded. `;
+      }
+
+      setStatus(statusMsg);
+      const link = document.createElement('a');
+      link.href = url;
+      link.textContent = 'Click here if the download didn\'t start';
+      link.download = filename;
+      statusEl.appendChild(link);
+    }catch(err){
+      setStatus('Mixdown failed: ' + err.message, true);
+    }finally{
+      bounceBtn.disabled = false;
+    }
+  }
+
+  bounceBtn.addEventListener('click', bounce);
+
+  // ---- Reels export: record canvas + audio to a 30s vertical video ----
+  function pickReelMimeType(){
+    const candidates = [
+      'video/mp4;codecs=h264,aac',
+      'video/mp4',
+      'video/webm;codecs=vp9,opus',
+      'video/webm;codecs=vp8,opus',
+      'video/webm'
+    ];
+    for(const type of candidates){
+      if(window.MediaRecorder && MediaRecorder.isTypeSupported && MediaRecorder.isTypeSupported(type)){
+        return type;
+      }
+    }
+    return '';
+  }
+
+  async function exportReel(){
+    if(isRecordingReel) return;
+    if(maxDuration() === 0){
+      setStatus('Load at least one WAV file before creating a reel.', true);
+      return;
+    }
+    const clipLength = Math.min(30, trimEnd - trimStart);
+    if(clipLength <= 0){
+      setStatus('Trim selection is empty — widen the trim range before creating a reel.', true);
+      return;
+    }
+    if(!window.MediaRecorder){
+      setStatus('This browser can\'t record video — try Chrome, Edge, or Safari.', true);
+      return;
+    }
+    const mimeType = pickReelMimeType();
+    if(!mimeType){
+      setStatus('No supported video format found in this browser for recording.', true);
+      return;
+    }
+
+    ensureCtx();
+    stop();
+    if(document.fonts && document.fonts.ready){
+      try{ await document.fonts.ready; }catch(e){}
+    }
+
+    isRecordingReel = true;
+    reelExportBtn.disabled = true;
+    setStatus('Recording reel… 0.0s / ' + clipLength.toFixed(1) + 's');
+
+    if(reelMediaType === 'video' && reelVideo){
+      try{
+        reelVideo.currentTime = 0;
+        await reelVideo.play();
+      }catch(err){
+        // muted autoplay should generally succeed; if it doesn't, the screen just falls back to its last frame
+      }
+    }
+
+    const reelMasterGain = audioCtx.createGain();
+    reelMasterGain.gain.value = parseFloat(masterFader.value);
+    const reelEQ = buildEQChain(audioCtx, eqLowGain, eqMidGain, eqHighGain);
+    reelMasterGain.connect(reelEQ.low);
+    reelEQ.high.connect(audioCtx.destination);
+    const audioDest = audioCtx.createMediaStreamDestination();
+    reelEQ.high.connect(audioDest);
+
+    reelMasterAnalyser = audioCtx.createAnalyser();
+    reelMasterAnalyser.fftSize = 128;
+    reelMasterAnalyser.smoothingTimeConstant = 0.6;
+    reelFreqData = new Uint8Array(reelMasterAnalyser.frequencyBinCount);
+    reelBarPeaks = null;
+    reelEQ.high.connect(reelMasterAnalyser);
+
+    const clipStart = trimStart;
+    const startAt = audioCtx.currentTime + 0.15;
+    const reelSources = [];
+
+    for(const t of tracks){
+      if(!t.buffer) continue;
+      const gainVal = effectiveGain(t);
+      if(gainVal === 0) continue;
+      const trackDur = t.buffer.duration;
+      if(clipStart >= trackDur) continue;
+      const playDuration = Math.min(clipStart + clipLength, trackDur) - clipStart;
+      if(playDuration <= 0) continue;
+
+      const src = audioCtx.createBufferSource();
+      src.buffer = t.buffer;
+      const gain = audioCtx.createGain();
+      applyMixFadeAutomation(gain, gainVal, mixFadeIn, mixFadeOut, 0, clipLength, startAt);
+      const panner = audioCtx.createStereoPanner();
+      panner.pan.value = t.pan || 0;
+      const analyser = audioCtx.createAnalyser();
+      analyser.fftSize = 512;
+      t.timeData = new Uint8Array(analyser.fftSize);
+      src.connect(gain);
+      gain.connect(panner);
+      panner.connect(analyser);
+      panner.connect(reelMasterGain);
+      src.start(startAt, clipStart, playDuration);
+      t.analyser = analyser;
+      reelSources.push(src);
+    }
+
+    const canvasStream = reelCanvas.captureStream(30);
+    const combined = new MediaStream([
+      ...canvasStream.getVideoTracks(),
+      ...audioDest.stream.getAudioTracks()
+    ]);
+
+    const recorder = new MediaRecorder(combined, {
+      mimeType,
+      videoBitsPerSecond: 4000000
+    });
+    const chunks = [];
+    recorder.ondataavailable = (e) => { if(e.data && e.data.size) chunks.push(e.data); };
+
+    const videoDonePromise = new Promise((resolve) => {
+      recorder.onstop = () => resolve();
+    });
+
+    recorder.start();
+
+    const choppingVideo = reelMediaType === 'video' && reelVideo && reelVideo.duration > 30;
+    let lastVideoSegment = -1;
+
+    const drawTick = () => {
+      const elapsed = Math.max(0, audioCtx.currentTime - startAt);
+
+      if(choppingVideo){
+        const segIdx = Math.floor(elapsed / 5);
+        if(segIdx !== lastVideoSegment){
+          lastVideoSegment = segIdx;
+          const maxStart = Math.max(0, reelVideo.duration - 5);
+          reelVideo.currentTime = Math.random() * maxStart;
+        }
+      }
+
+      for(const t of tracks){
+        if(t.analyser){
+          const data = t.timeData;
+          t.analyser.getByteTimeDomainData(data);
+          let sum = 0;
+          for(let i=0;i<data.length;i++){
+            const v = (data[i]-128)/128;
+            sum += v*v;
+          }
+          t.level = Math.min(1, Math.sqrt(sum/data.length) * 3.2);
+        }
+      }
+      drawReelFrame(elapsed, clipLength);
+      setStatus(`Recording reel… ${elapsed.toFixed(1)}s / ${clipLength.toFixed(1)}s`);
+
+      if(elapsed < clipLength && isRecordingReel){
+        requestAnimationFrame(drawTick);
+      }else{
+        setStatus('Finishing reel export…');
+        if(recorder.state !== 'inactive') recorder.stop();
+      }
+    };
+    requestAnimationFrame(drawTick);
+
+    await videoDonePromise;
+
+    // finalize video download
+    const outputType = mimeType.split(';')[0];
+    const ext = outputType === 'video/mp4' ? 'mp4' : 'webm';
+    const videoBlob = new Blob(chunks, {type: outputType});
+    const videoUrl = URL.createObjectURL(videoBlob);
+    const filename = mixFilenameBase() + '-reel.' + ext;
+
+    const a = document.createElement('a');
+    a.href = videoUrl;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(() => URL.revokeObjectURL(videoUrl), 1500);
+
+    setStatus(`Reel complete — "${filename}" downloaded.` +
+      (ext === 'webm' ? ' If Instagram won\'t accept .webm, convert it to .mp4 first.' : ''));
+
+    // cleanup
+    for(const src of reelSources){
+      try{ src.stop(); }catch(e){}
+    }
+    for(const t of tracks) t.analyser = null;
+    try{ reelMasterGain.disconnect(); }catch(e){}
+    try{ reelMasterAnalyser.disconnect(); }catch(e){}
+    try{ audioDest.disconnect(); }catch(e){}
+    reelMasterAnalyser = null;
+    canvasStream.getTracks().forEach(tr => tr.stop());
+    if(reelMediaType === 'video' && reelVideo){
+      reelVideo.pause();
+    }
+    isRecordingReel = false;
+    reelExportBtn.disabled = false;
+  }
+
+  reelExportBtn.addEventListener('click', exportReel);
+
+  function clearAllTracks(){
+    if(isRecordingReel){
+      setStatus('Wait for the reel export to finish before clearing tracks.', true);
+      return;
+    }
+    if(!confirm('Clear all tracks? This removes every loaded WAV and resets volumes, mutes, and titles.')){
+      return;
+    }
+    stop();
+    elapsedBeforeStop = 0;
+    counterEl.textContent = '0000';
+    tapeStrip.style.setProperty('--progress', '0%');
+    mixFadeIn = 0;
+    mixFadeOut = 0;
+
+    for(const t of tracks){
+      t.buffer = null;
+      t.name = null;
+      t.peaks = null;
+      t.viewStart = 0;
+      t.viewEnd = 0;
+      t.viewPeaks = null;
+      updateTrackZoomUI(t);
+      t.level = 0;
+      t.muted = false;
+      t.solo = false;
+      t.volume = 1;
+      t.pan = 0;
+      t.title = '';
+
+      const fnameEl = document.getElementById(`fname-${t.index}`);
+      fnameEl.textContent = 'no file loaded';
+      fnameEl.classList.remove('loaded');
+
+      const titleInput = document.getElementById(`title-${t.index}`);
+      titleInput.value = '';
+
+      const volInput = document.getElementById(`vol-${t.index}`);
+      volInput.value = t.volume;
+
+      const panInput = document.getElementById(`pan-${t.index}`);
+      panInput.value = 0;
+
+      document.getElementById(`mute-${t.index}`).classList.remove('active-mute');
+      document.getElementById(`solo-${t.index}`).classList.remove('active-solo');
+
+      renderTrackWave(t, 0);
+    }
+
+    if(globalFileInput) globalFileInput.value = '';
+    drawVisualizer();
+    trimIsDefault = true;
+    updateTrimBoundsAfterChange();
+    drawReelFrame(0, 0);
+    setStatus('All tracks cleared. Load a WAV file into each track, or drag one onto a track.');
+  }
+
+  clearBtn.addEventListener('click', clearAllTracks);
+
+  function audioBufferToWavBlob(buffer){
+    const numChannels = buffer.numberOfChannels;
+    const sampleRate = buffer.sampleRate;
+    const bitDepth = 16;
+    const bytesPerSample = bitDepth / 8;
+    const blockAlign = numChannels * bytesPerSample;
+
+    const channelData = [];
+    for(let c=0;c<numChannels;c++) channelData.push(buffer.getChannelData(c));
+
+    const numFrames = buffer.length;
+    const dataSize = numFrames * blockAlign;
+    const bufferArr = new ArrayBuffer(44 + dataSize);
+    const view = new DataView(bufferArr);
+
+    function writeString(offset, str){
+      for(let i=0;i<str.length;i++) view.setUint8(offset+i, str.charCodeAt(i));
+    }
+
+    writeString(0, 'RIFF');
+    view.setUint32(4, 36 + dataSize, true);
+    writeString(8, 'WAVE');
+    writeString(12, 'fmt ');
+    view.setUint32(16, 16, true);
+    view.setUint16(20, 1, true); // PCM
+    view.setUint16(22, numChannels, true);
+    view.setUint32(24, sampleRate, true);
+    view.setUint32(28, sampleRate * blockAlign, true);
+    view.setUint16(32, blockAlign, true);
+    view.setUint16(34, bitDepth, true);
+    writeString(36, 'data');
+    view.setUint32(40, dataSize, true);
+
+    let offset = 44;
+    for(let i=0;i<numFrames;i++){
+      for(let c=0;c<numChannels;c++){
+        let sample = channelData[c][i];
+        sample = Math.max(-1, Math.min(1, sample));
+        sample = sample < 0 ? sample * 0x8000 : sample * 0x7FFF;
+        view.setInt16(offset, sample, true);
+        offset += 2;
+      }
+    }
+
+    return new Blob([bufferArr], {type:'audio/wav'});
+  }
+
+})();
+</script>
+
+</body>
+</html>
