@@ -801,6 +801,307 @@
   .master-fader{display:flex;flex-direction:column;align-items:center;gap:4px;margin-left:8px;}
   .master-fader label{font-size:8px;color:var(--ink-dim);letter-spacing:1px;}
 
+  /* ===================================================================
+     Owner's manual — set as a period instruction booklet: heavy rules,
+     letterspaced caps, numbered sections, dot-leader specifications.
+     =================================================================== */
+  .brand-right{
+    display:flex;
+    align-items:center;
+    gap:12px;
+  }
+  .manual-open-btn{
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    background:var(--panel);
+    border:2px solid var(--panel-line);
+    color:var(--ink);
+    font-family:'JetBrains Mono',monospace;
+    font-size:10px;
+    font-weight:700;
+    letter-spacing:.14em;
+    text-transform:uppercase;
+    padding:9px 13px;
+    cursor:pointer;
+    transition:background .12s,color .12s;
+  }
+  .manual-open-btn:hover{background:var(--t1);color:var(--panel);border-color:var(--t1);}
+  .manual-open-icon{font-size:13px;line-height:1;}
+
+  .manual-overlay{
+    display:none;
+    position:fixed;
+    inset:0;
+    background:rgba(16,14,10,.72);
+    z-index:9000;
+    padding:24px 16px;
+    overflow-y:auto;
+    -webkit-overflow-scrolling:touch;
+  }
+  .manual-overlay.open{display:block;}
+  .manual-sheet{
+    position:relative;
+    max-width:760px;
+    margin:0 auto;
+    background:var(--panel);
+    border:2px solid var(--panel-line);
+    box-shadow:10px 10px 0 rgba(26,26,26,.45);
+    padding:0 0 20px;
+    color:var(--ink);
+  }
+  .manual-close{
+    position:absolute;
+    top:12px;
+    right:12px;
+    width:32px;
+    height:32px;
+    background:var(--panel);
+    border:2px solid var(--panel-line);
+    color:var(--ink);
+    font-size:14px;
+    line-height:1;
+    cursor:pointer;
+    z-index:2;
+  }
+  .manual-close:hover{background:var(--t1);color:var(--panel);border-color:var(--t1);}
+
+  .manual-head{
+    padding:34px 38px 20px;
+    border-bottom:none;
+    text-align:center;
+  }
+  /* Registration marks, as found on printed matter of the era. */
+  .manual-head-marks{
+    display:flex;
+    justify-content:center;
+    gap:7px;
+    margin-bottom:20px;
+  }
+  .manual-head-marks span{
+    width:9px;height:9px;
+    border:1.5px solid var(--ink);
+    border-radius:50%;
+  }
+  .manual-head-marks span:nth-child(1){background:var(--t1);}
+  .manual-head-marks span:nth-child(2){background:var(--t4);}
+  .manual-head-marks span:nth-child(3){background:var(--t2);}
+  .manual-brand{
+    font-family:'JetBrains Mono',monospace;
+    font-size:10px;
+    letter-spacing:.42em;
+    text-transform:uppercase;
+    color:var(--ink-dim);
+    margin-bottom:10px;
+  }
+  .manual-title{
+    font-family:'Archivo Black',sans-serif;
+    font-size:clamp(28px,6vw,44px);
+    letter-spacing:.02em;
+    text-transform:uppercase;
+    margin:0 0 8px;
+    line-height:1;
+  }
+  .manual-model{
+    font-family:'JetBrains Mono',monospace;
+    font-size:11px;
+    letter-spacing:.2em;
+    text-transform:uppercase;
+    color:var(--ink-dim);
+  }
+  /* A thick rule over a hairline — the standard head/foot rule of the era. */
+  .manual-rule-double{
+    border-top:3px solid var(--ink);
+    border-bottom:1px solid var(--ink);
+    height:5px;
+    margin:20px 0 0;
+  }
+  .manual-preamble{
+    font-family:'Space Grotesk',sans-serif;
+    font-size:13px;
+    line-height:1.7;
+    text-align:left;
+    margin:18px 0 0;
+  }
+
+  .manual-body{padding:4px 38px 0;}
+  .manual-section{
+    padding:22px 0;
+    border-bottom:1px solid rgba(26,26,26,.22);
+  }
+  .manual-section:last-child{border-bottom:none;}
+  .manual-sec-head{
+    display:flex;
+    align-items:center;
+    gap:11px;
+    margin-bottom:12px;
+  }
+  .manual-sec-num{
+    flex:0 0 auto;
+    min-width:26px;
+    height:26px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:var(--ink);
+    color:var(--panel);
+    font-family:'JetBrains Mono',monospace;
+    font-size:12px;
+    font-weight:700;
+    padding:0 5px;
+  }
+  .manual-sec-head h2{
+    font-family:'Archivo Black',sans-serif;
+    font-size:15px;
+    letter-spacing:.09em;
+    text-transform:uppercase;
+    margin:0;
+  }
+  .manual-sub{
+    font-family:'JetBrains Mono',monospace;
+    font-size:11px;
+    font-weight:700;
+    letter-spacing:.18em;
+    text-transform:uppercase;
+    color:var(--ink-dim);
+    margin:18px 0 6px;
+  }
+  .manual-section p{
+    font-family:'Space Grotesk',sans-serif;
+    font-size:13px;
+    line-height:1.7;
+    margin:0 0 10px;
+  }
+  .manual-section code{
+    font-family:'JetBrains Mono',monospace;
+    font-size:11.5px;
+    background:rgba(26,26,26,.07);
+    padding:1px 4px;
+  }
+  .manual-list{
+    font-family:'Space Grotesk',sans-serif;
+    font-size:13px;
+    line-height:1.7;
+    margin:0 0 10px;
+    padding-left:20px;
+  }
+  .manual-list li{margin-bottom:4px;}
+
+  .manual-table{
+    width:100%;
+    border-collapse:collapse;
+    margin:6px 0 10px;
+  }
+  .manual-table td{
+    font-family:'Space Grotesk',sans-serif;
+    font-size:12.5px;
+    line-height:1.6;
+    padding:7px 10px 7px 0;
+    border-bottom:1px dotted rgba(26,26,26,.35);
+    vertical-align:top;
+  }
+  .manual-table td.mt-key{
+    font-family:'JetBrains Mono',monospace;
+    font-size:11px;
+    font-weight:700;
+    letter-spacing:.04em;
+    white-space:nowrap;
+    width:34%;
+    padding-right:16px;
+  }
+  .manual-keys kbd{
+    font-family:'JetBrains Mono',monospace;
+    font-size:10px;
+    border:1.5px solid var(--ink);
+    padding:1px 5px;
+    margin-right:2px;
+    background:var(--panel-hi);
+  }
+
+  .manual-note,.manual-caution{
+    border:2px solid var(--ink);
+    padding:12px 14px 4px;
+    margin:14px 0;
+    position:relative;
+  }
+  .manual-caution{border-color:var(--t1);}
+  .manual-note-tag,.manual-caution-tag{
+    position:absolute;
+    top:-9px;
+    left:12px;
+    background:var(--panel);
+    padding:0 7px;
+    font-family:'JetBrains Mono',monospace;
+    font-size:9.5px;
+    font-weight:700;
+    letter-spacing:.2em;
+    text-transform:uppercase;
+  }
+  .manual-caution-tag{color:var(--t1);}
+  .manual-margin-note{
+    font-family:'Caveat',cursive;
+    font-size:16px !important;
+    line-height:1.4 !important;
+    color:var(--t2);
+    padding-left:16px;
+    border-left:2px solid var(--t2);
+  }
+
+  .manual-specs{margin:6px 0 0;}
+  .manual-specs > div{
+    display:flex;
+    align-items:baseline;
+    gap:6px;
+    font-family:'JetBrains Mono',monospace;
+    font-size:11.5px;
+    padding:5px 0;
+  }
+  /* Dot leaders, the way a spec sheet of the period would set them. */
+  .manual-specs dt{
+    flex:0 0 auto;
+    letter-spacing:.05em;
+    text-transform:uppercase;
+  }
+  .manual-specs > div::after{
+    content:"";
+    flex:1 1 auto;
+    border-bottom:1px dotted rgba(26,26,26,.5);
+    transform:translateY(-3px);
+  }
+  .manual-specs dd{
+    flex:0 0 auto;
+    margin:0;
+    font-weight:700;
+    order:3;
+  }
+
+  .manual-foot{padding:0 38px;}
+  .manual-foot-row{
+    display:flex;
+    justify-content:space-between;
+    gap:12px;
+    flex-wrap:wrap;
+    font-family:'JetBrains Mono',monospace;
+    font-size:9px;
+    letter-spacing:.16em;
+    text-transform:uppercase;
+    color:var(--ink-dim);
+    padding-top:12px;
+  }
+  .manual-foot-mid{text-align:center;}
+
+  @media (max-width:560px){
+    .manual-overlay{padding:12px 8px;}
+    .manual-head{padding:28px 20px 16px;}
+    .manual-body{padding:4px 20px 0;}
+    .manual-foot{padding:0 20px;}
+    .manual-table td.mt-key{width:auto;white-space:normal;display:block;padding-bottom:2px;border:none;}
+    .manual-table td{display:block;padding-right:0;}
+    .manual-table tr{display:block;border-bottom:1px dotted rgba(26,26,26,.35);padding:6px 0;}
+    .manual-table td{border-bottom:none;}
+    .manual-foot-row{justify-content:center;text-align:center;}
+  }
+
   .status-line{
     text-align:center;
     font-size:10px;
@@ -826,9 +1127,15 @@
       <div class="brand">Summer Reading</div>
       <div class="brand-sub">OP1 4-Track Demos</div>
     </div>
-    <div class="counter-box">
-      <div class="counter-label">Tape Counter</div>
-      <div class="counter" id="counter">0000</div>
+    <div class="brand-right">
+      <button class="manual-open-btn" id="manualOpenBtn" title="Open the owner's manual">
+        <span class="manual-open-icon">📖</span>
+        <span>Manual</span>
+      </button>
+      <div class="counter-box">
+        <div class="counter-label">Tape Counter</div>
+        <div class="counter" id="counter">0000</div>
+      </div>
     </div>
   </div>
 
@@ -964,6 +1271,269 @@
   </div>
 
   <div class="status-line" id="status">Load a WAV file into each track, or drag one straight onto a track.</div>
+</div>
+
+<div class="manual-overlay" id="manualOverlay">
+  <div class="manual-sheet" role="dialog" aria-modal="true" aria-labelledby="manualTitle">
+    <button class="manual-close" id="manualCloseBtn" title="Close (Esc)">✕</button>
+
+    <div class="manual-head">
+      <div class="manual-head-marks"><span></span><span></span><span></span></div>
+      <div class="manual-brand">Summer Reading</div>
+      <h1 class="manual-title" id="manualTitle">Owner's Manual</h1>
+      <div class="manual-model">Model SR&#8209;4 &nbsp;·&nbsp; Four Track Cassette Recorder</div>
+      <div class="manual-rule-double"></div>
+      <p class="manual-preamble">
+        Thank you for selecting the <b>SUMMER READING SR-4</b>. To obtain the finest performance from
+        this instrument, please read these instructions <i>completely</i> before operation, and retain
+        them for future reference.
+      </p>
+    </div>
+
+    <div class="manual-body">
+
+      <section class="manual-section">
+        <div class="manual-sec-head"><span class="manual-sec-num">1</span><h2>Before You Begin</h2></div>
+        <p>
+          The SR-4 operates entirely within your web browser. Nothing is uploaded, transmitted, or
+          stored on any server — your audio never leaves the machine in front of you. Consequently,
+          no account, installation, or network connection is required for normal operation.
+        </p>
+        <div class="manual-note">
+          <div class="manual-note-tag">Note</div>
+          <p>
+            The unit is supplied without audio. You must load your own <code>.wav</code> files into
+            the four tracks before the transport controls will operate.
+          </p>
+        </div>
+      </section>
+
+      <section class="manual-section">
+        <div class="manual-sec-head"><span class="manual-sec-num">2</span><h2>Loading Tape</h2></div>
+        <p>Audio may be loaded into the transport by any of three methods:</p>
+        <ol class="manual-list">
+          <li><b>LOAD WAV FILES</b> — select one or several files at once.</li>
+          <li><b>Drag and drop</b> onto the deck to fill the next available track.</li>
+          <li><b>Drag onto a single track</b> to replace only that track's contents.</li>
+        </ol>
+        <p>
+          Files named in the pattern <code>track_1.wav</code> through <code>track_4.wav</code> are
+          routed automatically to their corresponding track. Files bearing no such number are placed
+          into the next empty track in sequence.
+        </p>
+        <div class="manual-caution">
+          <div class="manual-caution-tag">Caution</div>
+          <p>
+            This model accepts <b>uncompressed .wav files only</b>. Compressed formats such as MP3
+            or M4A will be refused on loading.
+          </p>
+        </div>
+      </section>
+
+      <section class="manual-section">
+        <div class="manual-sec-head"><span class="manual-sec-num">3</span><h2>Track Controls</h2></div>
+        <p>Each of the four tracks is provided with an identical control complement:</p>
+        <table class="manual-table">
+          <tbody>
+            <tr><td class="mt-key">Title field</td><td>Names the track. Appears on the Reels export. Maximum 20 characters.</td></tr>
+            <tr><td class="mt-key">VOL</td><td>Track level, 0 to 1.30. Levels above 1.00 provide gain for quiet material.</td></tr>
+            <tr><td class="mt-key">PAN</td><td>Stereo placement, full left to full right.</td></tr>
+            <tr><td class="mt-key">M</td><td>Mute. Silences this track without disturbing its level setting.</td></tr>
+            <tr><td class="mt-key">S</td><td>Solo. When any track is soloed, all non&#8209;soloed tracks are silenced.</td></tr>
+            <tr><td class="mt-key">⬇</td><td>Downloads this track alone as a .wav file.</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section class="manual-section">
+        <div class="manual-sec-head"><span class="manual-sec-num">4</span><h2>The Waveform Displays</h2></div>
+        <p>
+          Every track carries its own waveform display, as does the master mix. These are not merely
+          indicators — they are the principal editing surface of the instrument.
+        </p>
+        <table class="manual-table">
+          <tbody>
+            <tr><td class="mt-key">Click or drag</td><td>Moves playback to that point, during playback or at rest.</td></tr>
+            <tr><td class="mt-key">Ctrl / ⌘ + scroll</td><td>Zooms in for finer editing. Pinch gestures are also recognised.</td></tr>
+            <tr><td class="mt-key">Scroll</td><td>Once zoomed, pans along the recording.</td></tr>
+            <tr><td class="mt-key">FIT</td><td>Returns the display to the full length of the track.</td></tr>
+          </tbody>
+        </table>
+        <p class="manual-margin-note">
+          The strip beneath the master display is a minimap — drag it to travel quickly through a long mix.
+        </p>
+      </section>
+
+      <section class="manual-section">
+        <div class="manual-sec-head"><span class="manual-sec-num">5</span><h2>Master Mix — Trim &amp; Fades</h2></div>
+        <p>
+          The trim selection determines what is heard on playback and what is written on mixdown.
+          Everything outside it is discarded.
+        </p>
+        <table class="manual-table">
+          <tbody>
+            <tr><td class="mt-key">Amber circles</td><td>Drag to set the start and end of the selection.</td></tr>
+            <tr><td class="mt-key">White squares</td><td>At mid&#8209;height. Drag inward from either end to set a fade&#8209;in or fade&#8209;out across the whole mix.</td></tr>
+            <tr><td class="mt-key">RESET TRIM</td><td>Restores the selection to the full length of the longest track.</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section class="manual-section">
+        <div class="manual-sec-head"><span class="manual-sec-num">6</span><h2>Tempo &amp; Bar Grid</h2></div>
+        <p>
+          Setting a tempo lays a bar grid across the master display and every track, for editing
+          reference only. It does not alter the audio in any way.
+        </p>
+        <table class="manual-table">
+          <tbody>
+            <tr><td class="mt-key">BPM</td><td>Enter a tempo directly. Accepted range 20 to 300.</td></tr>
+            <tr><td class="mt-key">TAP</td><td>Tap in time with the music to derive the tempo. Averaged over your last eight taps; pausing more than about two seconds begins a fresh count.</td></tr>
+            <tr><td class="mt-key">/ BAR</td><td>Beats per bar, for material not in four.</td></tr>
+            <tr><td class="mt-key">GRID</td><td>Shows or hides the grid without discarding the tempo.</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section class="manual-section">
+        <div class="manual-sec-head"><span class="manual-sec-num">7</span><h2>Master EQ &amp; Output</h2></div>
+        <p>
+          Three shelving and peaking bands — <b>LOW</b>, <b>MID</b>, <b>HIGH</b> — act upon the
+          combined output. <b>FLAT</b> returns all three to 0 dB. The equalisation is applied both to
+          what you hear and to the finished mixdown.
+        </p>
+        <p>
+          The <b>OUTPUT</b> display is a live spectrum analyser, presented in the manner of a
+          graphic&#8209;equaliser display of the period. It is an indicator only and has no effect upon the signal.
+        </p>
+      </section>
+
+      <section class="manual-section">
+        <div class="manual-sec-head"><span class="manual-sec-num">8</span><h2>Transport</h2></div>
+        <table class="manual-table">
+          <tbody>
+            <tr><td class="mt-key">◀◀ REW</td><td>Returns to the start of the trim selection.</td></tr>
+            <tr><td class="mt-key">▶ PLAY</td><td>Plays the trim selection.</td></tr>
+            <tr><td class="mt-key">■ STOP</td><td>Halts playback.</td></tr>
+            <tr><td class="mt-key">⟳ LOOP</td><td>Repeats the trim selection indefinitely.</td></tr>
+            <tr><td class="mt-key">MASTER</td><td>Overall output level, below the transport.</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section class="manual-section">
+        <div class="manual-sec-head"><span class="manual-sec-num">9</span><h2>Mixdown</h2></div>
+        <p>
+          <b>MIXDOWN → WAV</b> renders the trim selection to a single stereo <code>.wav</code> file at
+          44.1 kHz, 16&#8209;bit. Track levels, panning, mutes and solos, the master level, the master
+          EQ, and any fades are all applied. Rendering is performed offline and is therefore faster
+          than real time.
+        </p>
+        <div class="manual-note">
+          <div class="manual-note-tag">Note</div>
+          <p>
+            Should the NOTES panel contain any text, a matching <code>.txt</code> file is downloaded
+            alongside the mix — useful for lyrics, credits, or session notes.
+          </p>
+        </div>
+      </section>
+
+      <section class="manual-section">
+        <div class="manual-sec-head"><span class="manual-sec-num">10</span><h2>Session Storage</h2></div>
+        <p>The SR-4 preserves your work by two independent means.</p>
+        <h3 class="manual-sub">Automatic</h3>
+        <p>
+          Titles, notes, reading list, every fader, pan, mute, solo, the master level, EQ, tempo,
+          time signature, grid and loop state are retained in this browser and restored when you
+          return. <b>The audio itself is not retained</b> — recordings are far too large — so a
+          restored session returns as a fully configured deck awaiting its tapes.
+        </p>
+        <h3 class="manual-sub">Session Files</h3>
+        <p>
+          <b>SAVE SESSION</b> writes everything — <i>audio included</i>, together with trim and fade
+          positions — to a single <code>.4trk</code> file. This file may be archived, copied to
+          another machine, or given to a collaborator. <b>OPEN SESSION</b> restores it entire.
+        </p>
+        <div class="manual-caution">
+          <div class="manual-caution-tag">Caution</div>
+          <p>
+            Session files carry uncompressed audio and are correspondingly large. A full four&#8209;track
+            arrangement of several minutes may exceed 100 MB. Allow time for saving and opening.
+          </p>
+        </div>
+      </section>
+
+      <section class="manual-section">
+        <div class="manual-sec-head"><span class="manual-sec-num">11</span><h2>Reels Export</h2></div>
+        <p>
+          The SR-4 will render a vertical video of your mix, suitable for social distribution.
+          A still photograph may be placed behind it, or a video, which plays muted beneath the mix.
+        </p>
+        <table class="manual-table">
+          <tbody>
+            <tr><td class="mt-key">Format</td><td>720 × 1280, vertical (9:16).</td></tr>
+            <tr><td class="mt-key">Duration</td><td>Your trim selection, to a maximum of 30 seconds.</td></tr>
+            <tr><td class="mt-key">Footage over 30s</td><td>Cuts to a random five&#8209;second passage from elsewhere in the footage every five seconds, rather than merely playing the opening.</td></tr>
+            <tr><td class="mt-key">Reading list</td><td>Up to four titles, one per line, lettered onto the artwork.</td></tr>
+            <tr><td class="mt-key">No media</td><td>Generated artwork is substituted.</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section class="manual-section">
+        <div class="manual-sec-head"><span class="manual-sec-num">12</span><h2>Keyboard Operation</h2></div>
+        <table class="manual-table manual-keys">
+          <tbody>
+            <tr><td class="mt-key"><kbd>1</kbd> <kbd>2</kbd> <kbd>3</kbd> <kbd>4</kbd></td><td>Selects a track for keyboard control.</td></tr>
+            <tr><td class="mt-key"><kbd>↑</kbd> <kbd>↓</kbd></td><td>Raises or lowers the selected track's level.</td></tr>
+            <tr><td class="mt-key"><kbd>←</kbd> <kbd>→</kbd></td><td>Pans the selected track.</td></tr>
+            <tr><td class="mt-key"><kbd>Esc</kbd></td><td>Deselects.</td></tr>
+          </tbody>
+        </table>
+        <p class="manual-margin-note">Keyboard control is suspended while typing in any text field.</p>
+      </section>
+
+      <section class="manual-section">
+        <div class="manual-sec-head"><span class="manual-sec-num">13</span><h2>In Case of Difficulty</h2></div>
+        <table class="manual-table">
+          <tbody>
+            <tr><td class="mt-key">No sound on PLAY</td><td>Confirm audio is loaded, the track is not muted, and that no <i>other</i> track is soloed.</td></tr>
+            <tr><td class="mt-key">A file will not load</td><td>The unit accepts uncompressed .wav only. Convert compressed material first.</td></tr>
+            <tr><td class="mt-key">Mixdown refused</td><td>The trim selection is empty. Widen it and repeat.</td></tr>
+            <tr><td class="mt-key">Settings not retained</td><td>Private browsing, or a browser set to block site data, prevents storage. Use a session file instead.</td></tr>
+            <tr><td class="mt-key">Reel export refused</td><td>Your browser does not provide the necessary video recorder. A current Chrome, Edge or Firefox is advised.</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section class="manual-section">
+        <div class="manual-sec-head"><span class="manual-sec-num">14</span><h2>Specifications</h2></div>
+        <dl class="manual-specs">
+          <div><dt>Tracks</dt><dd>4</dd></div>
+          <div><dt>Input format</dt><dd>Uncompressed .wav</dd></div>
+          <div><dt>Mixdown</dt><dd>44.1 kHz · 16-bit · stereo .wav</dd></div>
+          <div><dt>Track level range</dt><dd>0 – 1.30</dd></div>
+          <div><dt>Equalisation</dt><dd>3 band, master bus</dd></div>
+          <div><dt>Tempo range</dt><dd>20 – 300 BPM</dd></div>
+          <div><dt>Video export</dt><dd>720 × 1280 · max 30 s</dd></div>
+          <div><dt>Session file</dt><dd>.4trk · audio embedded</dd></div>
+          <div><dt>Signal path</dt><dd>Entirely local to this device</dd></div>
+          <div><dt>Power requirement</dt><dd>One (1) web browser</dd></div>
+        </dl>
+      </section>
+
+    </div>
+
+    <div class="manual-foot">
+      <div class="manual-rule-double"></div>
+      <div class="manual-foot-row">
+        <span>Summer Reading &nbsp;·&nbsp; SR-4</span>
+        <span class="manual-foot-mid">Specifications subject to change without notice</span>
+        <span>Printed on the Web</span>
+      </div>
+    </div>
+
+  </div>
 </div>
 
 <script>
@@ -4199,6 +4769,39 @@
       setStatus(`Opened "${file.name}" — settings restored. This session had no audio saved in it.`);
     }
   }
+
+  // ---- Owner's manual ----
+  const manualOverlay = document.getElementById('manualOverlay');
+  const manualOpenBtn = document.getElementById('manualOpenBtn');
+  const manualCloseBtn = document.getElementById('manualCloseBtn');
+  let manualLastFocus = null;
+
+  function openManual(){
+    manualLastFocus = document.activeElement;
+    manualOverlay.classList.add('open');
+    manualOverlay.scrollTop = 0;
+    document.body.style.overflow = 'hidden';
+    manualCloseBtn.focus();
+  }
+
+  function closeManual(){
+    manualOverlay.classList.remove('open');
+    document.body.style.overflow = '';
+    if(manualLastFocus && manualLastFocus.focus) manualLastFocus.focus();
+  }
+
+  manualOpenBtn.addEventListener('click', openManual);
+  manualCloseBtn.addEventListener('click', closeManual);
+  // Clicking the darkened surround closes; clicking the page itself does not.
+  manualOverlay.addEventListener('click', (e) => {
+    if(e.target === manualOverlay) closeManual();
+  });
+  document.addEventListener('keydown', (e) => {
+    if(e.key === 'Escape' && manualOverlay.classList.contains('open')){
+      e.stopPropagation();
+      closeManual();
+    }
+  }, true);
 
   sessionSaveBtn.addEventListener('click', saveSessionFile);
   sessionOpenInput.addEventListener('change', async (e) => {
