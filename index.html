@@ -252,6 +252,15 @@
     letter-spacing:0.5px;
   }
   .grid-toggle-btn.on{background:var(--t2);color:#fff;border-color:var(--t2);}
+  .count-in-btn{
+    letter-spacing:.08em;
+    white-space:nowrap;
+    padding-left:8px;
+    padding-right:8px;
+  }
+  .count-in-btn.on{background:var(--t1);color:#fff;border-color:var(--t1);}
+  /* Flashes on each click of the count-in. */
+  .count-in-btn.beat{background:var(--amber-hi);color:var(--ink);border-color:var(--amber-hi);}
   .tap-tempo-btn{
     width:auto;
     padding:0 8px;
@@ -1213,6 +1222,7 @@
         <option value="8">8</option>
       </select>
       <button class="mini-btn grid-toggle-btn on" id="gridToggleBtn" title="Show/hide bar grid">GRID</button>
+      <button class="mini-btn count-in-btn" id="countInBtn" title="Play four bars of clicks before recording starts (needs a BPM)">COUNT-IN 4</button>
       <span class="bar-count-readout" id="barCountReadout"></span>
     </div>
     <div class="trim-zoom-row">
@@ -1382,6 +1392,23 @@
             Arming a second track releases the first.
           </p>
         </div>
+        <h3 class="manual-sub">Count-In</h3>
+        <p>
+          Engaging <b>COUNT-IN 4</b> in the tempo row sounds four bars of clicks before each take,
+          so that you may come in on the beat. The first beat of every bar is accented. The count
+          follows your tempo and time signature — four bars of three at 120 will count twelve — and
+          the bar and beat are displayed as it proceeds.
+        </p>
+        <p>
+          Recording begins only when the count has finished, so no part of it appears in the take.
+          <b>STOP</b> during the count abandons it without recording.
+        </p>
+        <div class="manual-note">
+          <div class="manual-note-tag">Note</div>
+          <p>
+            A tempo must be set for the count-in to operate. Enter a BPM or use <b>TAP</b>.
+          </p>
+        </div>
         <p>
           Recording begins at the playback position, so a passage may be dropped into the middle
           of an arrangement rather than always begun from the head of the tape. The unit measures
@@ -1461,6 +1488,7 @@
             <tr><td class="mt-key">TAP</td><td>Tap in time with the music to derive the tempo. Averaged over your last eight taps; pausing more than about two seconds begins a fresh count.</td></tr>
             <tr><td class="mt-key">/ BAR</td><td>Beats per bar, for material not in four.</td></tr>
             <tr><td class="mt-key">GRID</td><td>Shows or hides the grid without discarding the tempo.</td></tr>
+            <tr><td class="mt-key">COUNT-IN 4</td><td>Sounds four bars of clicks before each take. See section 3.</td></tr>
           </tbody>
         </table>
       </section>
@@ -1571,6 +1599,7 @@
             <tr><td class="mt-key">No sound on PLAY</td><td>Confirm audio is loaded, the track is not muted, and that no <i>other</i> track is soloed.</td></tr>
             <tr><td class="mt-key">A file will not load</td><td>The unit accepts uncompressed .wav only. Convert compressed material first.</td></tr>
             <tr><td class="mt-key">RECORD refused</td><td>No track is armed. Press the ● button on the track you wish to record.</td></tr>
+            <tr><td class="mt-key">Count-in will not run</td><td>No tempo is set. Enter a BPM or use TAP.</td></tr>
             <tr><td class="mt-key">Microphone denied</td><td>Permission was refused. Allow microphone access for this page in your browser's site settings, then arm the track again.</td></tr>
             <tr><td class="mt-key">Take sounds hollow, or doubled</td><td>The loudspeakers are being recorded along with the performance. Use headphones.</td></tr>
             <tr><td class="mt-key">Mixdown refused</td><td>The trim selection is empty. Widen it and repeat.</td></tr>
@@ -1587,6 +1616,7 @@
           <div><dt>Input format</dt><dd>Uncompressed .wav</dd></div>
           <div><dt>Recording</dt><dd>Live input, one track at a time</dd></div>
           <div><dt>Capture</dt><dd>Uncompressed, at the device rate</dd></div>
+          <div><dt>Count-in</dt><dd>4 bars, follows tempo and metre</dd></div>
           <div><dt>Mixdown</dt><dd>44.1 kHz · 16-bit · stereo .wav</dd></div>
           <div><dt>Track level range</dt><dd>0 – 1.30</dd></div>
           <div><dt>Equalisation</dt><dd>3 band, master bus</dd></div>
@@ -1628,6 +1658,7 @@
   const rewBtn = document.getElementById('rewBtn');
   const loopBtn = document.getElementById('loopBtn');
   const recordBtn = document.getElementById('recordBtn');
+  const countInBtn = document.getElementById('countInBtn');
   const bounceBtn = document.getElementById('bounceBtn');
   const clearBtn = document.getElementById('clearBtn');
   const masterFader = document.getElementById('masterFader');
@@ -1814,6 +1845,11 @@
   const tracks = [];
   let isPlaying = false;
   let isLooping = false;
+  // Declared here rather than beside the recording code: restoreSession()
+  // reads these during bootstrap, which runs before that block is reached.
+  let countInEnabled = false;
+  let countInAbort = false;
+  let countingIn = false;
   let playStartCtxTime = 0;
   let elapsedBeforeStop = 0;
   let rafId = null;
@@ -3918,6 +3954,7 @@
         beatsPerBar,
         showBarGrid,
         looping: isLooping,
+        countIn: countInEnabled,
         tracks: tracks.map(t => ({
           title: t.title, volume: t.volume, pan: t.pan,
           muted: t.muted, solo: t.solo
@@ -3982,6 +4019,10 @@
       if(typeof data.looping === 'boolean'){
         isLooping = data.looping;
         loopBtn.classList.toggle('loop-active', isLooping);
+      }
+      if(typeof data.countIn === 'boolean'){
+        countInEnabled = data.countIn;
+        countInBtn.classList.toggle('on', countInEnabled);
       }
 
       if(Array.isArray(data.tracks)){
@@ -4279,6 +4320,10 @@
     renderAllWaves(elapsedBeforeStop);
     renderMasterWave(elapsedBeforeStop);
     drawVisualizer();
+    if(countingIn){
+      countInAbort = true;
+      return;
+    }
     if(isRecording){
       finishRecording();
       return;
@@ -4410,6 +4455,77 @@
     }
   }
 
+  // ---- Count-in ----
+  // Four bars of clicks before a take, so you can come in on the beat. The
+  // clicks are scheduled on the audio clock rather than by timer, which is
+  // the only way they land evenly.
+  const COUNT_IN_BARS = 4;
+
+  function playClick(atTime, accent){
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.frequency.value = accent ? 1600 : 900;
+    gain.gain.setValueAtTime(0.0001, atTime);
+    gain.gain.exponentialRampToValueAtTime(accent ? 0.45 : 0.25, atTime + 0.002);
+    gain.gain.exponentialRampToValueAtTime(0.0001, atTime + 0.07);
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    osc.start(atTime);
+    osc.stop(atTime + 0.09);
+  }
+
+  // Resolves when the count-in has finished, or false if it was cancelled.
+  function runCountIn(){
+    return new Promise((resolve) => {
+      const timing = barBeatSeconds();
+      if(!timing){ resolve(false); return; }
+      const beat = timing.beatSec;
+      const beats = COUNT_IN_BARS * beatsPerBar;
+      const start = audioCtx.currentTime + 0.12;
+
+      countInAbort = false;
+      for(let i=0;i<beats;i++){
+        playClick(start + i * beat, i % beatsPerBar === 0);
+      }
+
+      // Visual countdown, driven off the same clock the clicks are on.
+      let i = 0;
+      const tick = () => {
+        if(countInAbort){ resolve(false); return; }
+        const elapsed = audioCtx.currentTime - start;
+        const current = Math.floor(elapsed / beat);
+        if(current >= beats){
+          countInBtn.classList.remove('beat');
+          resolve(true);
+          return;
+        }
+        if(current !== i && current >= 0){
+          i = current;
+          const bar = Math.floor(i / beatsPerBar) + 1;
+          const inBar = (i % beatsPerBar) + 1;
+          setStatus(`Count-in — bar ${bar} of ${COUNT_IN_BARS}, beat ${inBar}…`);
+          countInBtn.classList.add('beat');
+          setTimeout(() => countInBtn.classList.remove('beat'), 70);
+        }
+        requestAnimationFrame(tick);
+      };
+      requestAnimationFrame(tick);
+    });
+  }
+
+  countInBtn.addEventListener('click', () => {
+    countInEnabled = !countInEnabled;
+    countInBtn.classList.toggle('on', countInEnabled);
+    if(countInEnabled && !songBPM){
+      setStatus('Count-in is on, but no tempo is set — enter a BPM or use TAP so the clicks know how fast to go.', true);
+    }else{
+      setStatus(countInEnabled
+        ? `Count-in on — ${COUNT_IN_BARS} bars of clicks before each take.`
+        : 'Count-in off.');
+    }
+    saveSession();
+  });
+
   async function startRecording(){
     const target = armedTrack();
     if(!target){
@@ -4443,6 +4559,26 @@
     if(isLooping){
       isLooping = false;
       loopBtn.classList.remove('loop-active');
+    }
+
+    // Four bars of clicks first, if asked for. Capture only begins once they
+    // finish, so the take doesn't open with the count.
+    if(countInEnabled){
+      if(!songBPM){
+        setStatus('Set a BPM (or use TAP) before recording with a count-in.', true);
+        return;
+      }
+      countingIn = true;
+      recordBtn.classList.add('recording');
+      recordBtn.textContent = '● COUNT-IN';
+      const completed = await runCountIn();
+      countingIn = false;
+      if(!completed){
+        recordBtn.classList.remove('recording');
+        recordBtn.textContent = '● RECORD';
+        setStatus('Count-in cancelled.');
+        return;
+      }
     }
 
     recordChunks = [];
@@ -4547,7 +4683,9 @@
   }
 
   recordBtn.addEventListener('click', () => {
-    if(isRecording){
+    if(countingIn){
+      countInAbort = true;
+    }else if(isRecording){
       stop();
     }else{
       startRecording();
@@ -4934,6 +5072,7 @@
       beatsPerBar,
       showBarGrid,
       looping: isLooping,
+      countIn: countInEnabled,
       trim: {
         start: trimStart, end: trimEnd, isDefault: trimIsDefault,
         fadeIn: mixFadeIn, fadeOut: mixFadeOut
@@ -5057,6 +5196,10 @@
       if(typeof header.looping === 'boolean'){
         isLooping = header.looping;
         loopBtn.classList.toggle('loop-active', isLooping);
+      }
+      if(typeof header.countIn === 'boolean'){
+        countInEnabled = header.countIn;
+        countInBtn.classList.toggle('on', countInEnabled);
       }
 
       if(Array.isArray(header.tracks)){
