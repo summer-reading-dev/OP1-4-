@@ -801,6 +801,37 @@
   .master-fader{display:flex;flex-direction:column;align-items:center;gap:4px;margin-left:8px;}
   .master-fader label{font-size:8px;color:var(--ink-dim);letter-spacing:1px;}
 
+  /* ---- Recording: arm buttons and the record transport ---- */
+  .rec-arm{color:var(--ink-dim);}
+  .rec-arm:hover{background:var(--t1);color:#fff;border-color:var(--t1);}
+  .rec-arm.armed{
+    background:var(--t1);
+    color:#fff;
+    border-color:var(--t1);
+    animation:armPulse 1.5s ease-in-out infinite;
+  }
+  /* Solid while actually recording — a blinking light during a take is
+     the kind of thing you stop being able to ignore. */
+  .rec-arm.recording{
+    background:var(--t1);
+    color:#fff;
+    border-color:var(--t1);
+    animation:none;
+    box-shadow:0 0 0 3px rgba(214,64,44,.3);
+  }
+  @keyframes armPulse{
+    0%,100%{opacity:1;}
+    50%{opacity:.45;}
+  }
+  .tbtn.record{border-color:var(--t1);color:var(--t1);}
+  .tbtn.record:hover{background:var(--t1);color:#fff;}
+  .tbtn.record.recording{
+    background:var(--t1);
+    color:#fff;
+    animation:armPulse 1.2s ease-in-out infinite;
+  }
+  .track.armed{box-shadow:inset 0 0 0 2px var(--t1);}
+
   /* ===================================================================
      Owner's manual — set as a period instruction booklet: heavy rules,
      letterspaced caps, numbered sections, dot-leader specifications.
@@ -1262,6 +1293,7 @@
     <button class="tbtn play" id="playBtn">▶ PLAY</button>
     <button class="tbtn stop" id="stopBtn">■ STOP</button>
     <button class="tbtn" id="loopBtn" title="Loop the trimmed selection">🔁 LOOP</button>
+    <button class="tbtn record" id="recordBtn" title="Record the armed track while the others play back">● RECORD</button>
     <button class="tbtn bounce" id="bounceBtn">⏺ MIXDOWN → WAV</button>
     <button class="tbtn clear" id="clearBtn">✕ CLEAR ALL</button>
     <div class="master-fader">
@@ -1302,8 +1334,8 @@
         <div class="manual-note">
           <div class="manual-note-tag">Note</div>
           <p>
-            The unit is supplied without audio. You must load your own <code>.wav</code> files into
-            the four tracks before the transport controls will operate.
+            The unit is supplied without audio. Load your own <code>.wav</code> files into the four
+            tracks, or record directly into them from a microphone — see section 3.
           </p>
         </div>
       </section>
@@ -1331,13 +1363,51 @@
       </section>
 
       <section class="manual-section">
-        <div class="manual-sec-head"><span class="manual-sec-num">3</span><h2>Track Controls</h2></div>
+        <div class="manual-sec-head"><span class="manual-sec-num">3</span><h2>Recording</h2></div>
+        <p>
+          Any track may be recorded directly from a microphone or instrument input.
+          Press the <b>●</b> button on a track to arm it; the track is outlined in red and
+          its meter shows the incoming signal, allowing levels to be set before a take.
+        </p>
+        <p>
+          Press <b>● RECORD</b> to begin. <b>The remaining tracks play back as you record</b>,
+          so parts may be overdubbed one upon another in the usual manner. Press <b>STOP</b>,
+          or allow playback to reach the end of the selection, to finish. The take is placed on
+          the armed track and behaves thereafter exactly as a loaded file.
+        </p>
+        <div class="manual-note">
+          <div class="manual-note-tag">Note</div>
+          <p>
+            Only one track may be armed at a time, the instrument having a single input.
+            Arming a second track releases the first.
+          </p>
+        </div>
+        <p>
+          Recording begins at the playback position, so a passage may be dropped into the middle
+          of an arrangement rather than always begun from the head of the tape. The unit measures
+          the output delay of your audio hardware and advances the take accordingly, so that an
+          overdub sits in time with what you were listening to.
+        </p>
+        <div class="manual-caution">
+          <div class="manual-caution-tag">Caution</div>
+          <p>
+            Recording onto a track that already carries audio will replace it. You will be asked to
+            confirm. The input is metered but never fed to the loudspeakers, as this would return
+            to the microphone as feedback — <b>use headphones when overdubbing</b>, or the
+            microphone will capture the playback along with your performance.
+          </p>
+        </div>
+      </section>
+
+      <section class="manual-section">
+        <div class="manual-sec-head"><span class="manual-sec-num">4</span><h2>Track Controls</h2></div>
         <p>Each of the four tracks is provided with an identical control complement:</p>
         <table class="manual-table">
           <tbody>
             <tr><td class="mt-key">Title field</td><td>Names the track. Appears on the Reels export. Maximum 20 characters.</td></tr>
             <tr><td class="mt-key">VOL</td><td>Track level, 0 to 1.30. Levels above 1.00 provide gain for quiet material.</td></tr>
             <tr><td class="mt-key">PAN</td><td>Stereo placement, full left to full right.</td></tr>
+            <tr><td class="mt-key">●</td><td>Arms the track for recording. See section 3.</td></tr>
             <tr><td class="mt-key">M</td><td>Mute. Silences this track without disturbing its level setting.</td></tr>
             <tr><td class="mt-key">S</td><td>Solo. When any track is soloed, all non&#8209;soloed tracks are silenced.</td></tr>
             <tr><td class="mt-key">⬇</td><td>Downloads this track alone as a .wav file.</td></tr>
@@ -1346,7 +1416,7 @@
       </section>
 
       <section class="manual-section">
-        <div class="manual-sec-head"><span class="manual-sec-num">4</span><h2>The Waveform Displays</h2></div>
+        <div class="manual-sec-head"><span class="manual-sec-num">5</span><h2>The Waveform Displays</h2></div>
         <p>
           Every track carries its own waveform display, as does the master mix. These are not merely
           indicators — they are the principal editing surface of the instrument.
@@ -1365,7 +1435,7 @@
       </section>
 
       <section class="manual-section">
-        <div class="manual-sec-head"><span class="manual-sec-num">5</span><h2>Master Mix — Trim &amp; Fades</h2></div>
+        <div class="manual-sec-head"><span class="manual-sec-num">6</span><h2>Master Mix — Trim &amp; Fades</h2></div>
         <p>
           The trim selection determines what is heard on playback and what is written on mixdown.
           Everything outside it is discarded.
@@ -1380,7 +1450,7 @@
       </section>
 
       <section class="manual-section">
-        <div class="manual-sec-head"><span class="manual-sec-num">6</span><h2>Tempo &amp; Bar Grid</h2></div>
+        <div class="manual-sec-head"><span class="manual-sec-num">7</span><h2>Tempo &amp; Bar Grid</h2></div>
         <p>
           Setting a tempo lays a bar grid across the master display and every track, for editing
           reference only. It does not alter the audio in any way.
@@ -1396,7 +1466,7 @@
       </section>
 
       <section class="manual-section">
-        <div class="manual-sec-head"><span class="manual-sec-num">7</span><h2>Master EQ &amp; Output</h2></div>
+        <div class="manual-sec-head"><span class="manual-sec-num">8</span><h2>Master EQ &amp; Output</h2></div>
         <p>
           Three shelving and peaking bands — <b>LOW</b>, <b>MID</b>, <b>HIGH</b> — act upon the
           combined output. <b>FLAT</b> returns all three to 0 dB. The equalisation is applied both to
@@ -1409,20 +1479,21 @@
       </section>
 
       <section class="manual-section">
-        <div class="manual-sec-head"><span class="manual-sec-num">8</span><h2>Transport</h2></div>
+        <div class="manual-sec-head"><span class="manual-sec-num">9</span><h2>Transport</h2></div>
         <table class="manual-table">
           <tbody>
             <tr><td class="mt-key">◀◀ REW</td><td>Returns to the start of the trim selection.</td></tr>
             <tr><td class="mt-key">▶ PLAY</td><td>Plays the trim selection.</td></tr>
             <tr><td class="mt-key">■ STOP</td><td>Halts playback.</td></tr>
             <tr><td class="mt-key">⟳ LOOP</td><td>Repeats the trim selection indefinitely.</td></tr>
+            <tr><td class="mt-key">● RECORD</td><td>Records the armed track while the others play back. Press again, or STOP, to finish.</td></tr>
             <tr><td class="mt-key">MASTER</td><td>Overall output level, below the transport.</td></tr>
           </tbody>
         </table>
       </section>
 
       <section class="manual-section">
-        <div class="manual-sec-head"><span class="manual-sec-num">9</span><h2>Mixdown</h2></div>
+        <div class="manual-sec-head"><span class="manual-sec-num">10</span><h2>Mixdown</h2></div>
         <p>
           <b>MIXDOWN → WAV</b> renders the trim selection to a single stereo <code>.wav</code> file at
           44.1 kHz, 16&#8209;bit. Track levels, panning, mutes and solos, the master level, the master
@@ -1439,7 +1510,7 @@
       </section>
 
       <section class="manual-section">
-        <div class="manual-sec-head"><span class="manual-sec-num">10</span><h2>Session Storage</h2></div>
+        <div class="manual-sec-head"><span class="manual-sec-num">11</span><h2>Session Storage</h2></div>
         <p>The SR-4 preserves your work by two independent means.</p>
         <h3 class="manual-sub">Automatic</h3>
         <p>
@@ -1464,7 +1535,7 @@
       </section>
 
       <section class="manual-section">
-        <div class="manual-sec-head"><span class="manual-sec-num">11</span><h2>Reels Export</h2></div>
+        <div class="manual-sec-head"><span class="manual-sec-num">12</span><h2>Reels Export</h2></div>
         <p>
           The SR-4 will render a vertical video of your mix, suitable for social distribution.
           A still photograph may be placed behind it, or a video, which plays muted beneath the mix.
@@ -1481,7 +1552,7 @@
       </section>
 
       <section class="manual-section">
-        <div class="manual-sec-head"><span class="manual-sec-num">12</span><h2>Keyboard Operation</h2></div>
+        <div class="manual-sec-head"><span class="manual-sec-num">13</span><h2>Keyboard Operation</h2></div>
         <table class="manual-table manual-keys">
           <tbody>
             <tr><td class="mt-key"><kbd>1</kbd> <kbd>2</kbd> <kbd>3</kbd> <kbd>4</kbd></td><td>Selects a track for keyboard control.</td></tr>
@@ -1494,11 +1565,14 @@
       </section>
 
       <section class="manual-section">
-        <div class="manual-sec-head"><span class="manual-sec-num">13</span><h2>In Case of Difficulty</h2></div>
+        <div class="manual-sec-head"><span class="manual-sec-num">14</span><h2>In Case of Difficulty</h2></div>
         <table class="manual-table">
           <tbody>
             <tr><td class="mt-key">No sound on PLAY</td><td>Confirm audio is loaded, the track is not muted, and that no <i>other</i> track is soloed.</td></tr>
             <tr><td class="mt-key">A file will not load</td><td>The unit accepts uncompressed .wav only. Convert compressed material first.</td></tr>
+            <tr><td class="mt-key">RECORD refused</td><td>No track is armed. Press the ● button on the track you wish to record.</td></tr>
+            <tr><td class="mt-key">Microphone denied</td><td>Permission was refused. Allow microphone access for this page in your browser's site settings, then arm the track again.</td></tr>
+            <tr><td class="mt-key">Take sounds hollow, or doubled</td><td>The loudspeakers are being recorded along with the performance. Use headphones.</td></tr>
             <tr><td class="mt-key">Mixdown refused</td><td>The trim selection is empty. Widen it and repeat.</td></tr>
             <tr><td class="mt-key">Settings not retained</td><td>Private browsing, or a browser set to block site data, prevents storage. Use a session file instead.</td></tr>
             <tr><td class="mt-key">Reel export refused</td><td>Your browser does not provide the necessary video recorder. A current Chrome, Edge or Firefox is advised.</td></tr>
@@ -1507,10 +1581,12 @@
       </section>
 
       <section class="manual-section">
-        <div class="manual-sec-head"><span class="manual-sec-num">14</span><h2>Specifications</h2></div>
+        <div class="manual-sec-head"><span class="manual-sec-num">15</span><h2>Specifications</h2></div>
         <dl class="manual-specs">
           <div><dt>Tracks</dt><dd>4</dd></div>
           <div><dt>Input format</dt><dd>Uncompressed .wav</dd></div>
+          <div><dt>Recording</dt><dd>Live input, one track at a time</dd></div>
+          <div><dt>Capture</dt><dd>Uncompressed, at the device rate</dd></div>
           <div><dt>Mixdown</dt><dd>44.1 kHz · 16-bit · stereo .wav</dd></div>
           <div><dt>Track level range</dt><dd>0 – 1.30</dd></div>
           <div><dt>Equalisation</dt><dd>3 band, master bus</dd></div>
@@ -1551,6 +1627,7 @@
   const stopBtn = document.getElementById('stopBtn');
   const rewBtn = document.getElementById('rewBtn');
   const loopBtn = document.getElementById('loopBtn');
+  const recordBtn = document.getElementById('recordBtn');
   const bounceBtn = document.getElementById('bounceBtn');
   const clearBtn = document.getElementById('clearBtn');
   const masterFader = document.getElementById('masterFader');
@@ -2448,7 +2525,17 @@
     if(!t.meterEl) return;
     const segs = t.meterEl.children;
     let level = 0;
-    if(t.analyser && isPlaying){
+    if(t.armed && monitorAnalyser){
+      const data = t.timeData.length === monitorAnalyser.fftSize ? t.timeData : new Uint8Array(monitorAnalyser.fftSize);
+      t.timeData = data;
+      monitorAnalyser.getByteTimeDomainData(data);
+      let sum = 0;
+      for(let i=0;i<data.length;i++){
+        const v = (data[i]-128)/128;
+        sum += v*v;
+      }
+      level = Math.min(1, Math.sqrt(sum/data.length) * 3.2);
+    }else if(t.analyser && isPlaying){
       const data = t.timeData;
       t.analyser.getByteTimeDomainData(data);
       let sum = 0;
@@ -2493,6 +2580,7 @@
           <label>PAN</label>
           <input type="range" class="fader pan-fader" id="pan-${index}" min="-1" max="1" step="0.01" value="0">
         </div>
+        <button class="mini-btn rec-arm" id="arm-${index}" title="Arm this track to record from your microphone">●</button>
         <button class="mini-btn" id="mute-${index}">M</button>
         <button class="mini-btn" id="solo-${index}">S</button>
         <button class="mini-btn" id="dl-${index}" title="Download this track as WAV">⬇</button>
@@ -2514,6 +2602,8 @@
       seekDragging:false, seekRafPending:false, lastSeekX:0,
       title:'',
       fileBytes:null,
+      armed:false,
+      wrapEl:wrap,
       level:0
     };
     tracks.push(track);
@@ -2603,6 +2693,14 @@
       track.pan = parseFloat(e.target.value);
       if(track.pannerNode) track.pannerNode.pan.value = track.pan;
       saveSession();
+    });
+
+    document.getElementById(`arm-${index}`).addEventListener('click', () => {
+      if(isRecording){
+        setStatus('Stop the current take before changing which track is armed.', true);
+        return;
+      }
+      setArmed(index, !track.armed);
     });
 
     document.getElementById(`mute-${index}`).addEventListener('click', () => {
@@ -3784,6 +3882,12 @@
   function visLoop(){
     visPhase += 0.045;
     drawVisualizer();
+    // Armed tracks meter the live input so levels can be set before a take.
+    if(!isPlaying && monitorAnalyser){
+      for(const t of tracks){
+        if(t.armed) updateMeter(t);
+      }
+    }
     requestAnimationFrame(visLoop);
   }
 
@@ -4097,6 +4201,9 @@
     const startAt = audioCtx.currentTime + 0.06;
     for(const t of tracks){
       if(!t.buffer) continue;
+      // The armed track is being replaced — playing its old contents back
+      // underneath the take would only confuse what you're hearing.
+      if(isRecording && t.armed) continue;
       const trackDur = t.buffer.duration;
       if(elapsedBeforeStop >= trackDur) continue;
       const playDuration = Math.min(trimEnd, trackDur) - elapsedBeforeStop;
@@ -4172,6 +4279,10 @@
     renderAllWaves(elapsedBeforeStop);
     renderMasterWave(elapsedBeforeStop);
     drawVisualizer();
+    if(isRecording){
+      finishRecording();
+      return;
+    }
     setStatus('Stopped.');
   }
 
@@ -4194,6 +4305,254 @@
     setStatus(isLooping ? 'Loop on — playback will repeat the trimmed selection.' : 'Loop off.');
   });
   rewBtn.addEventListener('click', rewind);
+
+  // ---- Recording from the browser's audio input ----
+  //
+  // One input, so one armed track at a time — arming a track releases any
+  // other, the way a single-input deck behaves. Audio is captured as raw
+  // float samples through an AudioWorklet rather than through MediaRecorder,
+  // so a take arrives uncompressed and can join the existing WAV pipeline
+  // (per-track download, mixdown, and .4trk session files) unchanged.
+  const RECORDER_WORKLET = `
+    class RecProcessor extends AudioWorkletProcessor {
+      process(inputs){
+        const input = inputs[0];
+        if(input && input[0]) this.port.postMessage(input[0].slice(0));
+        return true;
+      }
+    }
+    registerProcessor('rec-processor', RecProcessor);
+  `;
+
+  let micStream = null;
+  let micSourceNode = null;
+  let recorderNode = null;
+  let recorderModuleLoaded = false;
+  let monitorAnalyser = null;
+  let isRecording = false;
+  let recordChunks = [];
+  let recordTargetIndex = null;
+  let recordStartOffset = 0;
+
+  function armedTrack(){
+    return tracks.find(t => t.armed) || null;
+  }
+
+  async function ensureMic(){
+    if(micStream) return true;
+    if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia){
+      setStatus('This browser does not provide microphone access. Recording is unavailable.', true);
+      return false;
+    }
+    try{
+      // The browser's voice-call processing wrecks music: it ducks, gates and
+      // rides the gain. Ask for the raw signal instead.
+      micStream = await navigator.mediaDevices.getUserMedia({
+        audio: {
+          echoCancellation: false,
+          noiseSuppression: false,
+          autoGainControl: false,
+          channelCount: 1
+        }
+      });
+    }catch(err){
+      const denied = err && (err.name === 'NotAllowedError' || err.name === 'SecurityError');
+      setStatus(denied
+        ? 'Microphone access was denied. Allow it in your browser’s site settings to record.'
+        : 'No microphone available to record from.', true);
+      return false;
+    }
+
+    ensureCtx();
+    micSourceNode = audioCtx.createMediaStreamSource(micStream);
+    // Monitoring is metering only — the input is never routed to the
+    // speakers, which would feed straight back into the microphone.
+    monitorAnalyser = audioCtx.createAnalyser();
+    monitorAnalyser.fftSize = 1024;
+    micSourceNode.connect(monitorAnalyser);
+    return true;
+  }
+
+  function releaseMic(){
+    if(micStream){
+      for(const track of micStream.getTracks()) track.stop();
+      micStream = null;
+    }
+    if(micSourceNode){ micSourceNode.disconnect(); micSourceNode = null; }
+    monitorAnalyser = null;
+  }
+
+  async function setArmed(index, armed){
+    const track = tracks[index];
+    if(!track) return;
+
+    if(armed){
+      if(!(await ensureMic())) return;
+      // Single input: arming one track releases the rest.
+      for(const t of tracks){
+        if(t !== track && t.armed){
+          t.armed = false;
+          document.getElementById(`arm-${t.index}`).classList.remove('armed');
+          t.wrapEl && t.wrapEl.classList.remove('armed');
+        }
+      }
+    }
+
+    track.armed = armed;
+    document.getElementById(`arm-${index}`).classList.toggle('armed', armed);
+    if(track.wrapEl) track.wrapEl.classList.toggle('armed', armed);
+
+    if(armed){
+      setStatus(`Track ${index+1} armed. Press RECORD to capture — the other tracks play back while you record.`);
+    }else{
+      setStatus(`Track ${index+1} disarmed.`);
+      if(!armedTrack()) releaseMic();
+    }
+  }
+
+  async function startRecording(){
+    const target = armedTrack();
+    if(!target){
+      setStatus('Arm a track first — press the ● button on the track you want to record onto.', true);
+      return;
+    }
+    if(!(await ensureMic())) return;
+
+    if(target.buffer && !confirm(`Track ${target.index+1} already has audio. Recording will replace it. Continue?`)){
+      return;
+    }
+
+    ensureCtx();
+    if(audioCtx.state === 'suspended') await audioCtx.resume();
+
+    if(!recorderModuleLoaded){
+      try{
+        const url = URL.createObjectURL(new Blob([RECORDER_WORKLET], {type:'application/javascript'}));
+        await audioCtx.audioWorklet.addModule(url);
+        URL.revokeObjectURL(url);
+        recorderModuleLoaded = true;
+      }catch(err){
+        setStatus('This browser cannot capture audio at full quality (no AudioWorklet support).', true);
+        return;
+      }
+    }
+
+    if(isPlaying) stop();
+
+    // Looping mid-take would restart playback under the recording.
+    if(isLooping){
+      isLooping = false;
+      loopBtn.classList.remove('loop-active');
+    }
+
+    recordChunks = [];
+    recordTargetIndex = target.index;
+    isRecording = true;
+
+    // Where on the timeline this take begins, so it can be dropped into place
+    // afterwards rather than always starting at zero.
+    recordStartOffset = (elapsedBeforeStop >= trimStart && elapsedBeforeStop < trimEnd)
+      ? elapsedBeforeStop : trimStart;
+
+    recorderNode = new AudioWorkletNode(audioCtx, 'rec-processor');
+    recorderNode.port.onmessage = (e) => {
+      if(isRecording) recordChunks.push(e.data);
+    };
+    micSourceNode.connect(recorderNode);
+    // An AudioWorklet only pulls input while something downstream pulls it;
+    // a zero-gain node to the destination keeps it running without any sound.
+    const sink = audioCtx.createGain();
+    sink.gain.value = 0;
+    recorderNode.connect(sink);
+    sink.connect(audioCtx.destination);
+    recorderNode._sink = sink;
+
+    document.getElementById(`arm-${target.index}`).classList.add('recording');
+    recordBtn.classList.add('recording');
+    recordBtn.textContent = '● RECORDING';
+
+    // Play the other tracks underneath, so this is an overdub rather than a
+    // take in silence. playFrom skips whichever track is armed.
+    if(maxDuration() > 0) play();
+
+    setStatus(`Recording onto Track ${target.index+1} from ${formatTime(recordStartOffset)}… press STOP to finish.`);
+  }
+
+  async function finishRecording(){
+    if(!isRecording) return;
+    isRecording = false;
+
+    const target = tracks[recordTargetIndex];
+    if(recorderNode){
+      try{ micSourceNode.disconnect(recorderNode); }catch(e){}
+      if(recorderNode._sink){
+        recorderNode._sink.disconnect();
+        recorderNode._sink = null;
+      }
+      recorderNode.disconnect();
+      recorderNode.port.onmessage = null;
+      recorderNode = null;
+    }
+
+    recordBtn.classList.remove('recording');
+    recordBtn.textContent = '● RECORD';
+    if(target) document.getElementById(`arm-${target.index}`).classList.remove('recording');
+
+    const total = recordChunks.reduce((n, c) => n + c.length, 0);
+    if(!target || total === 0){
+      recordChunks = [];
+      setStatus('Nothing was captured — check that the right input is selected in your browser.', true);
+      return;
+    }
+
+    const rate = audioCtx.sampleRate;
+    // Output latency puts the monitored playback slightly behind the take, so
+    // the recording sits late against it. Trim that much off the front.
+    const latency = (audioCtx.outputLatency || audioCtx.baseLatency || 0);
+    const skip = Math.min(total, Math.round(latency * rate));
+    const leadIn = Math.round(recordStartOffset * rate);
+    const buffer = audioCtx.createBuffer(1, leadIn + (total - skip), rate);
+    const out = buffer.getChannelData(0);
+
+    let written = leadIn, dropped = 0;
+    for(const chunk of recordChunks){
+      let c = chunk;
+      if(dropped < skip){
+        const take = Math.min(skip - dropped, c.length);
+        dropped += take;
+        if(take === c.length) continue;
+        c = c.subarray(take);
+      }
+      out.set(c, written);
+      written += c.length;
+    }
+    recordChunks = [];
+
+    const stamp = new Date().toISOString().slice(11,19).replace(/:/g,'');
+    const name = `take-${stamp}.wav`;
+    applyBufferToTrack(target.index, buffer, name, null);
+    // Keep WAV bytes so the take behaves like a loaded file — downloadable,
+    // and carried inside a saved .4trk session.
+    try{
+      target.fileBytes = await audioBufferToWavBlob(buffer).arrayBuffer();
+    }catch(err){
+      target.fileBytes = null;
+    }
+
+    renderMasterWave(elapsedBeforeStop);
+    renderMasterMinimap();
+    drawReelFrame(0, 0);
+    saveSession();
+    setStatus(`Recorded ${formatTime(buffer.duration - recordStartOffset)} onto Track ${target.index+1}.`);
+  }
+
+  recordBtn.addEventListener('click', () => {
+    if(isRecording){
+      stop();
+    }else{
+      startRecording();
+    }
+  });
 
   // ---- Mixdown / bounce to WAV ----
   async function bounce(){
@@ -4526,6 +4885,9 @@
       panInput.value = 0;
 
       t.fileBytes = null;
+      t.armed = false;
+      document.getElementById(`arm-${t.index}`).classList.remove('armed','recording');
+      if(t.wrapEl) t.wrapEl.classList.remove('armed');
       document.getElementById(`mute-${t.index}`).classList.remove('active-mute');
       document.getElementById(`solo-${t.index}`).classList.remove('active-solo');
 
@@ -4533,6 +4895,7 @@
     }
 
     if(globalFileInput) globalFileInput.value = '';
+    releaseMic();
     drawVisualizer();
     trimIsDefault = true;
     updateTrimBoundsAfterChange();
