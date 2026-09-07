@@ -646,6 +646,15 @@
     flex:1;
     min-width:180px;
   }
+  /* Session save/open sits just under the audio loader — same bar, quieter. */
+  .session-bar{margin-top:-8px;}
+  .session-btn{
+    font-family:'Space Mono',monospace;
+    font-weight:700;
+    letter-spacing:.06em;
+    cursor:pointer;
+  }
+  .session-btn:hover{background:var(--t3);color:var(--body-1);border-color:var(--t3);}
   .file-btn{
     background:var(--body-1);
     border:2px solid var(--panel-line);
@@ -843,6 +852,12 @@
     <span class="load-bar-hint">Pick or drop one or more WAVs. Files named like <code>track_1.wav</code> auto-route to that track; others fill the next empty track. You can still drag a file onto a track below to replace just that one.</span>
   </div>
 
+  <div class="load-bar session-bar">
+    <button class="load-bar-btn session-btn" id="sessionSaveBtn">💾 SAVE SESSION</button>
+    <label class="file-btn load-bar-btn session-btn">📂 OPEN SESSION<input type="file" accept=".4trk" id="sessionOpenInput"></label>
+    <span class="load-bar-hint">Saves everything — audio, titles, faders, EQ, trim and notes — into one <code>.4trk</code> file you can keep, back up, or move to another machine. Open it here to pick the mix back up exactly as you left it.</span>
+  </div>
+
   <div class="tracks" id="tracks"></div>
 
   <div class="trim-screen">
@@ -978,6 +993,8 @@
   const eqFlatBtn = document.getElementById('eqFlatBtn');
   const mixTitleInput = document.getElementById('mixTitleInput');
   const notesInput = document.getElementById('notesInput');
+  const sessionSaveBtn = document.getElementById('sessionSaveBtn');
+  const sessionOpenInput = document.getElementById('sessionOpenInput');
   const reelCanvas = document.getElementById('reelCanvas');
   const reelCtx = reelCanvas.getContext('2d');
   const reelImageInput = document.getElementById('reelImageInput');
@@ -1926,6 +1943,7 @@
       viewStart:0, viewEnd:0, viewPeaks:null,
       seekDragging:false, seekRafPending:false, lastSeekX:0,
       title:'',
+      fileBytes:null,
       level:0
     };
     tracks.push(track);
@@ -2936,9 +2954,13 @@
     try{
       ensureCtx();
       const arrayBuf = await file.arrayBuffer();
+      // decodeAudioData detaches whatever it's given, hence the slice — the
+      // original stays intact so a saved session can embed the source bytes
+      // verbatim rather than re-encoding from the decoded buffer.
       const audioBuf = await audioCtx.decodeAudioData(arrayBuf.slice(0));
       const titleGuess = file.name.replace(/\.[^/.]+$/, '');
       applyBufferToTrack(index, audioBuf, file.name, titleGuess);
+      tracks[index].fileBytes = arrayBuf;
       setStatus(`Loaded "${file.name}" into Track ${index+1}.`);
       return true;
     }catch(err){
@@ -3933,6 +3955,7 @@
       const panInput = document.getElementById(`pan-${t.index}`);
       panInput.value = 0;
 
+      t.fileBytes = null;
       document.getElementById(`mute-${t.index}`).classList.remove('active-mute');
       document.getElementById(`solo-${t.index}`).classList.remove('active-solo');
 
@@ -3950,6 +3973,239 @@
   }
 
   clearBtn.addEventListener('click', clearAllTracks);
+
+  // ---- Session files (.4trk) ----
+  // Container layout, so the whole thing is one self-describing file:
+  //
+  //   "4TRK"            4 bytes  magic
+  //   version           uint32   little-endian
+  //   headerLength      uint32   little-endian
+  //   header            UTF-8 JSON — settings plus a manifest of the audio
+  //   payload           each track's source bytes, back to back
+  //
+  // The audio is stored as the bytes originally loaded, not re-encoded from
+  // the decoded buffer, so a round trip is lossless and costs no quality.
+  const SESSION_MAGIC = '4TRK';
+  const SESSION_VERSION = 1;
+
+  function collectSessionHeader(){
+    return {
+      app: 'op1-4track',
+      savedAt: new Date().toISOString(),
+      mixTitle: mixTitleInput.value,
+      notes: notesInput.value,
+      readingList: readingListInput.value,
+      master: parseFloat(masterFader.value),
+      eq: { low: eqLowGain, mid: eqMidGain, high: eqHighGain },
+      bpm: songBPM,
+      beatsPerBar,
+      showBarGrid,
+      looping: isLooping,
+      trim: {
+        start: trimStart, end: trimEnd, isDefault: trimIsDefault,
+        fadeIn: mixFadeIn, fadeOut: mixFadeOut
+      },
+      tracks: tracks.map(t => ({
+        title: t.title, volume: t.volume, pan: t.pan,
+        muted: t.muted, solo: t.solo,
+        audio: null // offsets filled in below, once sizes are known
+      }))
+    };
+  }
+
+  function humanSize(bytes){
+    if(bytes < 1024) return bytes + ' B';
+    if(bytes < 1024*1024) return (bytes/1024).toFixed(0) + ' KB';
+    return (bytes/(1024*1024)).toFixed(1) + ' MB';
+  }
+
+  function saveSessionFile(){
+    const header = collectSessionHeader();
+
+    // Lay the audio out end to end, recording where each track's bytes land.
+    const chunks = [];
+    let offset = 0;
+    tracks.forEach((t, i) => {
+      if(!t.fileBytes) return;
+      const bytes = new Uint8Array(t.fileBytes);
+      header.tracks[i].audio = {
+        name: t.name || `track_${i+1}.wav`,
+        offset,
+        length: bytes.byteLength
+      };
+      chunks.push(bytes);
+      offset += bytes.byteLength;
+    });
+
+    const headerBytes = new TextEncoder().encode(JSON.stringify(header));
+    const prefix = new ArrayBuffer(12);
+    const view = new DataView(prefix);
+    for(let i=0;i<4;i++) view.setUint8(i, SESSION_MAGIC.charCodeAt(i));
+    view.setUint32(4, SESSION_VERSION, true);
+    view.setUint32(8, headerBytes.byteLength, true);
+
+    const blob = new Blob([prefix, headerBytes, ...chunks], {type:'application/octet-stream'});
+    const filename = mixFilenameBase() + '.4trk';
+
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+
+    const withAudio = header.tracks.filter(t => t.audio).length;
+    setStatus(`Saved "${filename}" (${humanSize(blob.size)}) — ` +
+      (withAudio ? `${withAudio} track(s) of audio included.` : 'settings only, no audio loaded.'));
+  }
+
+  async function openSessionFile(file){
+    let header, payload;
+    try{
+      const buf = await file.arrayBuffer();
+      const view = new DataView(buf);
+      if(buf.byteLength < 12){
+        throw new Error('too short');
+      }
+      let magic = '';
+      for(let i=0;i<4;i++) magic += String.fromCharCode(view.getUint8(i));
+      if(magic !== SESSION_MAGIC) throw new Error('bad magic');
+
+      const version = view.getUint32(4, true);
+      if(version > SESSION_VERSION){
+        setStatus(`That session was saved by a newer version of this app (v${version}). Update the page and try again.`, true);
+        return;
+      }
+      const headerLength = view.getUint32(8, true);
+      header = JSON.parse(new TextDecoder().decode(new Uint8Array(buf, 12, headerLength)));
+      payload = new Uint8Array(buf, 12 + headerLength);
+    }catch(err){
+      setStatus(`"${file.name}" isn't a readable .4trk session file.`, true);
+      return;
+    }
+
+    ensureCtx();
+    if(isPlaying) stop();
+
+    // Settings first, so restored audio lands on an already-configured board.
+    restoringSession = true;
+    try{
+      if(typeof header.mixTitle === 'string'){ mixTitleInput.value = header.mixTitle; syncPageTitle(); }
+      if(typeof header.notes === 'string') notesInput.value = header.notes;
+      if(typeof header.readingList === 'string') readingListInput.value = header.readingList;
+      if(isFinite(header.master)){
+        masterFader.value = header.master;
+        if(masterGainLive) masterGainLive.gain.value = header.master;
+      }
+      if(header.eq){
+        eqLowGain = isFinite(header.eq.low) ? header.eq.low : 0;
+        eqMidGain = isFinite(header.eq.mid) ? header.eq.mid : 0;
+        eqHighGain = isFinite(header.eq.high) ? header.eq.high : 0;
+        eqLowSlider.value = eqLowGain; eqMidSlider.value = eqMidGain; eqHighSlider.value = eqHighGain;
+        eqLowValue.textContent = fmtDb(eqLowGain);
+        eqMidValue.textContent = fmtDb(eqMidGain);
+        eqHighValue.textContent = fmtDb(eqHighGain);
+        if(liveEQLow) liveEQLow.gain.value = eqLowGain;
+        if(liveEQMid) liveEQMid.gain.value = eqMidGain;
+        if(liveEQHigh) liveEQHigh.gain.value = eqHighGain;
+      }
+      songBPM = (isFinite(header.bpm) && header.bpm > 0) ? Math.max(20, Math.min(300, header.bpm)) : 0;
+      bpmInput.value = songBPM || '';
+      if(isFinite(header.beatsPerBar)){
+        beatsPerBar = parseInt(header.beatsPerBar, 10) || 4;
+        beatsPerBarSelect.value = String(beatsPerBar);
+      }
+      if(typeof header.showBarGrid === 'boolean'){
+        showBarGrid = header.showBarGrid;
+        gridToggleBtn.classList.toggle('on', showBarGrid);
+      }
+      if(typeof header.looping === 'boolean'){
+        isLooping = header.looping;
+        loopBtn.classList.toggle('loop-active', isLooping);
+      }
+
+      if(Array.isArray(header.tracks)){
+        header.tracks.forEach((saved, i) => {
+          const t = tracks[i];
+          if(!t || !saved) return;
+          if(typeof saved.title === 'string'){
+            t.title = saved.title;
+            document.getElementById(`title-${i}`).value = saved.title;
+          }
+          if(isFinite(saved.volume)){
+            t.volume = saved.volume;
+            document.getElementById(`vol-${i}`).value = saved.volume;
+          }
+          if(isFinite(saved.pan)){
+            t.pan = saved.pan;
+            document.getElementById(`pan-${i}`).value = saved.pan;
+          }
+          t.muted = !!saved.muted;
+          t.solo = !!saved.solo;
+          document.getElementById(`mute-${i}`).classList.toggle('active-mute', t.muted);
+          document.getElementById(`solo-${i}`).classList.toggle('active-solo', t.solo);
+        });
+      }
+    }finally{
+      restoringSession = false;
+    }
+
+    // Then the audio. Each track decodes from its slice of the payload.
+    let restored = 0, failed = 0;
+    if(Array.isArray(header.tracks)){
+      for(let i=0;i<header.tracks.length && i<tracks.length;i++){
+        const audio = header.tracks[i] && header.tracks[i].audio;
+        if(!audio) continue;
+        try{
+          const slice = payload.slice(audio.offset, audio.offset + audio.length);
+          const audioBuf = await audioCtx.decodeAudioData(slice.buffer.slice(0));
+          applyBufferToTrack(i, audioBuf, audio.name, null);
+          tracks[i].fileBytes = slice.buffer;
+          restored++;
+        }catch(err){
+          failed++;
+        }
+      }
+    }
+
+    // Trim and fades last: applyBufferToTrack resets the trim bounds every
+    // time a buffer lands, so restoring them earlier would be overwritten.
+    updateTrimBoundsAfterChange();
+    if(header.trim && !header.trim.isDefault && isFinite(header.trim.start) && isFinite(header.trim.end)){
+      const totalDur = maxDuration();
+      trimStart = Math.max(0, Math.min(header.trim.start, totalDur));
+      trimEnd = Math.min(totalDur, Math.max(header.trim.end, trimStart + 0.05));
+      trimIsDefault = false;
+      mixFadeIn = isFinite(header.trim.fadeIn) ? header.trim.fadeIn : 0;
+      mixFadeOut = isFinite(header.trim.fadeOut) ? header.trim.fadeOut : 0;
+    }
+
+    refreshLiveGains();
+    resetMasterZoom();
+    renderMasterWave(0);
+    renderMasterMinimap();
+    for(const t of tracks) renderTrackWave(t, 0);
+    drawVisualizer();
+    drawReelFrame(0, 0);
+    saveSession();
+
+    if(failed){
+      setStatus(`Opened "${file.name}" — ${restored} track(s) restored, ${failed} could not be decoded.`, true);
+    }else if(restored){
+      setStatus(`Opened "${file.name}" — ${restored} track(s) and every setting restored.`);
+    }else{
+      setStatus(`Opened "${file.name}" — settings restored. This session had no audio saved in it.`);
+    }
+  }
+
+  sessionSaveBtn.addEventListener('click', saveSessionFile);
+  sessionOpenInput.addEventListener('change', async (e) => {
+    const file = e.target.files && e.target.files[0];
+    if(file) await openSessionFile(file);
+    e.target.value = '';
+  });
 
   function audioBufferToWavBlob(buffer){
     const numChannels = buffer.numberOfChannels;
