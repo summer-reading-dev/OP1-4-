@@ -2732,7 +2732,7 @@
     });
 
     document.getElementById(`arm-${index}`).addEventListener('click', () => {
-      if(isRecording){
+      if(isRecording || countingIn){
         setStatus('Stop the current take before changing which track is armed.', true);
         return;
       }
@@ -4472,6 +4472,7 @@
     gain.connect(audioCtx.destination);
     osc.start(atTime);
     osc.stop(atTime + 0.09);
+    return osc;
   }
 
   // Resolves when the count-in has finished, or false if it was cancelled.
@@ -4484,32 +4485,45 @@
       const start = audioCtx.currentTime + 0.12;
 
       countInAbort = false;
+      // Every click is scheduled up front, which is what keeps them in time —
+      // so cancelling has to silence the ones that haven't sounded yet, or the
+      // count carries on over an abandoned take.
+      const voices = [];
       for(let i=0;i<beats;i++){
-        playClick(start + i * beat, i % beatsPerBar === 0);
+        voices.push(playClick(start + i * beat, i % beatsPerBar === 0));
       }
 
-      // Visual countdown, driven off the same clock the clicks are on.
-      let i = 0;
-      const tick = () => {
-        if(countInAbort){ resolve(false); return; }
+      let timer = null;
+      const finish = (completed) => {
+        clearInterval(timer);
+        countInBtn.classList.remove('beat');
+        if(!completed){
+          for(const osc of voices){
+            try{ osc.stop(); }catch(e){}
+          }
+        }
+        resolve(completed);
+      };
+
+      // Polled on a timer rather than requestAnimationFrame: rAF is suspended
+      // in a background tab, which would strand both the count and any STOP
+      // pressed during it until the tab was looked at again. A timer keeps
+      // running, throttled but alive, and the audio clock stays authoritative.
+      let shown = -1;
+      timer = setInterval(() => {
+        if(countInAbort){ finish(false); return; }
         const elapsed = audioCtx.currentTime - start;
         const current = Math.floor(elapsed / beat);
-        if(current >= beats){
-          countInBtn.classList.remove('beat');
-          resolve(true);
-          return;
-        }
-        if(current !== i && current >= 0){
-          i = current;
-          const bar = Math.floor(i / beatsPerBar) + 1;
-          const inBar = (i % beatsPerBar) + 1;
+        if(current >= beats){ finish(true); return; }
+        if(current >= 0 && current !== shown){
+          shown = current;
+          const bar = Math.floor(current / beatsPerBar) + 1;
+          const inBar = (current % beatsPerBar) + 1;
           setStatus(`Count-in — bar ${bar} of ${COUNT_IN_BARS}, beat ${inBar}…`);
           countInBtn.classList.add('beat');
           setTimeout(() => countInBtn.classList.remove('beat'), 70);
         }
-        requestAnimationFrame(tick);
-      };
-      requestAnimationFrame(tick);
+      }, 30);
     });
   }
 
@@ -4577,6 +4591,15 @@
         recordBtn.classList.remove('recording');
         recordBtn.textContent = '● RECORD';
         setStatus('Count-in cancelled.');
+        return;
+      }
+      // Four bars is long enough for things to have moved on — the input can
+      // be gone, or the armed track changed — and connecting a stale node
+      // would leave the deck lit up recording nothing.
+      if(!micSourceNode || armedTrack() !== target){
+        recordBtn.classList.remove('recording');
+        recordBtn.textContent = '● RECORD';
+        setStatus('Recording cancelled — the armed track or the input changed during the count-in.', true);
         return;
       }
     }
