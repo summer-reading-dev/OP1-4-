@@ -1098,6 +1098,7 @@
   bpmInput.addEventListener('input', () => {
     const v = parseFloat(bpmInput.value);
     songBPM = (isFinite(v) && v > 0) ? Math.max(20, Math.min(300, v)) : 0;
+    saveSession();
     updateBarCountReadout();
     renderMasterWave(elapsedBeforeStop);
     for(const t of tracks) renderTrackWave(t, elapsedBeforeStop);
@@ -1122,6 +1123,7 @@
       const bpm = Math.max(20, Math.min(300, Math.round(60000 / avgMs)));
       bpmInput.value = bpm;
       songBPM = bpm;
+      saveSession();
       updateBarCountReadout();
       renderMasterWave(elapsedBeforeStop);
       for(const t of tracks) renderTrackWave(t, elapsedBeforeStop);
@@ -1130,6 +1132,7 @@
 
   beatsPerBarSelect.addEventListener('change', () => {
     beatsPerBar = parseInt(beatsPerBarSelect.value, 10) || 4;
+    saveSession();
     updateBarCountReadout();
     renderMasterWave(elapsedBeforeStop);
     for(const t of tracks) renderTrackWave(t, elapsedBeforeStop);
@@ -1138,6 +1141,7 @@
   gridToggleBtn.addEventListener('click', () => {
     showBarGrid = !showBarGrid;
     gridToggleBtn.classList.toggle('on', showBarGrid);
+    saveSession();
     renderMasterWave(elapsedBeforeStop);
     for(const t of tracks) renderTrackWave(t, elapsedBeforeStop);
   });
@@ -1237,12 +1241,15 @@
 
   mixTitleInput.addEventListener('input', () => {
     syncPageTitle();
+    saveSession();
     if(!isRecordingReel) drawReelFrame(0, 0);
   });
   notesInput.addEventListener('input', () => {
+    saveSession();
     if(!isRecordingReel) drawReelFrame(0, 0);
   });
   readingListInput.addEventListener('input', () => {
+    saveSession();
     if(!isRecordingReel) drawReelFrame(0, 0);
   });
   syncPageTitle();
@@ -1994,29 +2001,34 @@
     document.getElementById(`title-${index}`).addEventListener('input', (e) => {
       track.title = e.target.value;
       if(!isRecordingReel) drawReelFrame(0, 0);
+      saveSession();
     });
 
     document.getElementById(`vol-${index}`).addEventListener('input', (e) => {
       track.volume = parseFloat(e.target.value);
       if(track.gainNode) track.gainNode.gain.value = effectiveGain(track);
       if(!isRecordingReel) drawReelFrame(0, 0);
+      saveSession();
     });
 
     document.getElementById(`pan-${index}`).addEventListener('input', (e) => {
       track.pan = parseFloat(e.target.value);
       if(track.pannerNode) track.pannerNode.pan.value = track.pan;
+      saveSession();
     });
 
     document.getElementById(`mute-${index}`).addEventListener('click', () => {
       track.muted = !track.muted;
       document.getElementById(`mute-${index}`).classList.toggle('active-mute', track.muted);
       refreshLiveGains();
+      saveSession();
     });
 
     document.getElementById(`solo-${index}`).addEventListener('click', () => {
       track.solo = !track.solo;
       document.getElementById(`solo-${index}`).classList.toggle('active-solo', track.solo);
       refreshLiveGains();
+      saveSession();
     });
 
     document.getElementById(`dl-${index}`).addEventListener('click', () => {
@@ -3183,7 +3195,131 @@
     requestAnimationFrame(visLoop);
   }
 
+  // ---- Session persistence ----
+  // Everything except the audio itself survives a reload. Buffers are far too
+  // large for localStorage, so a restored session comes back as a fully set up
+  // board waiting for you to drop the files in again.
+  const STORE_KEY = 'op1-4track:session:v1';
+  let restoringSession = false;
+  let saveTimer = null;
+
+  function saveSession(){
+    if(restoringSession) return;
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(writeSession, 250);
+  }
+
+  function writeSession(){
+    try{
+      localStorage.setItem(STORE_KEY, JSON.stringify({
+        v: 1,
+        mixTitle: mixTitleInput.value,
+        notes: notesInput.value,
+        readingList: readingListInput.value,
+        master: parseFloat(masterFader.value),
+        eq: { low: eqLowGain, mid: eqMidGain, high: eqHighGain },
+        bpm: songBPM,
+        beatsPerBar,
+        showBarGrid,
+        looping: isLooping,
+        tracks: tracks.map(t => ({
+          title: t.title, volume: t.volume, pan: t.pan,
+          muted: t.muted, solo: t.solo
+        }))
+      }));
+    }catch(err){
+      // Private browsing, disabled site data, or quota — persistence is a
+      // convenience, so a failure here must never interrupt the mix.
+    }
+  }
+
+  function restoreSession(){
+    let data;
+    try{
+      const raw = localStorage.getItem(STORE_KEY);
+      if(!raw) return false;
+      data = JSON.parse(raw);
+    }catch(err){
+      return false;
+    }
+    if(!data || data.v !== 1) return false;
+
+    restoringSession = true;
+    try{
+      if(typeof data.mixTitle === 'string'){
+        mixTitleInput.value = data.mixTitle;
+        syncPageTitle();
+      }
+      if(typeof data.notes === 'string') notesInput.value = data.notes;
+      if(typeof data.readingList === 'string') readingListInput.value = data.readingList;
+
+      if(isFinite(data.master)){
+        masterFader.value = data.master;
+      }
+
+      if(data.eq){
+        eqLowGain = isFinite(data.eq.low) ? data.eq.low : 0;
+        eqMidGain = isFinite(data.eq.mid) ? data.eq.mid : 0;
+        eqHighGain = isFinite(data.eq.high) ? data.eq.high : 0;
+        eqLowSlider.value = eqLowGain;
+        eqMidSlider.value = eqMidGain;
+        eqHighSlider.value = eqHighGain;
+        eqLowValue.textContent = fmtDb(eqLowGain);
+        eqMidValue.textContent = fmtDb(eqMidGain);
+        eqHighValue.textContent = fmtDb(eqHighGain);
+      }
+
+      if(isFinite(data.bpm) && data.bpm > 0){
+        songBPM = Math.max(20, Math.min(300, data.bpm));
+        bpmInput.value = songBPM;
+      }
+      if(isFinite(data.beatsPerBar)){
+        beatsPerBar = parseInt(data.beatsPerBar, 10) || 4;
+        beatsPerBarSelect.value = String(beatsPerBar);
+      }
+      if(typeof data.showBarGrid === 'boolean'){
+        showBarGrid = data.showBarGrid;
+        gridToggleBtn.classList.toggle('on', showBarGrid);
+      }
+      updateBarCountReadout();
+
+      if(typeof data.looping === 'boolean'){
+        isLooping = data.looping;
+        loopBtn.classList.toggle('loop-active', isLooping);
+      }
+
+      if(Array.isArray(data.tracks)){
+        data.tracks.forEach((saved, i) => {
+          const t = tracks[i];
+          if(!t || !saved) return;
+
+          if(typeof saved.title === 'string'){
+            t.title = saved.title;
+            document.getElementById(`title-${i}`).value = saved.title;
+          }
+          if(isFinite(saved.volume)){
+            t.volume = saved.volume;
+            document.getElementById(`vol-${i}`).value = saved.volume;
+          }
+          if(isFinite(saved.pan)){
+            t.pan = saved.pan;
+            document.getElementById(`pan-${i}`).value = saved.pan;
+          }
+          t.muted = !!saved.muted;
+          t.solo = !!saved.solo;
+          document.getElementById(`mute-${i}`).classList.toggle('active-mute', t.muted);
+          document.getElementById(`solo-${i}`).classList.toggle('active-solo', t.solo);
+        });
+      }
+    }finally{
+      restoringSession = false;
+    }
+    return true;
+  }
+
   for(let i=0;i<NUM_TRACKS;i++) buildTrackUI(i);
+
+  const sessionRestored = restoreSession();
 
   fitCanvasResolution(masterWaveCanvas);
   fitCanvasResolution(masterMinimapCanvas);
@@ -3193,6 +3329,10 @@
   renderMasterMinimap();
   drawReelFrame(0, 0);
   requestAnimationFrame(visLoop);
+
+  if(sessionRestored){
+    setStatus('Restored your last session — titles, notes, faders and EQ are back. Load your WAVs to pick up where you left off.');
+  }
 
   let waveResizeTimer = null;
   window.addEventListener('resize', () => {
@@ -3281,6 +3421,7 @@
 
   masterFader.addEventListener('input', (e) => {
     if(masterGainLive) masterGainLive.gain.value = parseFloat(e.target.value);
+    saveSession();
   });
 
   function fmtDb(v){
@@ -3291,16 +3432,19 @@
     eqLowGain = parseFloat(e.target.value);
     eqLowValue.textContent = fmtDb(eqLowGain);
     if(liveEQLow) liveEQLow.gain.value = eqLowGain;
+    saveSession();
   });
   eqMidSlider.addEventListener('input', (e) => {
     eqMidGain = parseFloat(e.target.value);
     eqMidValue.textContent = fmtDb(eqMidGain);
     if(liveEQMid) liveEQMid.gain.value = eqMidGain;
+    saveSession();
   });
   eqHighSlider.addEventListener('input', (e) => {
     eqHighGain = parseFloat(e.target.value);
     eqHighValue.textContent = fmtDb(eqHighGain);
     if(liveEQHigh) liveEQHigh.gain.value = eqHighGain;
+    saveSession();
   });
   eqFlatBtn.addEventListener('click', () => {
     eqLowGain = 0; eqMidGain = 0; eqHighGain = 0;
@@ -3311,6 +3455,7 @@
     if(liveEQLow) liveEQLow.gain.value = 0;
     if(liveEQMid) liveEQMid.gain.value = 0;
     if(liveEQHigh) liveEQHigh.gain.value = 0;
+    saveSession();
     setStatus('Master EQ reset to flat.');
   });
 
@@ -3453,6 +3598,7 @@
   loopBtn.addEventListener('click', () => {
     isLooping = !isLooping;
     loopBtn.classList.toggle('loop-active', isLooping);
+    saveSession();
     setStatus(isLooping ? 'Loop on — playback will repeat the trimmed selection.' : 'Loop off.');
   });
   rewBtn.addEventListener('click', rewind);
@@ -3798,6 +3944,8 @@
     trimIsDefault = true;
     updateTrimBoundsAfterChange();
     drawReelFrame(0, 0);
+    // Persist the cleared board, so a reload doesn't resurrect the old mix.
+    saveSession();
     setStatus('All tracks cleared. Load a WAV file into each track, or drag one onto a track.');
   }
 
