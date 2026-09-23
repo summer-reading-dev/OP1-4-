@@ -245,14 +245,17 @@
     outline:none;
     cursor:pointer;
   }
-  .grid-toggle-btn{
+  /* Each variant below is qualified with .mini-btn: the base .mini-btn rule
+     comes later in the sheet and would otherwise win, pinning them at 24px. */
+  .mini-btn.grid-toggle-btn{
     width:auto;
     padding:0 8px;
     margin-left:2px;
     letter-spacing:0.5px;
   }
   .grid-toggle-btn.on{background:var(--t2);color:#fff;border-color:var(--t2);}
-  .count-in-btn{
+  .mini-btn.count-in-btn{
+    width:auto;
     letter-spacing:.08em;
     white-space:nowrap;
     padding-left:8px;
@@ -261,7 +264,7 @@
   .count-in-btn.on{background:var(--t1);color:#fff;border-color:var(--t1);}
   /* Flashes on each click of the count-in. */
   .count-in-btn.beat{background:var(--amber-hi);color:var(--ink);border-color:var(--amber-hi);}
-  .tap-tempo-btn{
+  .mini-btn.tap-tempo-btn{
     width:auto;
     padding:0 8px;
     letter-spacing:0.5px;
@@ -288,7 +291,7 @@
     color:var(--ink-dim);
     text-transform:uppercase;
   }
-  .zoom-btn{
+  .mini-btn.zoom-btn{
     width:24px;
     font-family:'Space Grotesk',sans-serif;
     font-size:14px;
@@ -302,7 +305,7 @@
     min-width:34px;
     text-align:center;
   }
-  .zoom-fit-btn{
+  .mini-btn.zoom-fit-btn{
     width:auto;
     padding:0 8px;
     letter-spacing:0.5px;
@@ -810,6 +813,9 @@
   .master-fader{display:flex;flex-direction:column;align-items:center;gap:4px;margin-left:8px;}
   .master-fader label{font-size:8px;color:var(--ink-dim);letter-spacing:1px;}
 
+  /* Something is being dragged over the page: show that the whole deck takes it. */
+  body.drag-active .unit{outline:3px dashed var(--t2);outline-offset:6px;}
+
   /* ---- Recording: arm buttons and the record transport ---- */
   .rec-arm{color:var(--ink-dim);}
   .rec-arm:hover{background:var(--t1);color:#fff;border-color:var(--t1);}
@@ -1195,8 +1201,9 @@
   </div>
 
   <div class="load-bar">
-    <label class="file-btn load-bar-btn">LOAD WAV FILES<input type="file" accept="audio/wav,audio/x-wav,.wav" multiple id="globalFileInput"></label>
-    <span class="load-bar-hint">Pick or drop one or more WAVs. Files named like <code>track_1.wav</code> auto-route to that track; others fill the next empty track. You can still drag a file onto a track below to replace just that one.</span>
+    <label class="file-btn load-bar-btn">LOAD AUDIO FILES<input type="file" accept="audio/wav,audio/x-wav,audio/aiff,audio/x-aiff,.wav,.aif,.aiff,.aifc" multiple id="globalFileInput"></label>
+    <label class="file-btn load-bar-btn">LOAD TAPE FOLDER<input type="file" webkitdirectory directory multiple id="folderInput"></label>
+    <span class="load-bar-hint">Drop your OP-1's <code>tape</code> folder anywhere on this page, or pick WAV / AIFF files. <code>track_1</code>–<code>track_4</code> each land on their own track; anything else fills the next empty one. Drop onto a single track to replace just that one. Blank tape after the last sound is trimmed off automatically.</span>
   </div>
 
   <div class="load-bar session-bar">
@@ -1344,7 +1351,7 @@
         <div class="manual-note">
           <div class="manual-note-tag">Note</div>
           <p>
-            The unit is supplied without audio. Load your own <code>.wav</code> files into the four
+            The unit is supplied without audio. Load your OP-1 tape, WAV or AIFF files into the four
             tracks, or record directly into them from a microphone — see section 3.
           </p>
         </div>
@@ -1352,22 +1359,34 @@
 
       <section class="manual-section">
         <div class="manual-sec-head"><span class="manual-sec-num">2</span><h2>Loading Tape</h2></div>
-        <p>Audio may be loaded into the transport by any of three methods:</p>
+        <p>
+          The SR-4 is designed to receive the tape of an OP-1 directly. Place the OP-1 in disk mode,
+          and drag its <code>tape</code> folder anywhere onto this page — or use
+          <b>LOAD TAPE FOLDER</b> to choose it. Each of the four tape tracks is placed upon its
+          corresponding track without further attention.
+        </p>
+        <p>Audio may also be loaded by the following methods:</p>
         <ol class="manual-list">
-          <li><b>LOAD WAV FILES</b> — select one or several files at once.</li>
-          <li><b>Drag and drop</b> onto the deck to fill the next available track.</li>
+          <li><b>LOAD AUDIO FILES</b> — select one or several files at once.</li>
+          <li><b>Drag and drop</b> files anywhere on the deck to fill the next available track.</li>
           <li><b>Drag onto a single track</b> to replace only that track's contents.</li>
         </ol>
         <p>
-          Files named in the pattern <code>track_1.wav</code> through <code>track_4.wav</code> are
-          routed automatically to their corresponding track. Files bearing no such number are placed
-          into the next empty track in sequence.
+          Files named <code>track_1</code> through <code>track_4</code> are routed to their
+          corresponding track. Files bearing no such number are placed into the next empty track in
+          sequence. Should the whole OP-1 drive be dropped, its album sides and sampler patches are
+          set aside and only the tape is loaded.
+        </p>
+        <p>
+          <b>Blank tape is trimmed automatically.</b> Where the recording ends well before the end of
+          the tape, the trim selection is drawn in to just after the last sound, so that playback,
+          mixdown and Reels stop with the music. <b>RESET TRIM</b> restores the full length.
         </p>
         <div class="manual-caution">
           <div class="manual-caution-tag">Caution</div>
           <p>
-            This model accepts <b>uncompressed .wav files only</b>. Compressed formats such as MP3
-            or M4A will be refused on loading.
+            This model accepts <b>uncompressed WAV and AIFF files only</b>. Compressed formats such
+            as MP3 or M4A will be refused on loading.
           </p>
         </div>
       </section>
@@ -1471,7 +1490,7 @@
           <tbody>
             <tr><td class="mt-key">Amber circles</td><td>Drag to set the start and end of the selection.</td></tr>
             <tr><td class="mt-key">White squares</td><td>At mid&#8209;height. Drag inward from either end to set a fade&#8209;in or fade&#8209;out across the whole mix.</td></tr>
-            <tr><td class="mt-key">RESET TRIM</td><td>Restores the selection to the full length of the longest track.</td></tr>
+            <tr><td class="mt-key">RESET TRIM</td><td>Restores the selection to the full length of the longest track, including any blank tape the automatic trim removed.</td></tr>
           </tbody>
         </table>
       </section>
@@ -1597,7 +1616,8 @@
         <table class="manual-table">
           <tbody>
             <tr><td class="mt-key">No sound on PLAY</td><td>Confirm audio is loaded, the track is not muted, and that no <i>other</i> track is soloed.</td></tr>
-            <tr><td class="mt-key">A file will not load</td><td>The unit accepts uncompressed .wav only. Convert compressed material first.</td></tr>
+            <tr><td class="mt-key">A file will not load</td><td>The unit accepts uncompressed WAV and AIFF only. Convert compressed material first.</td></tr>
+            <tr><td class="mt-key">The mix stops early</td><td>The automatic trim has removed blank tape after the last sound it could hear. Press RESET TRIM to restore the full length.</td></tr>
             <tr><td class="mt-key">RECORD refused</td><td>No track is armed. Press the ● button on the track you wish to record.</td></tr>
             <tr><td class="mt-key">Count-in will not run</td><td>No tempo is set. Enter a BPM or use TAP.</td></tr>
             <tr><td class="mt-key">Microphone denied</td><td>Permission was refused. Allow microphone access for this page in your browser's site settings, then arm the track again.</td></tr>
@@ -1613,7 +1633,7 @@
         <div class="manual-sec-head"><span class="manual-sec-num">15</span><h2>Specifications</h2></div>
         <dl class="manual-specs">
           <div><dt>Tracks</dt><dd>4</dd></div>
-          <div><dt>Input format</dt><dd>Uncompressed .wav</dd></div>
+          <div><dt>Input format</dt><dd>WAV · AIFF · OP-1 tape folder</dd></div>
           <div><dt>Recording</dt><dd>Live input, one track at a time</dd></div>
           <div><dt>Capture</dt><dd>Uncompressed, at the device rate</dd></div>
           <div><dt>Count-in</dt><dd>4 bars, follows tempo and metre</dd></div>
@@ -1648,6 +1668,7 @@
   const TRACK_COLORS = ['#d6402c', '#1f5fa8', '#e0821e', '#e8b32c'];
   const tracksEl = document.getElementById('tracks');
   const globalFileInput = document.getElementById('globalFileInput');
+  const folderInput = document.getElementById('folderInput');
   const counterEl = document.getElementById('counter');
   const tapeStrip = document.getElementById('tapeStrip');
   const reelL = document.getElementById('reelL');
@@ -1864,6 +1885,9 @@
   let trimStart = 0;
   let trimEnd = 0;
   let trimIsDefault = true;
+  // True while the trim is one autoTrimToContent() chose rather than the
+  // user, so it can keep following the audio as tracks are added.
+  let trimIsAuto = false;
   let masterPeaks = null;
   let trimDragging = null;
   let mixFadeIn = 0;
@@ -2258,6 +2282,7 @@
       trimStart = 0;
       trimEnd = 0;
       trimIsDefault = true;
+      trimIsAuto = false;
     }else if(trimIsDefault){
       trimStart = 0;
       trimEnd = newDur;
@@ -2331,12 +2356,14 @@
     if(Math.abs(x - startX) <= handleGrabPx() && Math.abs(x - startX) <= Math.abs(x - endX)){
       trimDragging = 'start';
       trimIsDefault = false;
+      trimIsAuto = false;
       masterWaveCanvas.setPointerCapture(e.pointerId);
       return;
     }
     if(Math.abs(x - endX) <= handleGrabPx()){
       trimDragging = 'end';
       trimIsDefault = false;
+      trimIsAuto = false;
       masterWaveCanvas.setPointerCapture(e.pointerId);
       return;
     }
@@ -2480,6 +2507,7 @@
     trimStart = 0;
     trimEnd = totalDur;
     trimIsDefault = true;
+    trimIsAuto = false;
     renderMasterWave(elapsedBeforeStop);
     setStatus(totalDur > 0 ? 'Trim reset to the full mix length.' : 'Nothing loaded yet.');
   });
@@ -2703,13 +2731,22 @@
     });
     dropZone.addEventListener('drop', async (e) => {
       e.preventDefault();
+      e.stopPropagation();
       wrap.classList.remove('drag-over');
-      const files = Array.from(e.dataTransfer.files || []).filter(f => /\.wav$/i.test(f.name));
-      if(!files.length){
-        setStatus(`That doesn't look like a .wav file — drop a WAV instead.`, true);
+      endPageDrag();
+      // Must be called before anything awaits: a drop's items are only
+      // readable during the event itself.
+      const collected = await collectDroppedAudio(e.dataTransfer);
+      if(collected.files.length === 1){
+        // One file dropped on a particular track goes on that track, even if
+        // its name says otherwise — where it was dropped is the clearer intent.
+        if(await loadFileIntoTrack(index, collected.files[0])){
+          const trimNote = autoTrimToContent();
+          if(trimNote) setStatus(`${statusEl.textContent} ${trimNote}`);
+        }
         return;
       }
-      await loadFilesAuto(files, index);
+      await loadCollected(collected, index);
     });
 
     document.getElementById(`title-${index}`).addEventListener('input', (e) => {
@@ -3583,11 +3620,137 @@
     return idx === -1 ? 0 : idx;
   }
 
-  globalFileInput.addEventListener('change', async (e) => {
-    const files = Array.from(e.target.files || []);
-    if(!files.length) return;
-    await loadFilesAuto(files, firstEmptyTrackIndex());
+  // Both pickers copy their file list before clearing the input: clearing it
+  // (so the same file can be picked twice running) empties that same list.
+  globalFileInput.addEventListener('change', async () => {
+    const picked = Array.from(globalFileInput.files || []);
     globalFileInput.value = '';
+    if(!picked.length) return;
+    const found = picked
+      .filter(f => AUDIO_FILE_RE.test(f.name))
+      .map(f => ({file: f, path: f.name}));
+    await loadCollected(pickTapeFiles(found), firstEmptyTrackIndex());
+  });
+
+  folderInput.addEventListener('change', async () => {
+    const picked = Array.from(folderInput.files || []);
+    folderInput.value = '';
+    if(!picked.length) return;
+    const found = picked
+      .filter(f => AUDIO_FILE_RE.test(f.name))
+      .map(f => ({file: f, path: f.webkitRelativePath || f.name}));
+    await loadCollected(pickTapeFiles(found), firstEmptyTrackIndex());
+  });
+
+  // ---- Collecting dropped files and folders ----
+  // A dropped folder arrives as a directory entry rather than as files, so it
+  // has to be walked. readEntries returns a listing in batches and has to be
+  // called until it comes back empty.
+  function readAllEntries(dirEntry){
+    return new Promise((resolve) => {
+      const reader = dirEntry.createReader();
+      const all = [];
+      const next = () => reader.readEntries((batch) => {
+        if(!batch.length){ resolve(all); return; }
+        all.push(...batch);
+        next();
+      }, () => resolve(all));
+      next();
+    });
+  }
+
+  async function walkEntry(entry, path, out){
+    if(entry.isFile){
+      if(!AUDIO_FILE_RE.test(entry.name)) return;
+      const file = await new Promise((resolve) => entry.file(resolve, () => resolve(null)));
+      if(file) out.push({file, path: path + entry.name});
+    }else if(entry.isDirectory){
+      for(const child of await readAllEntries(entry)){
+        await walkEntry(child, path + entry.name + '/', out);
+      }
+    }
+  }
+
+  // The entries are taken synchronously, before the first await: a drop's
+  // items stop being readable once the event handler yields.
+  async function collectDroppedAudio(dataTransfer){
+    const entries = Array.from(dataTransfer.items || [])
+      .map(item => item.webkitGetAsEntry ? item.webkitGetAsEntry() : null)
+      .filter(Boolean);
+    const plainFiles = Array.from(dataTransfer.files || []);
+    const found = [];
+    if(entries.length){
+      for(const entry of entries) await walkEntry(entry, '', found);
+    }else{
+      for(const file of plainFiles){
+        if(AUDIO_FILE_RE.test(file.name)) found.push({file, path: file.name});
+      }
+    }
+    return pickTapeFiles(found);
+  }
+
+  // Dropping the whole OP-1 drive brings the album sides and sampler patches
+  // along with the tape. When tape tracks are present, take only those — one
+  // per slot, preferring a copy that sits inside a "tape" folder.
+  const TAPE_TRACK_RE = /^track[\s_-]*([1-4])\.(wav|aif|aiff|aifc)$/i;
+  function pickTapeFiles(found){
+    const tape = found.filter(f => TAPE_TRACK_RE.test(f.file.name));
+    if(tape.length){
+      const inTapeDir = (f) => /(^|\/)tape\//i.test(f.path) ? 1 : 0;
+      tape.sort((a, b) => inTapeDir(b) - inTapeDir(a));
+      const bySlot = new Map();
+      for(const f of tape){
+        const slot = f.file.name.match(TAPE_TRACK_RE)[1];
+        if(!bySlot.has(slot)) bySlot.set(slot, f.file);
+      }
+      return { files: [...bySlot.values()], skipped: found.length - bySlot.size };
+    }
+    return {
+      files: found.slice(0, NUM_TRACKS).map(f => f.file),
+      skipped: Math.max(0, found.length - NUM_TRACKS)
+    };
+  }
+
+  async function loadCollected({files, skipped}, startIndex){
+    if(!files.length){
+      setStatus('No WAV or AIFF audio in that — drop your OP-1 tape folder, or .wav / .aif files.', true);
+      return;
+    }
+    await loadFilesAuto(files, startIndex);
+    if(skipped > 0 && !statusEl.classList.contains('err')){
+      setStatus(`${statusEl.textContent} Left out ${skipped} other audio file${skipped === 1 ? '' : 's'} (album sides, samples, or more than four tracks).`);
+    }
+  }
+
+  // ---- Dropping anywhere on the page ----
+  // Without this, a file dropped outside a track panel makes the browser
+  // navigate to it, replacing the whole deck and everything unsaved on it.
+  let pageDragDepth = 0;
+  function dragHasFiles(e){
+    return !!(e.dataTransfer && Array.from(e.dataTransfer.types || []).includes('Files'));
+  }
+  function endPageDrag(){
+    pageDragDepth = 0;
+    document.body.classList.remove('drag-active');
+  }
+  document.addEventListener('dragenter', (e) => {
+    if(!dragHasFiles(e)) return;
+    pageDragDepth++;
+    document.body.classList.add('drag-active');
+  });
+  document.addEventListener('dragleave', (e) => {
+    if(!dragHasFiles(e)) return;
+    pageDragDepth = Math.max(0, pageDragDepth - 1);
+    if(!pageDragDepth) document.body.classList.remove('drag-active');
+  });
+  document.addEventListener('dragover', (e) => {
+    if(dragHasFiles(e)) e.preventDefault();
+  });
+  document.addEventListener('drop', async (e) => {
+    if(!dragHasFiles(e)) return;
+    e.preventDefault();
+    endPageDrag();
+    await loadCollected(await collectDroppedAudio(e.dataTransfer), firstEmptyTrackIndex());
   });
 
   async function loadFilesAuto(files, dropIndex){
@@ -3628,6 +3791,65 @@
       setStatus(`Loaded ${loadedCount} of ${files.length} file(s)` +
         (matchedCount ? ` — ${matchedCount} matched by name to their track.` : '.'));
     }
+    const trimNote = autoTrimToContent();
+    if(trimNote && loadedCount) setStatus(`${statusEl.textContent} ${trimNote}`);
+  }
+
+  // ---- Auto-trim to the music ----
+  // An OP-1 tape is often mostly blank. While the trim hasn't been set by
+  // hand, pull its end in to just after the last audible sound on any track,
+  // so playback, mixdown and reels stop where the music does.
+  const SILENCE_THRESHOLD = 0.002;  // about -54 dBFS: above any noise floor, below any real tail
+  const AUTO_TRIM_TAIL = 0.5;       // seconds kept after the last sound, so decays aren't clipped
+  const AUTO_TRIM_MIN_GAP = 1.0;    // leave the trim alone unless at least this much would go
+
+  function lastAudibleTime(buffer){
+    let last = -1;
+    for(let ch = 0; ch < buffer.numberOfChannels; ch++){
+      const data = buffer.getChannelData(ch);
+      // Scanning backwards means a full tape costs almost nothing; stopping
+      // at `last` means later channels only scan what could still move it.
+      for(let i = data.length - 1; i > last; i--){
+        if(data[i] > SILENCE_THRESHOLD || data[i] < -SILENCE_THRESHOLD){ last = i; break; }
+      }
+    }
+    return last < 0 ? 0 : (last + 1) / buffer.sampleRate;
+  }
+
+  // Returns a sentence describing what changed, or '' if nothing did.
+  function autoTrimToContent(){
+    if(!(trimIsDefault || trimIsAuto)) return '';
+    const total = maxDuration();
+    if(total <= 0) return '';
+
+    let content = 0;
+    for(const t of tracks){
+      if(t.buffer) content = Math.max(content, lastAudibleTime(t.buffer));
+    }
+    const end = Math.min(total, content + AUTO_TRIM_TAIL);
+
+    if(content > 0 && total - end >= AUTO_TRIM_MIN_GAP){
+      trimStart = 0;
+      trimEnd = end;
+      trimIsDefault = false;
+      trimIsAuto = true;
+      if(elapsedBeforeStop > trimEnd) elapsedBeforeStop = trimStart;
+      renderMasterWave(elapsedBeforeStop);
+      updateBarCountReadout();
+      saveSession();
+      return `Trimmed to the music — ${formatTime(end)} of ${formatTime(total)}; the rest is blank tape. RESET TRIM plays all of it.`;
+    }
+    if(trimIsAuto){
+      // New audio now runs to the end of the tape, so the old auto-trim
+      // would cut it off. Go back to the full length.
+      trimStart = 0;
+      trimEnd = total;
+      trimIsDefault = true;
+      trimIsAuto = false;
+      renderMasterWave(elapsedBeforeStop);
+      updateBarCountReadout();
+    }
+    return '';
   }
 
   function applyBufferToTrack(index, audioBuf, displayName, titleGuess){
@@ -3654,21 +3876,116 @@
     if(!isRecordingReel) drawReelFrame(0, 0);
   }
 
+  // ---- AIFF ----
+  // The OP-1 writes its tape tracks as AIFF, which Chrome and Firefox can't
+  // decode natively (Safari can). The format is simple enough to read by
+  // hand: big-endian chunks, with the sample rate stored as an 80-bit float.
+  function fourCC(view, o){
+    return String.fromCharCode(view.getUint8(o), view.getUint8(o+1), view.getUint8(o+2), view.getUint8(o+3));
+  }
+
+  function isAiff(bytes){
+    if(bytes.byteLength < 12) return false;
+    const v = new DataView(bytes);
+    const form = fourCC(v, 8);
+    return fourCC(v, 0) === 'FORM' && (form === 'AIFF' || form === 'AIFC');
+  }
+
+  function readExtended80(view, o){
+    const sign = (view.getUint8(o) & 0x80) ? -1 : 1;
+    const exponent = ((view.getUint8(o) & 0x7f) << 8) | view.getUint8(o + 1);
+    const hi = view.getUint32(o + 2);
+    const lo = view.getUint32(o + 6);
+    if(exponent === 0 && hi === 0 && lo === 0) return 0;
+    return sign * (hi * 4294967296 + lo) * Math.pow(2, exponent - 16383 - 63);
+  }
+
+  function decodeAiff(bytes){
+    const v = new DataView(bytes);
+    const isAifc = fourCC(v, 8) === 'AIFC';
+    let channels = 0, frames = 0, bits = 0, rate = 0, compression = 'NONE';
+    let dataStart = -1;
+
+    for(let o = 12; o + 8 <= bytes.byteLength;){
+      const id = fourCC(v, o);
+      const size = v.getUint32(o + 4);
+      const body = o + 8;
+      if(id === 'COMM'){
+        channels = v.getInt16(body);
+        frames = v.getUint32(body + 2);
+        bits = v.getInt16(body + 6);
+        rate = readExtended80(v, body + 8);
+        if(isAifc && size >= 22) compression = fourCC(v, body + 18);
+      }else if(id === 'SSND'){
+        dataStart = body + 8 + v.getUint32(body);
+      }
+      o = body + size + (size & 1);
+    }
+
+    if(channels < 1 || !(rate > 0) || dataStart < 0){
+      throw new Error('AIFF file is missing its format or audio data');
+    }
+
+    const c = compression.toLowerCase();
+    const isFloat = c === 'fl32' || c === 'fl64';
+    if(!isFloat && c !== 'none' && c !== 'twos' && c !== 'sowt'){
+      throw new Error(`AIFF compression "${compression}" isn't supported`);
+    }
+    const little = c === 'sowt';
+    const bytesPerSample = c === 'fl64' ? 8 : c === 'fl32' ? 4 : Math.ceil(bits / 8);
+    const frameBytes = bytesPerSample * channels;
+    // Trust the data actually present over the header's frame count, so a
+    // truncated copy still loads what it has.
+    const n = Math.min(frames, Math.floor((bytes.byteLength - dataStart) / frameBytes));
+    if(n <= 0) throw new Error('AIFF file contains no audio');
+
+    // Integer samples are left-justified in their container, so dividing by
+    // the container's full scale is right for 12- or 20-bit material too.
+    let read;
+    if(c === 'fl32') read = (p) => v.getFloat32(p, little);
+    else if(c === 'fl64') read = (p) => v.getFloat64(p, little);
+    else if(bytesPerSample === 1) read = (p) => v.getInt8(p) / 128;
+    else if(bytesPerSample === 2) read = (p) => v.getInt16(p, little) / 32768;
+    else if(bytesPerSample === 3) read = little
+      ? (p) => { let x = v.getUint8(p) | (v.getUint8(p+1) << 8) | (v.getUint8(p+2) << 16); if(x & 0x800000) x -= 0x1000000; return x / 8388608; }
+      : (p) => { let x = (v.getUint8(p) << 16) | (v.getUint8(p+1) << 8) | v.getUint8(p+2); if(x & 0x800000) x -= 0x1000000; return x / 8388608; };
+    else if(bytesPerSample === 4) read = (p) => v.getInt32(p, little) / 2147483648;
+    else throw new Error(`${bits}-bit AIFF isn't supported`);
+
+    const buffer = audioCtx.createBuffer(channels, n, rate);
+    for(let ch = 0; ch < channels; ch++){
+      const out = buffer.getChannelData(ch);
+      let p = dataStart + ch * bytesPerSample;
+      for(let i = 0; i < n; i++, p += frameBytes) out[i] = read(p);
+    }
+    return buffer;
+  }
+
+  // One decode path for loading, dropping, and opening sessions, so a format
+  // that loads is also a format that survives a save and reopen.
+  async function decodeAudioBytes(bytes){
+    ensureCtx();
+    if(isAiff(bytes)) return decodeAiff(bytes);
+    // decodeAudioData detaches whatever it's given, hence the copy.
+    return await audioCtx.decodeAudioData(bytes.slice(0));
+  }
+
+  const AUDIO_FILE_RE = /\.(wav|aif|aiff|aifc)$/i;
+
   async function loadFileIntoTrack(index, file){
     try{
       ensureCtx();
       const arrayBuf = await file.arrayBuffer();
-      // decodeAudioData detaches whatever it's given, hence the slice — the
-      // original stays intact so a saved session can embed the source bytes
+      // The original bytes stay intact so a saved session can embed them
       // verbatim rather than re-encoding from the decoded buffer.
-      const audioBuf = await audioCtx.decodeAudioData(arrayBuf.slice(0));
+      const audioBuf = await decodeAudioBytes(arrayBuf);
       const titleGuess = file.name.replace(/\.[^/.]+$/, '');
       applyBufferToTrack(index, audioBuf, file.name, titleGuess);
       tracks[index].fileBytes = arrayBuf;
       setStatus(`Loaded "${file.name}" into Track ${index+1}.`);
       return true;
     }catch(err){
-      setStatus(`Couldn't read "${file.name}" as WAV audio — try a standard PCM .wav.`, true);
+      setStatus(`Couldn't read "${file.name}" — ${err && err.message && /AIFF/.test(err.message) ? err.message + '.' : 'use an uncompressed WAV or AIFF file.'}`, true);
       return false;
     }
   }
@@ -4698,6 +5015,7 @@
       target.fileBytes = null;
     }
 
+    autoTrimToContent();
     renderMasterWave(elapsedBeforeStop);
     renderMasterMinimap();
     drawReelFrame(0, 0);
@@ -5059,6 +5377,7 @@
     releaseMic();
     drawVisualizer();
     trimIsDefault = true;
+    trimIsAuto = false;
     updateTrimBoundsAfterChange();
     drawReelFrame(0, 0);
     // Persist the cleared board, so a reload doesn't resurrect the old mix.
@@ -5259,7 +5578,7 @@
         if(!audio) continue;
         try{
           const slice = payload.slice(audio.offset, audio.offset + audio.length);
-          const audioBuf = await audioCtx.decodeAudioData(slice.buffer.slice(0));
+          const audioBuf = await decodeAudioBytes(slice.buffer);
           applyBufferToTrack(i, audioBuf, audio.name, null);
           tracks[i].fileBytes = slice.buffer;
           restored++;
@@ -5277,6 +5596,7 @@
       trimStart = Math.max(0, Math.min(header.trim.start, totalDur));
       trimEnd = Math.min(totalDur, Math.max(header.trim.end, trimStart + 0.05));
       trimIsDefault = false;
+      trimIsAuto = false;
       mixFadeIn = isFinite(header.trim.fadeIn) ? header.trim.fadeIn : 0;
       mixFadeOut = isFinite(header.trim.fadeOut) ? header.trim.fadeOut : 0;
     }
