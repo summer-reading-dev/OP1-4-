@@ -813,51 +813,6 @@
   .master-fader{display:flex;flex-direction:column;align-items:center;gap:4px;margin-left:8px;}
   .master-fader label{font-size:8px;color:var(--ink-dim);letter-spacing:1px;}
 
-  .op1-import-btn{
-    font-family:'Space Mono',monospace;
-    font-weight:700;
-    letter-spacing:.06em;
-    cursor:pointer;
-    border-color:var(--t1);
-    color:var(--t1);
-  }
-  .op1-import-btn:hover{background:var(--t1);color:#fff;border-color:var(--t1);}
-  .op1-import-btn:disabled{opacity:.5;cursor:progress;}
-  /* The import's step-by-step log, in the deck's screen style. It takes its
-     own row in the load bar, directly under the buttons. */
-  .op1-log{
-    order:10;
-    flex:1 1 100%;
-    background:var(--screen-bg);
-    color:var(--screen-fg);
-    border:2px solid var(--panel-line);
-    padding:10px 12px;
-    font-family:'JetBrains Mono',monospace;
-    font-size:11px;
-    line-height:1.55;
-  }
-  .op1-log[hidden]{display:none;}
-  .op1-log.failed{border-color:var(--t1);}
-  .op1-log-list{list-style:none;margin:0;padding:0;overflow-wrap:anywhere;}
-  .op1-log-list li::before{display:inline-block;width:1.4em;}
-  .op1-log-ok::before{content:"✓";color:var(--led-green);}
-  .op1-log-step::before,.op1-log-progress::before{content:"·";color:var(--amber-hi);}
-  .op1-log-err{color:#ff8a78;}
-  .op1-log-err::before{content:"✗";}
-  .op1-log-copy{
-    margin-top:8px;
-    background:transparent;
-    color:var(--screen-fg);
-    border:1.5px solid var(--screen-fg);
-    font-family:'JetBrains Mono',monospace;
-    font-size:10px;
-    letter-spacing:.08em;
-    text-transform:uppercase;
-    padding:5px 10px;
-    cursor:pointer;
-  }
-  .op1-log-copy:hover{background:var(--screen-fg);color:var(--screen-bg);}
-
   /* Something is being dragged over the page: show that the whole deck takes it. */
   body.drag-active .unit{outline:3px dashed var(--t2);outline-offset:6px;}
 
@@ -1248,12 +1203,7 @@
   <div class="load-bar">
     <label class="file-btn load-bar-btn">LOAD AUDIO FILES<input type="file" accept="audio/wav,audio/x-wav,audio/aiff,audio/x-aiff,.wav,.aif,.aiff,.aifc" multiple id="globalFileInput"></label>
     <label class="file-btn load-bar-btn">LOAD TAPE FOLDER<input type="file" webkitdirectory directory multiple id="folderInput"></label>
-    <button class="load-bar-btn op1-import-btn" id="op1ImportBtn" title="Read the tape straight off an OP-1 field over USB (Chrome or Edge)">⇣ IMPORT FROM OP-1</button>
-    <div class="op1-log" id="op1ImportLog" hidden>
-      <ol class="op1-log-list" id="op1ImportLogList"></ol>
-      <button class="op1-log-copy" id="op1ImportCopy" hidden>Copy details</button>
-    </div>
-    <span class="load-bar-hint"><b>OP-1 field:</b> put it in MTP mode (shift + com, then T4), quit Android File Transfer, and press IMPORT FROM OP-1 — Chrome or Edge only. Or drop a copied <code>tape</code> folder anywhere on this page, or pick WAV / AIFF files: <code>track_1</code>–<code>track_4</code> land on their own tracks, and blank tape after the last sound is trimmed off.</span>
+    <span class="load-bar-hint"><b>From your OP-1:</b> drag its <code>tape</code> folder — or the <code>track_1</code>–<code>track_4</code> files — from Android File Transfer anywhere onto this page. If a drop does nothing, drag them to your Desktop first, then in from there. You can also pick WAV / AIFF files here; each track file lands on its own track, and blank tape after the last sound is trimmed off.</span>
   </div>
 
   <div class="load-bar session-bar">
@@ -1414,25 +1364,23 @@
         </p>
         <h3 class="manual-sub">OP-1 field</h3>
         <p>
-          Connect the OP-1 field by USB and enter MTP mode (<b>shift + com</b>, then <b>T4</b>).
-          Press <b>IMPORT FROM OP-1</b> and choose it from the list. The four tape tracks are read
-          straight from the instrument and placed upon their tracks; no transfer application is
-          needed. The OP-1 is remembered, so later imports proceed without the list.
+          Enter MTP mode on the OP-1 field (<b>shift + com</b>, then <b>T4</b>) and open it in
+          Android File Transfer, or a similar MTP application. Drag its <code>tape</code> folder — or
+          the four track files within it — anywhere onto this page. Each is placed upon its
+          corresponding track without further attention.
         </p>
         <div class="manual-note">
           <div class="manual-note-tag">Note</div>
           <p>
-            Direct import requires <b>Chrome or Edge on a computer</b>. Only one application may hold
-            the OP-1 at a time — <b>quit Android File Transfer</b> and any similar application first.
-            The SR-4 only reads: nothing on the OP-1 is altered or removed.
+            Should a drop straight from the transfer application produce nothing, drag the files to
+            your desktop first, and from there onto the page.
           </p>
         </div>
-        <h3 class="manual-sub">Original OP-1, or a copied tape</h3>
+        <h3 class="manual-sub">Original OP-1</h3>
         <p>
           The original OP-1 appears as an ordinary drive in disk mode. Drag its <code>tape</code>
-          folder — or a tape folder already copied to your computer — anywhere onto this page, or use
-          <b>LOAD TAPE FOLDER</b> to choose it. Each of the four tape tracks is placed upon its
-          corresponding track without further attention.
+          folder anywhere onto this page, or use <b>LOAD TAPE FOLDER</b> to choose it. A tape folder
+          already copied to your computer from either model loads the same way.
         </p>
         <p>Audio may also be loaded by the following methods:</p>
         <ol class="manual-list">
@@ -1688,9 +1636,7 @@
             <tr><td class="mt-key">A file will not load</td><td>The unit accepts uncompressed WAV and AIFF only. Convert compressed material first.</td></tr>
             <tr><td class="mt-key">The mix stops early</td><td>The automatic trim has removed blank tape after the last sound it could hear. Press RESET TRIM to restore the full length.</td></tr>
             <tr><td class="mt-key">RECORD refused</td><td>No track is armed. Press the ● button on the track you wish to record.</td></tr>
-            <tr><td class="mt-key">IMPORT FROM OP-1 unavailable</td><td>Your browser lacks USB access. Use Chrome or Edge on a computer, or copy the tape folder with an MTP application and drop it here.</td></tr>
-            <tr><td class="mt-key">OP-1 not in the list</td><td>Enter MTP mode on the OP-1 field (shift + com, then T4), and check the cable carries data rather than power alone.</td></tr>
-            <tr><td class="mt-key">The OP-1 is busy</td><td>Another application holds it. Quit Android File Transfer, including its menu-bar agent, OpenMTP, Image Capture and Photos. Should it persist, unplug the OP-1, quit those applications, and reconnect.</td></tr>
+            <tr><td class="mt-key">A drop from Android File Transfer does nothing</td><td>Drag the files to your desktop first, then onto the page.</td></tr>
             <tr><td class="mt-key">Count-in will not run</td><td>No tempo is set. Enter a BPM or use TAP.</td></tr>
             <tr><td class="mt-key">Microphone denied</td><td>Permission was refused. Allow microphone access for this page in your browser's site settings, then arm the track again.</td></tr>
             <tr><td class="mt-key">Take sounds hollow, or doubled</td><td>The loudspeakers are being recorded along with the performance. Use headphones.</td></tr>
@@ -1706,7 +1652,6 @@
         <dl class="manual-specs">
           <div><dt>Tracks</dt><dd>4</dd></div>
           <div><dt>Input format</dt><dd>WAV · AIFF · OP-1 tape folder</dd></div>
-          <div><dt>Direct import</dt><dd>OP-1 field over USB · Chrome, Edge</dd></div>
           <div><dt>Recording</dt><dd>Live input, one track at a time</dd></div>
           <div><dt>Capture</dt><dd>Uncompressed, at the device rate</dd></div>
           <div><dt>Count-in</dt><dd>4 bars, follows tempo and metre</dd></div>
@@ -1742,7 +1687,6 @@
   const tracksEl = document.getElementById('tracks');
   const globalFileInput = document.getElementById('globalFileInput');
   const folderInput = document.getElementById('folderInput');
-  const op1ImportBtn = document.getElementById('op1ImportBtn');
   const counterEl = document.getElementById('counter');
   const tapeStrip = document.getElementById('tapeStrip');
   const reelL = document.getElementById('reelL');
@@ -3827,389 +3771,6 @@
     await loadCollected(await collectDroppedAudio(e.dataTransfer), firstEmptyTrackIndex());
   });
 
-  // ---- Direct import from an OP-1 field over USB (MTP) ----
-  //
-  // The OP-1 field shares its files over MTP, which macOS can't read without
-  // an extra app. Chrome and Edge can talk to USB devices directly (WebUSB),
-  // and MTP is a small request/response protocol over a pair of bulk
-  // endpoints, so the deck can fetch the tape itself. It only ever reads:
-  // the operations used are open/close session, list, describe and get.
-  const TE_VENDOR_ID = 0x2367;   // Teenage Engineering
-  const MTP_OP = {
-    OpenSession: 0x1002, CloseSession: 0x1003, GetStorageIDs: 0x1004,
-    GetObjectHandles: 0x1007, GetObjectInfo: 0x1008, GetObject: 0x1009
-  };
-  const MTP_OP_NAME = Object.fromEntries(Object.entries(MTP_OP).map(([k, v]) => [v, k]));
-  const MTP_OK = 0x2001;
-  const MTP_SESSION_ALREADY_OPEN = 0x201E;
-  const MTP_FORMAT_FOLDER = 0x3001;
-  const MTP_ROOT = 0xFFFFFFFF;
-  const MTP_CONTAINER = { COMMAND: 1, DATA: 2, RESPONSE: 3 };
-  const MTP_CHUNK = 1 << 20;       // largest single USB read
-  const MTP_TIMEOUT_MS = 15000;    // per USB transfer, not per file
-  let op1Importing = false;
-
-  class MtpError extends Error {}
-
-  // WebUSB transfers have no timeout of their own; a wedged device would hang
-  // the import forever.
-  function usbWithTimeout(promise, what){
-    let timer;
-    return Promise.race([
-      promise.finally(() => clearTimeout(timer)),
-      new Promise((_, reject) => {
-        timer = setTimeout(() => reject(new MtpError(`the OP-1 stopped responding during ${what}`)), MTP_TIMEOUT_MS);
-      })
-    ]);
-  }
-
-  function describeUsbInterfaces(device){
-    const parts = [];
-    for(const iface of (device.configuration ? device.configuration.interfaces : [])){
-      for(const alt of iface.alternates){
-        const hex = (n) => n.toString(16).padStart(2, '0');
-        parts.push(`#${iface.interfaceNumber} class ${hex(alt.interfaceClass)}/${hex(alt.interfaceSubclass)}/${hex(alt.interfaceProtocol)}`);
-      }
-    }
-    return parts.join(', ') || 'none';
-  }
-
-  // MTP sits on a still-image interface (class 06) or a vendor-specific one,
-  // with one bulk endpoint each way. Candidates are ranked from most to least
-  // certainly MTP; anything with a bulk pair on a non-audio class is a last
-  // resort, since the log shows what was used if it turns out wrong.
-  function findMtpInterface(device){
-    const candidates = [];
-    for(const iface of device.configuration.interfaces){
-      for(const alt of iface.alternates){
-        const bulkIn = alt.endpoints.find(e => e.type === 'bulk' && e.direction === 'in');
-        const bulkOut = alt.endpoints.find(e => e.type === 'bulk' && e.direction === 'out');
-        if(!bulkIn || !bulkOut) continue;
-        const cls = alt.interfaceClass;
-        const rank = cls === 0x06 ? 0
-          : (cls === 0xFF && /mtp/i.test(alt.interfaceName || '')) ? 1
-          : (cls === 0xFF && alt.endpoints.some(e => e.type === 'interrupt')) ? 2
-          : cls === 0xFF ? 3
-          : (cls !== 0x01 && cls !== 0x02 && cls !== 0x0A) ? 4   // not audio or serial
-          : -1;
-        if(rank >= 0) candidates.push({ rank, iface, alt, bulkIn, bulkOut });
-      }
-    }
-    candidates.sort((x, y) => x.rank - y.rank);
-    return candidates[0] || null;
-  }
-
-  class MtpSession {
-    constructor(device, found){
-      this.device = device;
-      this.epIn = found.bulkIn.endpointNumber;
-      this.epOut = found.bulkOut.endpointNumber;
-      this.packetSize = found.bulkIn.packetSize || 512;
-      this.transactionId = 0;
-    }
-
-    async sendCommand(code, params){
-      const buf = new ArrayBuffer(12 + 4 * params.length);
-      const v = new DataView(buf);
-      v.setUint32(0, buf.byteLength, true);
-      v.setUint16(4, MTP_CONTAINER.COMMAND, true);
-      v.setUint16(6, code, true);
-      v.setUint32(8, this.transactionId, true);
-      params.forEach((p, i) => v.setUint32(12 + 4 * i, p >>> 0, true));
-      const r = await usbWithTimeout(this.device.transferOut(this.epOut, buf), MTP_OP_NAME[code]);
-      if(r.status !== 'ok') throw new MtpError(`sending ${MTP_OP_NAME[code]} failed (${r.status})`);
-    }
-
-    async transferIn(length, what){
-      const r = await usbWithTimeout(this.device.transferIn(this.epIn, length), what);
-      if(r.status !== 'ok') throw new MtpError(`reading ${what} failed (${r.status})`);
-      return new Uint8Array(r.data.buffer, r.data.byteOffset, r.data.byteLength);
-    }
-
-    // Reads one whole container, however many USB transfers it spans.
-    async readContainer(what, onProgress){
-      let first;
-      do{
-        first = await this.transferIn(MTP_CHUNK, what);
-      }while(first.byteLength === 0);  // the zero-length packet that closed the last phase
-      if(first.byteLength < 12) throw new MtpError(`the OP-1 sent a malformed reply to ${what}`);
-
-      const head = new DataView(first.buffer, first.byteOffset, 12);
-      const total = head.getUint32(0, true);
-      const type = head.getUint16(4, true);
-      const code = head.getUint16(6, true);
-      if(total < 12) throw new MtpError(`the OP-1 sent a malformed reply to ${what}`);
-
-      const out = new Uint8Array(total);
-      let got = Math.min(first.byteLength, total);
-      out.set(first.subarray(0, got));
-      while(got < total){
-        // Ask for exactly what's left, rounded up to whole packets: a container
-        // that ends on a packet boundary may have no short packet to end on.
-        const remaining = total - got;
-        const want = Math.min(MTP_CHUNK, Math.ceil(remaining / this.packetSize) * this.packetSize);
-        const part = await this.transferIn(want, what);
-        const take = Math.min(part.byteLength, remaining);
-        out.set(part.subarray(0, take), got);
-        got += take;
-        if(onProgress) onProgress(got - 12);
-      }
-      return { type, code, payload: out.subarray(12) };
-    }
-
-    async transaction(code, params = [], onProgress = null){
-      const what = MTP_OP_NAME[code];
-      await this.sendCommand(code, params);
-      let data = null;
-      let reply = await this.readContainer(what, onProgress);
-      if(reply.type === MTP_CONTAINER.DATA){
-        data = reply.payload;
-        reply = await this.readContainer(what);
-      }
-      if(reply.type !== MTP_CONTAINER.RESPONSE) throw new MtpError(`the OP-1 sent an unexpected reply to ${what}`);
-      this.transactionId++;
-      return { code: reply.code, data };
-    }
-
-    async call(code, params = [], onProgress = null){
-      const r = await this.transaction(code, params, onProgress);
-      if(r.code !== MTP_OK){
-        throw new MtpError(`the OP-1 refused ${MTP_OP_NAME[code]} (code 0x${r.code.toString(16)})`);
-      }
-      return r.data;
-    }
-
-    async listFolder(storage, parent){
-      const r = await this.transaction(MTP_OP.GetObjectHandles, [storage, 0, parent]);
-      if(r.code !== MTP_OK || !r.data) return null;
-      const items = [];
-      for(const handle of mtpUint32Array(r.data)){
-        const info = parseMtpObjectInfo(await this.call(MTP_OP.GetObjectInfo, [handle]));
-        items.push({ handle, ...info });
-      }
-      return items;
-    }
-  }
-
-  function mtpUint32Array(data){
-    const v = new DataView(data.buffer, data.byteOffset, data.byteLength);
-    if(data.byteLength < 4) return [];
-    const count = v.getUint32(0, true);
-    const out = [];
-    for(let i = 0; i < count && 8 + 4 * i <= data.byteLength; i++) out.push(v.getUint32(4 + 4 * i, true));
-    return out;
-  }
-
-  // ObjectInfo dataset: fixed fields, then the filename as a PTP string —
-  // a length byte counting UTF-16 units including the terminator. A folder is
-  // format 0x3001, but some devices only mark it by association type 1.
-  function parseMtpObjectInfo(data){
-    const v = new DataView(data.buffer, data.byteOffset, data.byteLength);
-    if(data.byteLength < 53) throw new MtpError('the OP-1 described a file too briefly to read');
-    const chars = v.getUint8(52);
-    let name = '';
-    for(let i = 0; i < chars && 53 + 2 * i + 1 < data.byteLength; i++){
-      const c = v.getUint16(53 + 2 * i, true);
-      if(c) name += String.fromCharCode(c);
-    }
-    const format = v.getUint16(4, true);
-    const association = v.getUint16(42, true);
-    return {
-      name,
-      size: v.getUint32(8, true),
-      isFolder: format === MTP_FORMAT_FOLDER || association === 0x0001
-    };
-  }
-
-  const listNames = (items) => items.length ? items.map(i => i.isFolder ? i.name + '/' : i.name).join(', ') : 'nothing';
-
-  async function findOp1Tape(session, log){
-    const storages = mtpUint32Array(await session.call(MTP_OP.GetStorageIDs));
-    log('ok', `${storages.length} storage area${storages.length === 1 ? '' : 's'} on the OP-1`);
-    const seen = [];
-    for(const storage of storages){
-      // Root is 0xFFFFFFFF by the spec; some devices only answer to 0.
-      const root = (await session.listFolder(storage, MTP_ROOT)) || (await session.listFolder(storage, 0)) || [];
-      log('ok', `Top level: ${listNames(root)}`);
-      seen.push(...root.map(i => i.name));
-
-      const tape = root.find(i => /^tape$/i.test(i.name));
-      if(tape){
-        const inside = (await session.listFolder(storage, tape.handle)) || [];
-        log('ok', `tape/ holds: ${listNames(inside)}`);
-        const tracks = inside.filter(i => !i.isFolder && TAPE_TRACK_RE.test(i.name));
-        if(tracks.length) return tracks;
-      }
-      // Tracks sitting at the top level rather than inside tape/.
-      const loose = root.filter(i => !i.isFolder && TAPE_TRACK_RE.test(i.name));
-      if(loose.length) return loose;
-    }
-    throw new MtpError(seen.length
-      ? `no track_1–track_4 files found — see what the OP-1 listed above`
-      : 'the OP-1 listed nothing at all');
-  }
-
-  // ---- The import log ----
-  // Shown right under the button: the main status line sits at the foot of
-  // the page, well out of view of anyone pressing IMPORT. On failure it keeps
-  // every step, so the whole thing can be copied and sent for diagnosis.
-  const op1LogEl = document.getElementById('op1ImportLog');
-  const op1LogList = document.getElementById('op1ImportLogList');
-  const op1LogCopyBtn = document.getElementById('op1ImportCopy');
-  let op1LogLines = [];
-
-  function op1LogRender(){
-    op1LogList.textContent = '';
-    for(const line of op1LogLines){
-      const li = document.createElement('li');
-      li.className = 'op1-log-' + line.kind;
-      li.textContent = line.text;   // names come from the device: never as HTML
-      op1LogList.appendChild(li);
-    }
-  }
-  function op1LogStart(){
-    op1LogLines = [];
-    op1LogEl.hidden = false;
-    op1LogEl.classList.remove('failed');
-    op1LogCopyBtn.hidden = true;
-    op1LogRender();
-  }
-  function op1Log(kind, text){
-    // A progress line replaces the one before it rather than piling up.
-    const last = op1LogLines[op1LogLines.length - 1];
-    if(kind === 'progress' && last && last.kind === 'progress') last.text = text;
-    else op1LogLines.push({ kind, text });
-    op1LogRender();
-  }
-
-  op1LogCopyBtn.addEventListener('click', async () => {
-    const text = ['SR-4 · OP-1 import log', navigator.userAgent, '',
-      ...op1LogLines.map(l => (l.kind === 'err' ? '✗ ' : l.kind === 'ok' ? '✓ ' : '· ') + l.text)].join('\n');
-    try{
-      await navigator.clipboard.writeText(text);
-      op1LogCopyBtn.textContent = 'Copied ✓';
-    }catch(err){
-      // Clipboard refused: select the log so a manual copy is one keystroke.
-      const range = document.createRange();
-      range.selectNodeContents(op1LogList);
-      const sel = window.getSelection();
-      sel.removeAllRanges(); sel.addRange(range);
-      op1LogCopyBtn.textContent = 'Selected — press ⌘C';
-    }
-    setTimeout(() => { op1LogCopyBtn.textContent = 'Copy details'; }, 2500);
-  });
-
-  function op1ImportErrorMessage(err, step){
-    const name = err && err.name;
-    if(step === 'choosing the OP-1' && name === 'NotFoundError'){
-      return 'No OP-1 chosen. Connect the OP-1 field by USB, put it in MTP mode (shift + com, then T4), and pick it from the list.';
-    }
-    if((step === 'opening the USB connection' || step === 'claiming the OP-1') &&
-       (name === 'SecurityError' || name === 'NetworkError' || name === 'InvalidStateError')){
-      return 'Another app is holding the OP-1. Quit Android File Transfer (and its menu-bar agent), OpenMTP, Image Capture and Photos, then press IMPORT FROM OP-1 again.';
-    }
-    const detail = (err && err.message) || String(err);
-    return `Couldn't import from the OP-1 while ${step}: ${detail}.`;
-  }
-
-  async function importFromOp1(){
-    op1LogStart();
-    if(!navigator.usb){
-      const msg = 'Importing straight from the OP-1 needs Chrome or Edge on a computer — this browser has no USB access. Copy the tape folder off with an MTP app instead and drop it here.';
-      op1Log('err', msg);
-      setStatus(msg, true);
-      return;
-    }
-    if(op1Importing) return;
-    op1Importing = true;
-    op1ImportBtn.disabled = true;
-
-    let device = null;
-    let step = 'choosing the OP-1';
-    const hex4 = (n) => (n || 0).toString(16).padStart(4, '0');
-    try{
-      op1Log('step', 'Looking for the OP-1…');
-      // A device chosen once is remembered by the browser, so later imports
-      // skip the chooser entirely.
-      const known = (await navigator.usb.getDevices()).filter(d => d.vendorId === TE_VENDOR_ID);
-      device = known.find(d => /op-?1/i.test(d.productName || '')) || known[0] ||
-        await navigator.usb.requestDevice({ filters: [{ vendorId: TE_VENDOR_ID }, { classCode: 0x06 }] });
-      op1Log('ok', `Found ${device.productName || 'a USB device'} (USB ${hex4(device.vendorId)}:${hex4(device.productId)})${known.length ? ', remembered from before' : ''}`);
-
-      step = 'opening the USB connection';
-      if(!device.opened) await device.open();
-      if(!device.configuration) await device.selectConfiguration(1);
-      op1Log('ok', `Connected. USB interfaces: ${describeUsbInterfaces(device)}`);
-
-      step = 'finding MTP';
-      const found = findMtpInterface(device);
-      if(!found){
-        throw new MtpError(`it isn't in MTP mode — press shift + com, then T4 on the OP-1 field`);
-      }
-      op1Log('ok', `Using interface #${found.iface.interfaceNumber} for MTP`);
-
-      step = 'claiming the OP-1';
-      await device.claimInterface(found.iface.interfaceNumber);
-      if(found.alt.alternateSetting){
-        await device.selectAlternateInterface(found.iface.interfaceNumber, found.alt.alternateSetting);
-      }
-      op1Log('ok', 'Claimed the OP-1');
-
-      step = 'opening an MTP session';
-      const session = new MtpSession(device, found);
-      const opened = await session.transaction(MTP_OP.OpenSession, [1]);
-      if(opened.code !== MTP_OK && opened.code !== MTP_SESSION_ALREADY_OPEN){
-        throw new MtpError(`the OP-1 refused OpenSession (code 0x${opened.code.toString(16)})`);
-      }
-      op1Log('ok', `MTP session open${opened.code === MTP_SESSION_ALREADY_OPEN ? ' (one was already open)' : ''}`);
-
-      step = 'finding the tape';
-      setStatus('Connected to the OP-1 — looking for the tape…');
-      const tracksOnTape = await findOp1Tape(session, op1Log);
-
-      const total = tracksOnTape.reduce((n, t) => n + t.size, 0);
-      let done = 0;
-      const files = [];
-      for(const t of tracksOnTape){
-        step = `reading ${t.name}`;
-        const data = await session.call(MTP_OP.GetObject, [t.handle], (got) => {
-          const pct = total ? Math.min(100, Math.round(100 * (done + got) / total)) : 0;
-          const text = `Reading ${t.name} — ${pct}% (${humanSize(done + got)} of ${humanSize(total)})`;
-          op1Log('progress', text);
-          setStatus(`Importing from the OP-1 — ${text}…`);
-        });
-        done += t.size;
-        files.push(new File([data], t.name));
-      }
-      if(op1LogLines.length && op1LogLines[op1LogLines.length - 1].kind === 'progress') op1LogLines.pop();
-      op1Log('ok', `Read ${files.length} track${files.length === 1 ? '' : 's'} (${humanSize(done)})`);
-
-      // Let go of the OP-1 before decoding, so it's free again straight away.
-      step = 'closing the connection';
-      await session.transaction(MTP_OP.CloseSession).catch(() => {});
-      await device.releaseInterface(found.iface.interfaceNumber).catch(() => {});
-      await device.close().catch(() => {});
-      device = null;
-      op1Log('ok', 'Released the OP-1');
-
-      await loadCollected(pickTapeFiles(files.map(file => ({ file, path: 'tape/' + file.name }))), firstEmptyTrackIndex());
-      op1Log(statusEl.classList.contains('err') ? 'err' : 'ok', statusEl.textContent);
-    }catch(err){
-      const msg = op1ImportErrorMessage(err, step);
-      op1Log('err', msg);
-      op1LogEl.classList.add('failed');
-      op1LogCopyBtn.hidden = false;
-      setStatus(msg, true);
-    }finally{
-      if(device && device.opened){
-        try{ await device.close(); }catch(e){}
-      }
-      op1Importing = false;
-      op1ImportBtn.disabled = false;
-    }
-  }
-
-  op1ImportBtn.addEventListener('click', importFromOp1);
 
   async function loadFilesAuto(files, dropIndex){
     const assignments = []; // {file, index, matched}
