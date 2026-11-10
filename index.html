@@ -245,6 +245,24 @@
     outline:none;
     cursor:pointer;
   }
+  /* ---- Recording input picker ---- */
+  .input-bar-label{
+    font-family:'JetBrains Mono',monospace;
+    font-size:10px;
+    font-weight:700;
+    letter-spacing:.14em;
+    text-transform:uppercase;
+    color:var(--t1);
+    white-space:nowrap;
+  }
+  .input-select{
+    padding:7px 6px;
+    max-width:240px;
+    min-width:0;
+    text-overflow:ellipsis;
+  }
+  .input-select:disabled{opacity:.5;cursor:not-allowed;}
+
   /* Each variant below is qualified with .mini-btn: the base .mini-btn rule
      comes later in the sheet and would otherwise win, pinning them at 24px. */
   .mini-btn.grid-toggle-btn{
@@ -1212,6 +1230,14 @@
     <span class="load-bar-hint">Saves everything — audio, titles, faders, EQ, trim and notes — into one <code>.4trk</code> file you can keep, back up, or move to another machine. Open it here to pick the mix back up exactly as you left it.</span>
   </div>
 
+  <div class="load-bar session-bar input-bar">
+    <span class="input-bar-label">Record from</span>
+    <select class="bpb-select input-select" id="inputDeviceSelect" aria-label="Recording input device"></select>
+    <select class="bpb-select input-select" id="inputSourceSelect" aria-label="Which of its channels to record"></select>
+    <button class="load-bar-btn session-btn" id="inputFindBtn">SHOW MY INPUTS</button>
+    <span class="load-bar-hint" id="inputHint"></span>
+  </div>
+
   <div class="tracks" id="tracks"></div>
 
   <div class="trim-screen">
@@ -1411,7 +1437,7 @@
       <section class="manual-section">
         <div class="manual-sec-head"><span class="manual-sec-num">3</span><h2>Recording</h2></div>
         <p>
-          Any track may be recorded directly from a microphone or instrument input.
+          Any track may be recorded directly from a microphone, an instrument input, or a K.O. AMP.
           Press the <b>●</b> button on a track to arm it; the track is outlined in red and
           its meter shows the incoming signal, allowing levels to be set before a take.
         </p>
@@ -1424,10 +1450,35 @@
         <div class="manual-note">
           <div class="manual-note-tag">Note</div>
           <p>
-            Only one track may be armed at a time, the instrument having a single input.
-            Arming a second track releases the first.
+            Only one track may be armed at a time. Arming a second track releases the first.
+            A take begins from wherever the tape was stopped; press <b>REW</b> to begin from the head.
           </p>
         </div>
+        <h3 class="manual-sub">Choosing the Input</h3>
+        <p>
+          The <b>RECORD FROM</b> row selects what the arm buttons record. Press
+          <b>SHOW MY INPUTS</b> and permit microphone access; every audio input connected to your
+          computer is then listed by name, and your choice is remembered. A second selector chooses
+          which of the device's channels to record, as a stereo pair or a single channel in mono.
+        </p>
+        <h3 class="manual-sub">K.O. AMP</h3>
+        <p>
+          The EP&#8209;35 K.O. AMP, connected by USB, presents each of its inputs on a channel pair of
+          its own. Choose it under <b>RECORD FROM</b> and select the source required:
+        </p>
+        <table class="manual-table">
+          <tbody>
+            <tr><td class="mt-key">Mix · 1–2</td><td>Everything the amplifier plays, effects included.</td></tr>
+            <tr><td class="mt-key">Guitar · 3–4</td><td>The guitar input alone.</td></tr>
+            <tr><td class="mt-key">Mic · 5–6</td><td>The microphone input alone.</td></tr>
+            <tr><td class="mt-key">Line in · 7–8</td><td>The line input alone.</td></tr>
+          </tbody>
+        </table>
+        <p>
+          Where your backing tracks are played through the amplifier itself, record from Guitar, Mic
+          or Line in rather than Mix, that the backing may be kept out of the take. An OP&#8209;1 field
+          connected by USB may be recorded in the same manner, as a single stereo pair.
+        </p>
         <h3 class="manual-sub">Count-In</h3>
         <p>
           Engaging <b>COUNT-IN 4</b> in the tempo row sounds four bars of clicks before each take,
@@ -1638,6 +1689,9 @@
             <tr><td class="mt-key">RECORD refused</td><td>No track is armed. Press the ● button on the track you wish to record.</td></tr>
             <tr><td class="mt-key">A drop from Android File Transfer does nothing</td><td>Drag the files to your desktop first, then onto the page.</td></tr>
             <tr><td class="mt-key">Count-in will not run</td><td>No tempo is set. Enter a BPM or use TAP.</td></tr>
+            <tr><td class="mt-key">K.O. AMP not listed</td><td>Press SHOW MY INPUTS and permit microphone access. Should it still be absent, try the amplifier's other USB&#8209;C port, and a cable that carries data.</td></tr>
+            <tr><td class="mt-key">Only Mix offered for the K.O. AMP</td><td>The browser is passing two of the amplifier's eight channels. Record from Mix, or try a current Chrome.</td></tr>
+            <tr><td class="mt-key">“Recorded only silence”</td><td>The chosen channels carried no signal, and the take was discarded to protect the track. Check the source under RECORD FROM against the input in use.</td></tr>
             <tr><td class="mt-key">Microphone denied</td><td>Permission was refused. Allow microphone access for this page in your browser's site settings, then arm the track again.</td></tr>
             <tr><td class="mt-key">Take sounds hollow, or doubled</td><td>The loudspeakers are being recorded along with the performance. Use headphones.</td></tr>
             <tr><td class="mt-key">Mixdown refused</td><td>The trim selection is empty. Widen it and repeat.</td></tr>
@@ -1653,6 +1707,8 @@
           <div><dt>Tracks</dt><dd>4</dd></div>
           <div><dt>Input format</dt><dd>WAV · AIFF · OP-1 tape folder</dd></div>
           <div><dt>Recording</dt><dd>Live input, one track at a time</dd></div>
+          <div><dt>Inputs</dt><dd>Any audio input · mono or stereo</dd></div>
+          <div><dt>K.O. AMP sources</dt><dd>Mix · Guitar · Mic · Line in</dd></div>
           <div><dt>Capture</dt><dd>Uncompressed, at the device rate</dd></div>
           <div><dt>Count-in</dt><dd>4 bars, follows tempo and metre</dd></div>
           <div><dt>Mixdown</dt><dd>44.1 kHz · 16-bit · stereo .wav</dd></div>
@@ -1698,6 +1754,10 @@
   const loopBtn = document.getElementById('loopBtn');
   const recordBtn = document.getElementById('recordBtn');
   const countInBtn = document.getElementById('countInBtn');
+  const inputDeviceSelect = document.getElementById('inputDeviceSelect');
+  const inputSourceSelect = document.getElementById('inputSourceSelect');
+  const inputFindBtn = document.getElementById('inputFindBtn');
+  const inputHint = document.getElementById('inputHint');
   const bounceBtn = document.getElementById('bounceBtn');
   const clearBtn = document.getElementById('clearBtn');
   const masterFader = document.getElementById('masterFader');
@@ -1889,6 +1949,12 @@
   let countInEnabled = false;
   let countInAbort = false;
   let countingIn = false;
+  // What the arm buttons record from. deviceId '' is the system default;
+  // channels are zero-based indices into that device, one for mono, two for
+  // stereo; channelCount is how many the device was last seen to deliver
+  // (0 = not yet known). Kept per browser, not in session files: it describes
+  // this machine's hardware, not the mix.
+  let inputPref = { deviceId: '', label: '', channels: [0], channelCount: 0 };
   let playStartCtxTime = 0;
   let elapsedBeforeStop = 0;
   let rafId = null;
@@ -4291,6 +4357,7 @@
         showBarGrid,
         looping: isLooping,
         countIn: countInEnabled,
+        input: inputPref,
         tracks: tracks.map(t => ({
           title: t.title, volume: t.volume, pan: t.pan,
           muted: t.muted, solo: t.solo
@@ -4359,6 +4426,15 @@
       if(typeof data.countIn === 'boolean'){
         countInEnabled = data.countIn;
         countInBtn.classList.toggle('on', countInEnabled);
+      }
+      if(data.input && typeof data.input.deviceId === 'string' && Array.isArray(data.input.channels)){
+        const chans = data.input.channels.filter(c => Number.isInteger(c) && c >= 0 && c < 32).slice(0, 2);
+        inputPref = {
+          deviceId: data.input.deviceId,
+          label: typeof data.input.label === 'string' ? data.input.label : '',
+          channels: chans.length ? chans : [0],
+          channelCount: Number.isInteger(data.input.channelCount) ? data.input.channelCount : 0
+        };
       }
 
       if(Array.isArray(data.tracks)){
@@ -4698,7 +4774,10 @@
     class RecProcessor extends AudioWorkletProcessor {
       process(inputs){
         const input = inputs[0];
-        if(input && input[0]) this.port.postMessage(input[0].slice(0));
+        if(input && input.length){
+          const channels = input.map(c => c.slice(0));
+          this.port.postMessage(channels, channels.map(c => c.buffer));
+        }
         return true;
       }
     }
@@ -4719,6 +4798,158 @@
     return tracks.find(t => t.armed) || null;
   }
 
+  // ---- Choosing what to record from ----
+  //
+  // Any audio input the browser can see: the built-in microphone, an OP-1
+  // field, or a K.O. AMP, which is a USB interface carrying each of its inputs
+  // on its own stereo pair. The chosen channels are tapped off the device with
+  // a splitter and merger, so the meter and the recorder both see exactly the
+  // channels selected and nothing else.
+  const KO_AMP_RE = /ep[\s–-]?35|k\.?\s?o\.?[\s-]*amp/i;
+  // Per the EP-35 guide: 1-2 stereo mixdown, 3-4 guitar, 5-6 microphone, 7-8 line-in.
+  const KO_AMP_PAIRS = ['Mix', 'Guitar', 'Mic', 'Line in'];
+  let inputTap = null;
+  let inputDevicesSeen = [];
+  let inputLabelsKnown = false;
+
+  const isKoAmp = () => KO_AMP_RE.test(inputPref.label);
+  // Chrome appends the USB ids, "Name (2367:0012)"; they mean nothing to a person.
+  const cleanInputLabel = (label) => (label || '').replace(/\s*\([0-9a-f]{4}:[0-9a-f]{4}\)\s*$/i, '');
+  const inputDeviceName = () => inputPref.deviceId ? (cleanInputLabel(inputPref.label) || 'the chosen input') : 'the default input';
+
+  function inputSourceName(channels){
+    const pairName = isKoAmp() ? KO_AMP_PAIRS[Math.floor(channels[0] / 2)] : null;
+    if(channels.length === 2){
+      const range = `${channels[0] + 1}–${channels[1] + 1}`;
+      return pairName ? `${pairName} · stereo ${range}` : `Stereo ${range}`;
+    }
+    return pairName ? `${pairName} · mono ${channels[0] + 1}` : `Mono ${channels[0] + 1}`;
+  }
+
+  function buildInputSourceOptions(){
+    // Until a device has been opened its channel count is a guess: one for
+    // the system default, which is nearly always a microphone.
+    const count = Math.min(32, inputPref.channelCount || (inputPref.deviceId ? 2 : 1));
+    const options = [];
+    for(let c = 0; c + 1 < count; c += 2) options.push([c, c + 1]);
+    for(let c = 0; c < count; c++) options.push([c]);
+
+    let chosen = options.find(o => o.join() === inputPref.channels.join());
+    let fellBack = false;
+    if(!chosen){
+      chosen = options[0];
+      fellBack = true;
+      inputPref.channels = chosen.slice();
+    }
+
+    inputSourceSelect.textContent = '';
+    const groups = { 2: document.createElement('optgroup'), 1: document.createElement('optgroup') };
+    groups[2].label = 'Stereo'; groups[1].label = 'Mono';
+    for(const o of options){
+      const opt = document.createElement('option');
+      opt.value = o.join();
+      opt.textContent = inputSourceName(o);
+      groups[o.length].appendChild(opt);
+    }
+    if(groups[2].children.length) inputSourceSelect.appendChild(groups[2]);
+    inputSourceSelect.appendChild(groups[1]);
+    inputSourceSelect.value = chosen.join();
+    updateInputHint();
+    return fellBack;
+  }
+
+  function updateInputHint(){
+    if(!inputLabelsKnown){
+      inputHint.textContent = 'Recording uses your default microphone. Press SHOW MY INPUTS to pick another — a K.O. AMP or OP-1 field connected by USB appears here by name.';
+    }else if(isKoAmp() && inputPref.channelCount > 0 && inputPref.channelCount < 8){
+      inputHint.textContent = `This browser is passing only ${inputPref.channelCount} of the K.O. AMP's 8 channels, so Mix (everything the amp plays) is what can be recorded here. The separate guitar, mic and line channels need all 8.`;
+    }else if(isKoAmp()){
+      inputHint.textContent = 'K.O. AMP: Mix is everything the amp plays. Guitar, Mic and Line in record that input alone — pick one of those when your backing tracks play through the amp, so they stay out of the take.';
+    }else{
+      inputHint.textContent = 'What the ● arm buttons record from. Stereo keeps both channels of a pair; Mono records one.';
+    }
+  }
+
+  async function refreshInputDevices(){
+    if(!navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices){
+      inputDeviceSelect.disabled = inputSourceSelect.disabled = true;
+      inputFindBtn.hidden = true;
+      inputHint.textContent = 'This browser cannot list audio inputs; recording uses its default microphone.';
+      return;
+    }
+    let devices = [];
+    try{
+      devices = (await navigator.mediaDevices.enumerateDevices()).filter(d => d.kind === 'audioinput');
+    }catch(err){}
+    // The browser withholds names until microphone access has been granted.
+    inputLabelsKnown = devices.some(d => d.label);
+    // Chrome lists the default twice, once under these aliases.
+    inputDevicesSeen = devices.filter(d => d.label && d.deviceId !== 'default' && d.deviceId !== 'communications');
+
+    // A remembered device is matched by id, or by name if its id was reissued.
+    if(inputPref.deviceId && inputLabelsKnown){
+      const byId = inputDevicesSeen.find(d => d.deviceId === inputPref.deviceId);
+      const byLabel = !byId && inputPref.label && inputDevicesSeen.find(d => d.label === inputPref.label);
+      if(byLabel) inputPref.deviceId = byLabel.deviceId;
+    }
+
+    inputDeviceSelect.textContent = '';
+    const add = (value, text) => {
+      const opt = document.createElement('option');
+      opt.value = value; opt.textContent = text;
+      inputDeviceSelect.appendChild(opt);
+    };
+    add('', 'System default input');
+    for(const d of inputDevicesSeen) add(d.deviceId, cleanInputLabel(d.label));
+    if(inputPref.deviceId && !inputDevicesSeen.some(d => d.deviceId === inputPref.deviceId)){
+      add(inputPref.deviceId, `${cleanInputLabel(inputPref.label) || 'Saved input'} (not connected)`);
+    }
+    inputDeviceSelect.value = inputPref.deviceId;
+    inputFindBtn.hidden = inputLabelsKnown;
+    buildInputSourceOptions();
+  }
+
+  function inputConstraints(){
+    // The browser's voice-call processing wrecks music: it ducks, gates and
+    // rides the gain. Ask for the raw signal, and for every channel the
+    // device has rather than a stereo fold-down.
+    const audio = {
+      echoCancellation: false,
+      noiseSuppression: false,
+      autoGainControl: false,
+      channelCount: { ideal: 32 }
+    };
+    if(inputPref.deviceId) audio.deviceId = { exact: inputPref.deviceId };
+    return { audio };
+  }
+
+  function streamChannelCount(stream){
+    const track = stream.getAudioTracks()[0];
+    const n = track && track.getSettings ? track.getSettings().channelCount : 0;
+    return Number.isInteger(n) && n > 0 ? n : 2;
+  }
+
+  function buildInputTap(){
+    if(inputTap){
+      inputTap.splitter.disconnect();
+      inputTap.merger.disconnect();
+      try{ micSourceNode.disconnect(inputTap.splitter); }catch(e){}
+    }
+    const chans = inputPref.channels;
+    // A splitter treats channels as discrete, so nothing is folded together
+    // and a channel the device lacks simply comes through silent.
+    const splitter = audioCtx.createChannelSplitter(Math.max(...chans) + 1);
+    const merger = audioCtx.createChannelMerger(chans.length);
+    micSourceNode.connect(splitter);
+    chans.forEach((c, i) => splitter.connect(merger, c, i));
+    // Monitoring is metering only — the input is never routed to the
+    // speakers, which would feed straight back into a microphone.
+    monitorAnalyser = audioCtx.createAnalyser();
+    monitorAnalyser.fftSize = 1024;
+    merger.connect(monitorAnalyser);
+    inputTap = { splitter, merger };
+  }
+
   async function ensureMic(){
     if(micStream) return true;
     if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia){
@@ -4726,42 +4957,145 @@
       return false;
     }
     try{
-      // The browser's voice-call processing wrecks music: it ducks, gates and
-      // rides the gain. Ask for the raw signal instead.
-      micStream = await navigator.mediaDevices.getUserMedia({
-        audio: {
-          echoCancellation: false,
-          noiseSuppression: false,
-          autoGainControl: false,
-          channelCount: 1
-        }
-      });
+      micStream = await navigator.mediaDevices.getUserMedia(inputConstraints());
     }catch(err){
-      const denied = err && (err.name === 'NotAllowedError' || err.name === 'SecurityError');
+      const name = err && err.name;
+      const denied = name === 'NotAllowedError' || name === 'SecurityError';
       setStatus(denied
         ? 'Microphone access was denied. Allow it in your browser’s site settings to record.'
-        : 'No microphone available to record from.', true);
+        : (inputPref.deviceId && (name === 'OverconstrainedError' || name === 'NotFoundError'))
+          ? `${inputDeviceName()} isn't connected. Plug it in, or choose another input under RECORD FROM.`
+          : 'No audio input available to record from.', true);
       return false;
     }
 
+    inputPref.channelCount = streamChannelCount(micStream);
+    // Access has now been granted, so the device names can be listed.
+    await refreshInputDevices();
+    saveSession();
+
+    micStream.getAudioTracks()[0].addEventListener('ended', onInputLost);
     ensureCtx();
     micSourceNode = audioCtx.createMediaStreamSource(micStream);
-    // Monitoring is metering only — the input is never routed to the
-    // speakers, which would feed straight back into the microphone.
-    monitorAnalyser = audioCtx.createAnalyser();
-    monitorAnalyser.fftSize = 1024;
-    micSourceNode.connect(monitorAnalyser);
+    buildInputTap();
     return true;
   }
 
   function releaseMic(){
     if(micStream){
-      for(const track of micStream.getTracks()) track.stop();
+      for(const track of micStream.getTracks()){
+        track.removeEventListener('ended', onInputLost);
+        track.stop();
+      }
       micStream = null;
+    }
+    if(inputTap){
+      inputTap.splitter.disconnect();
+      inputTap.merger.disconnect();
+      inputTap = null;
     }
     if(micSourceNode){ micSourceNode.disconnect(); micSourceNode = null; }
     monitorAnalyser = null;
   }
+
+  // The input was unplugged or switched off. Whatever was captured so far is
+  // kept as the take; nothing more can arrive.
+  function onInputLost(){
+    const midTake = isRecording || countingIn;
+    if(midTake) stop();
+    for(const t of tracks){
+      if(!t.armed) continue;
+      t.armed = false;
+      document.getElementById(`arm-${t.index}`).classList.remove('armed');
+      if(t.wrapEl) t.wrapEl.classList.remove('armed');
+      updateMeter(t);
+    }
+    const lost = inputDeviceName();
+    releaseMic();
+    refreshInputDevices();
+    if(!midTake) setStatus(`${lost} was disconnected, so the track has been disarmed.`, true);
+  }
+
+  // Opens the chosen device just long enough to learn how many channels it
+  // delivers, unless a track is armed, in which case it stays open for it.
+  async function applyInputDevice(){
+    const armed = armedTrack();
+    releaseMic();
+    let stream = null;
+    try{
+      stream = await navigator.mediaDevices.getUserMedia(inputConstraints());
+    }catch(err){
+      if(armed) await setArmed(armed.index, false);
+      setStatus(`Couldn't open ${inputDeviceName()}. Check it's connected and not in use by another application.`, true);
+      return;
+    }
+    inputPref.channelCount = streamChannelCount(stream);
+    for(const track of stream.getTracks()) track.stop();
+
+    // A device chosen by name starts on its first stereo pair; the system
+    // default, almost always a microphone, on mono.
+    inputPref.channels = (inputPref.deviceId && inputPref.channelCount >= 2) ? [0, 1] : [0];
+    await refreshInputDevices();
+    saveSession();
+
+    if(armed && !(await ensureMic())){
+      await setArmed(armed.index, false);
+      return;
+    }
+    setStatus(`Recording from ${inputDeviceName()} — ${inputSourceName(inputPref.channels)}.` +
+      (armed ? '' : ' Arm a track with its ● button to check the level.'));
+  }
+
+  inputDeviceSelect.addEventListener('change', async () => {
+    if(isRecording || countingIn){
+      inputDeviceSelect.value = inputPref.deviceId;
+      setStatus('Stop the current take before changing the input.', true);
+      return;
+    }
+    const picked = inputDevicesSeen.find(d => d.deviceId === inputDeviceSelect.value);
+    inputPref.deviceId = picked ? picked.deviceId : '';
+    inputPref.label = picked ? picked.label : '';
+    inputPref.channelCount = 0;
+    await applyInputDevice();
+  });
+
+  inputSourceSelect.addEventListener('change', () => {
+    if(isRecording || countingIn){
+      inputSourceSelect.value = inputPref.channels.join();
+      setStatus('Stop the current take before changing the input.', true);
+      return;
+    }
+    inputPref.channels = inputSourceSelect.value.split(',').map(Number);
+    if(micSourceNode) buildInputTap();
+    saveSession();
+    setStatus(`Recording from ${inputDeviceName()} — ${inputSourceName(inputPref.channels)}.`);
+  });
+
+  // Device names stay hidden until microphone access is granted, so this asks
+  // for it, then lets go of the microphone straight away.
+  inputFindBtn.addEventListener('click', async () => {
+    if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia){
+      setStatus('This browser does not provide microphone access. Recording is unavailable.', true);
+      return;
+    }
+    try{
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      for(const track of stream.getTracks()) track.stop();
+    }catch(err){
+      setStatus('Microphone access was denied. Allow it in your browser’s site settings to choose an input.', true);
+      return;
+    }
+    await refreshInputDevices();
+    setStatus(inputDevicesSeen.length
+      ? `Found ${inputDevicesSeen.length} input${inputDevicesSeen.length === 1 ? '' : 's'}. Choose one under RECORD FROM.`
+      : 'No named inputs found — recording will use the system default.');
+  });
+
+  if(navigator.mediaDevices && navigator.mediaDevices.addEventListener){
+    // Plugging the amp in or out updates the list without a reload.
+    navigator.mediaDevices.addEventListener('devicechange', () => { refreshInputDevices(); });
+  }
+  refreshInputDevices();
 
   async function setArmed(index, armed){
     const track = tracks[index];
@@ -4949,11 +5283,19 @@
     recordStartOffset = (elapsedBeforeStop >= trimStart && elapsedBeforeStop < trimEnd)
       ? elapsedBeforeStop : trimStart;
 
-    recorderNode = new AudioWorkletNode(audioCtx, 'rec-processor');
+    recorderNode = new AudioWorkletNode(audioCtx, 'rec-processor', {
+      numberOfInputs: 1,
+      numberOfOutputs: 1,
+      outputChannelCount: [1],
+      channelCount: inputPref.channels.length,
+      channelCountMode: 'explicit',
+      channelInterpretation: 'discrete'
+    });
     recorderNode.port.onmessage = (e) => {
       if(isRecording) recordChunks.push(e.data);
     };
-    micSourceNode.connect(recorderNode);
+    recorderNode._source = inputTap.merger;
+    inputTap.merger.connect(recorderNode);
     // An AudioWorklet only pulls input while something downstream pulls it;
     // a zero-gain node to the destination keeps it running without any sound.
     const sink = audioCtx.createGain();
@@ -4979,7 +5321,7 @@
 
     const target = tracks[recordTargetIndex];
     if(recorderNode){
-      try{ micSourceNode.disconnect(recorderNode); }catch(e){}
+      try{ recorderNode._source.disconnect(recorderNode); }catch(e){}
       if(recorderNode._sink){
         recorderNode._sink.disconnect();
         recorderNode._sink = null;
@@ -4993,35 +5335,54 @@
     recordBtn.textContent = '● RECORD';
     if(target) document.getElementById(`arm-${target.index}`).classList.remove('recording');
 
-    const total = recordChunks.reduce((n, c) => n + c.length, 0);
+    // Each chunk is one block of every recorded channel.
+    const total = recordChunks.reduce((n, c) => n + c[0].length, 0);
     if(!target || total === 0){
       recordChunks = [];
-      setStatus('Nothing was captured — check that the right input is selected in your browser.', true);
+      setStatus(`Nothing was captured from ${inputDeviceName()} — check it under RECORD FROM.`, true);
       return;
     }
 
     const rate = audioCtx.sampleRate;
+    const channels = recordChunks[0].length;
     // Output latency puts the monitored playback slightly behind the take, so
     // the recording sits late against it. Trim that much off the front.
     const latency = (audioCtx.outputLatency || audioCtx.baseLatency || 0);
     const skip = Math.min(total, Math.round(latency * rate));
     const leadIn = Math.round(recordStartOffset * rate);
-    const buffer = audioCtx.createBuffer(1, leadIn + (total - skip), rate);
-    const out = buffer.getChannelData(0);
+    const buffer = audioCtx.createBuffer(channels, leadIn + (total - skip), rate);
 
-    let written = leadIn, dropped = 0;
-    for(const chunk of recordChunks){
-      let c = chunk;
-      if(dropped < skip){
-        const take = Math.min(skip - dropped, c.length);
-        dropped += take;
-        if(take === c.length) continue;
-        c = c.subarray(take);
+    let heard = false;
+    for(let ch = 0; ch < channels; ch++){
+      const out = buffer.getChannelData(ch);
+      let written = leadIn, dropped = 0;
+      for(const chunk of recordChunks){
+        let c = chunk[ch];
+        if(dropped < skip){
+          const take = Math.min(skip - dropped, c.length);
+          dropped += take;
+          if(take === c.length) continue;
+          c = c.subarray(take);
+        }
+        out.set(c, written);
+        written += c.length;
+        if(!heard){
+          for(let i = 0; i < c.length; i++){ if(c[i] !== 0){ heard = true; break; } }
+        }
       }
-      out.set(c, written);
-      written += c.length;
     }
     recordChunks = [];
+
+    // Pure digital silence means the chosen channels carried nothing at all.
+    // Keeping it would replace whatever the track held with a blank take.
+    if(!heard){
+      const source = inputSourceName(inputPref.channels);
+      setStatus(`Recorded only silence from ${inputDeviceName()} — ${source}, so nothing was kept. ` +
+        (inputPref.channels[0] >= 2
+          ? 'This browser may be passing only the device’s first two channels; try the first stereo pair.'
+          : 'Check the input is connected and turned up.'), true);
+      return;
+    }
 
     const stamp = new Date().toISOString().slice(11,19).replace(/:/g,'');
     const name = `take-${stamp}.wav`;
@@ -5039,7 +5400,7 @@
     renderMasterMinimap();
     drawReelFrame(0, 0);
     saveSession();
-    setStatus(`Recorded ${formatTime(buffer.duration - recordStartOffset)} onto Track ${target.index+1}.`);
+    setStatus(`Recorded ${formatTime(buffer.duration - recordStartOffset)} onto Track ${target.index+1} from ${inputDeviceName()} — ${inputSourceName(inputPref.channels)}.`);
   }
 
   recordBtn.addEventListener('click', () => {
