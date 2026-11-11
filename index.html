@@ -263,6 +263,109 @@
   }
   .input-select:disabled{opacity:.5;cursor:not-allowed;}
 
+  .live-btn.live{background:var(--t1);color:#fff;border-color:var(--t1);}
+  .bounce-group{display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:center;}
+  .bounce-label{
+    font-family:'JetBrains Mono',monospace;
+    font-size:9px;
+    font-weight:700;
+    letter-spacing:.16em;
+    text-transform:uppercase;
+    color:var(--ink-dim);
+  }
+  .track-src{display:none;}
+
+  /* ===================================================================
+     K.O. view — the deck pared down to what a multitrack take from the
+     K.O. AMP needs: one strip per source, the transport, and the bounce.
+     Everything else is still there in the full deck.
+     =================================================================== */
+  body.ko-view .load-bar:not(.input-bar),
+  body.ko-view .trim-tempo-row,
+  body.ko-view .trim-zoom-row,
+  body.ko-view .trim-hint,
+  body.ko-view .eq-screen,
+  body.ko-view .viz-screen,
+  body.ko-view .notes-panel,
+  body.ko-view .reel-panel,
+  body.ko-view #loopBtn,
+  body.ko-view #clearBtn,
+  body.ko-view #inputSourceSelect,
+  body.ko-view #inputFindBtn,
+  body.ko-view .track-word,
+  body.ko-view .track-num b,
+  body.ko-view .track-title,
+  body.ko-view .key-select-hint,
+  body.ko-view .pan-wrap,
+  body.ko-view .load-row,
+  body.ko-view .unit::before{display:none;}
+
+  body.ko-view .unit{border-width:1px;box-shadow:none;}
+  body.ko-view .window,
+  body.ko-view .input-bar,
+  body.ko-view .trim-screen{border-width:1px;}
+  body.ko-view .input-bar{margin-top:0;}
+  body.ko-view .tracks{gap:0;}
+  body.ko-view .track{
+    grid-template-columns:96px 1fr auto;
+    padding:12px 14px;
+    border:1px solid var(--panel-line);
+    border-bottom-width:0;
+  }
+  body.ko-view .track:last-child{border-bottom-width:1px;}
+  /* Four red outlines and four pulsing lights is not quiet; the lit dot says it. */
+  body.ko-view .track.armed{box-shadow:none;}
+  body.ko-view .rec-arm.armed{animation:none;}
+  body.ko-view .track-src{
+    display:block;
+    font-family:'Archivo Black',sans-serif;
+    font-size:13px;
+    letter-spacing:.04em;
+    color:var(--ink);
+  }
+  body.ko-view .track.src-missing .track-mid,
+  body.ko-view .track.src-missing .track-controls{opacity:.3;}
+  body.ko-view .track.src-missing .track-src{color:var(--ink-dim);}
+  body.ko-view .track-mid{flex-direction:row;align-items:center;gap:12px;}
+  body.ko-view .meter{flex:0 0 auto;height:26px;}
+  body.ko-view .wave-canvas-wrap{flex:1 1 auto;min-width:0;}
+  body.ko-view .wave-canvas{height:44px;}
+  body.ko-view .transport{padding-top:18px;}
+  body.ko-view #masterWave{height:72px;}
+  /* Ink on cream throughout; red is kept for recording alone. */
+  body.ko-view .tape-strip::after{background:var(--screen-fg);}
+  body.ko-view .tbtn{
+    background:transparent;
+    border:1px solid var(--ink);
+    color:var(--ink);
+  }
+  body.ko-view #rewBtn{border-color:var(--ink);color:var(--ink);}
+  body.ko-view .tbtn:hover,
+  body.ko-view #rewBtn:hover{background:var(--ink);color:var(--body-1);}
+  body.ko-view .tbtn.bounce{background:var(--ink);color:var(--body-1);}
+  body.ko-view .tbtn.record{border-color:var(--t1);color:var(--t1);}
+  body.ko-view .tbtn.record:hover,
+  body.ko-view .tbtn.record.recording{background:var(--t1);color:#fff;border-color:var(--t1);}
+  body.ko-view .input-bar-label{color:var(--ink-dim);}
+  body.ko-view .input-select,
+  body.ko-view .load-bar-btn,
+  body.ko-view .mini-btn{border-width:1px;}
+  body.ko-view input[type=range].fader::-webkit-slider-thumb{background:var(--ink);}
+  body.ko-view input[type=range].fader::-moz-range-thumb{background:var(--ink);}
+  body.ko-view .live-btn.live{background:var(--t1);border-color:var(--t1);color:#fff;}
+  body.ko-view .mini-btn.active-mute,
+  body.ko-view .mini-btn.active-solo{background:var(--ink);color:var(--body-1);border-color:var(--ink);}
+  @media (max-width:480px){
+    body.ko-view .track{grid-template-columns:1fr;}
+  }
+
+  /* Fingers need more than a 24px square. */
+  @media (pointer:coarse){
+    /* min- sizes, because the base .mini-btn rule sits later in the sheet. */
+    .mini-btn{min-width:40px;min-height:40px;font-size:13px;}
+    .track-controls{flex-wrap:wrap;row-gap:8px;}
+  }
+
   /* Each variant below is qualified with .mini-btn: the base .mini-btn rule
      comes later in the sheet and would otherwise win, pinning them at 24px. */
   .mini-btn.grid-toggle-btn{
@@ -1226,7 +1329,7 @@
 
   <div class="load-bar session-bar">
     <button class="load-bar-btn session-btn" id="sessionSaveBtn">💾 SAVE SESSION</button>
-    <label class="file-btn load-bar-btn session-btn">📂 OPEN SESSION<input type="file" accept=".4trk" id="sessionOpenInput"></label>
+    <label class="file-btn load-bar-btn session-btn">📂 OPEN SESSION<input type="file" id="sessionOpenInput"></label>
     <span class="load-bar-hint">Saves everything — audio, titles, faders, EQ, trim and notes — into one <code>.4trk</code> file you can keep, back up, or move to another machine. Open it here to pick the mix back up exactly as you left it.</span>
   </div>
 
@@ -1235,6 +1338,8 @@
     <select class="bpb-select input-select" id="inputDeviceSelect" aria-label="Recording input device"></select>
     <select class="bpb-select input-select" id="inputSourceSelect" aria-label="Which of its channels to record"></select>
     <button class="load-bar-btn session-btn" id="inputFindBtn">SHOW MY INPUTS</button>
+    <button class="load-bar-btn session-btn live-btn" id="koLiveBtn" hidden title="Open the amp so every strip shows its level">GO LIVE</button>
+    <button class="load-bar-btn session-btn" id="viewToggleBtn" hidden title="Switch between the K.O. view and the full deck">FULL DECK</button>
     <span class="load-bar-hint" id="inputHint"></span>
   </div>
 
@@ -1276,7 +1381,7 @@
       <button class="trim-reset-btn" id="trimResetBtn">Reset trim</button>
       <span id="trimEndLabel">0:00.0</span>
     </div>
-    <div class="trim-hint">Click or drag anywhere on the waveform to jump playback there. Amber circles trim the selection. Drag the white squares at mid-height in from either end to set a fade-in/fade-out for the whole mix. Use ZOOM (or scroll/pinch on the waveform) to zoom in for finer edits, and drag the strip below to pan around. Set a BPM above to lay a bar grid over the master mix and every track for editing reference.</div>
+    <div class="trim-hint">Click or drag anywhere on the waveform to jump playback there. Amber circles trim the selection. Drag the white squares at mid-height in from either end to set a fade-in/fade-out for the whole mix. Use ZOOM (or Ctrl/⌘ + scroll, or a trackpad pinch, on the waveform) to zoom in for finer edits, and drag the strip below to pan around. Set a BPM above to lay a bar grid over the master mix and every track for editing reference.</div>
   </div>
 
   <div class="eq-screen">
@@ -1311,7 +1416,7 @@
   <div class="notes-panel">
     <div class="cassette-title">Notes</div>
     <textarea id="notesInput" class="notes-input" placeholder="Lyrics, credits, mix notes, reminders…" maxlength="4000"></textarea>
-    <div class="notes-hint">Saved alongside the mixdown as a .txt file when you export.</div>
+    <div class="notes-hint">Saved alongside the master as a .txt file when you bounce it.</div>
   </div>
 
   <div class="reel-panel">
@@ -1337,7 +1442,12 @@
     <button class="tbtn stop" id="stopBtn">■ STOP</button>
     <button class="tbtn" id="loopBtn" title="Loop the trimmed selection">🔁 LOOP</button>
     <button class="tbtn record" id="recordBtn" title="Record the armed track while the others play back">● RECORD</button>
-    <button class="tbtn bounce" id="bounceBtn">⏺ MIXDOWN → WAV</button>
+    <div class="bounce-group" role="group" aria-label="Bounce to WAV">
+      <span class="bounce-label">Bounce</span>
+      <button class="tbtn" id="stemsBtn" title="Each track as its own WAV, cut to the trim selection so they line up">⬇ STEMS</button>
+      <button class="tbtn bounce" id="bounceBtn" title="The whole mix as one stereo WAV">⬇ MASTER</button>
+      <button class="tbtn" id="bounceAllBtn" title="Every stem and the master in one go">⬇ ALL</button>
+    </div>
     <button class="tbtn clear" id="clearBtn">✕ CLEAR ALL</button>
     <div class="master-fader">
       <label>MASTER</label>
@@ -1423,7 +1533,7 @@
         <p>
           <b>Blank tape is trimmed automatically.</b> Where the recording ends well before the end of
           the tape, the trim selection is drawn in to just after the last sound, so that playback,
-          mixdown and Reels stop with the music. <b>RESET TRIM</b> restores the full length.
+          bounces and Reels stop with the music. <b>RESET TRIM</b> restores the full length.
         </p>
         <div class="manual-caution">
           <div class="manual-caution-tag">Caution</div>
@@ -1444,13 +1554,14 @@
         <p>
           Press <b>● RECORD</b> to begin. <b>The remaining tracks play back as you record</b>,
           so parts may be overdubbed one upon another in the usual manner. Press <b>STOP</b>,
-          or allow playback to reach the end of the selection, to finish. The take is placed on
+          to finish; a take rolls on past the end of anything already on tape. The take is placed on
           the armed track and behaves thereafter exactly as a loaded file.
         </p>
         <div class="manual-note">
           <div class="manual-note-tag">Note</div>
           <p>
-            Only one track may be armed at a time. Arming a second track releases the first.
+            On the full deck one track is armed at a time, and arming a second releases the first.
+            In the K.O. view any number may be armed together.
             A take begins from wherever the tape was stopped; press <b>REW</b> to begin from the head.
           </p>
         </div>
@@ -1461,23 +1572,38 @@
           computer is then listed by name, and your choice is remembered. A second selector chooses
           which of the device's channels to record, as a stereo pair or a single channel in mono.
         </p>
-        <h3 class="manual-sub">K.O. AMP</h3>
+        <h3 class="manual-sub">K.O. AMP — The K.O. View</h3>
         <p>
           The EP&#8209;35 K.O. AMP, connected by USB, presents each of its inputs on a channel pair of
-          its own. Choose it under <b>RECORD FROM</b> and select the source required:
+          its own. Choose it under <b>RECORD FROM</b> and the deck is pared down to the
+          <b>K.O. view</b>: one strip for each source the amplifier sends, each with its own meter.
         </p>
         <table class="manual-table">
           <tbody>
-            <tr><td class="mt-key">Mix · 1–2</td><td>Everything the amplifier plays, effects included.</td></tr>
             <tr><td class="mt-key">Guitar · 3–4</td><td>The guitar input alone.</td></tr>
             <tr><td class="mt-key">Mic · 5–6</td><td>The microphone input alone.</td></tr>
             <tr><td class="mt-key">Line in · 7–8</td><td>The line input alone.</td></tr>
+            <tr><td class="mt-key">Amp mix · 1–2</td><td>Everything the amplifier plays, effects included.</td></tr>
           </tbody>
         </table>
         <p>
-          Where your backing tracks are played through the amplifier itself, record from Guitar, Mic
-          or Line in rather than Mix, that the backing may be kept out of the take. An OP&#8209;1 field
-          connected by USB may be recorded in the same manner, as a single stereo pair.
+          While the amplifier is <b>LIVE</b>, every strip shows its incoming level. Each empty strip
+          is armed, and <b>● RECORD</b> captures all the armed strips together, in step with one
+          another. Disarm a strip with its <b>●</b> button and it plays back during the take
+          instead, so that one part may be overdubbed against the rest.
+        </p>
+        <div class="manual-note">
+          <div class="manual-note-tag">Note</div>
+          <p>
+            The Amp mix already contains the inputs recorded beside it. After such a take it is
+            muted, that the master should not carry everything twice; it remains available as a
+            stem of its own. An input into which nothing was played is left empty.
+          </p>
+        </div>
+        <p>
+          <b>FULL DECK</b> returns the complete instrument, where the amplifier records one source at
+          a time, chosen in the second selector; <b>K.O. VIEW</b> comes back. An OP&#8209;1 field
+          connected by USB is recorded on the full deck, as a single stereo pair.
         </p>
         <h3 class="manual-sub">Count-In</h3>
         <p>
@@ -1538,7 +1664,7 @@
         <table class="manual-table">
           <tbody>
             <tr><td class="mt-key">Click or drag</td><td>Moves playback to that point, during playback or at rest.</td></tr>
-            <tr><td class="mt-key">Ctrl / ⌘ + scroll</td><td>Zooms in for finer editing. Pinch gestures are also recognised.</td></tr>
+            <tr><td class="mt-key">Ctrl / ⌘ + scroll</td><td>Zooms in for finer editing. A trackpad pinch does the same.</td></tr>
             <tr><td class="mt-key">Scroll</td><td>Once zoomed, pans along the recording.</td></tr>
             <tr><td class="mt-key">FIT</td><td>Returns the display to the full length of the track.</td></tr>
           </tbody>
@@ -1551,7 +1677,7 @@
       <section class="manual-section">
         <div class="manual-sec-head"><span class="manual-sec-num">6</span><h2>Master Mix — Trim &amp; Fades</h2></div>
         <p>
-          The trim selection determines what is heard on playback and what is written on mixdown.
+          The trim selection determines what is heard on playback and what is written by a bounce.
           Everything outside it is discarded.
         </p>
         <table class="manual-table">
@@ -1585,7 +1711,7 @@
         <p>
           Three shelving and peaking bands — <b>LOW</b>, <b>MID</b>, <b>HIGH</b> — act upon the
           combined output. <b>FLAT</b> returns all three to 0 dB. The equalisation is applied both to
-          what you hear and to the finished mixdown.
+          what you hear and to the bounced master.
         </p>
         <p>
           The <b>OUTPUT</b> display is a live spectrum analyser, presented in the manner of a
@@ -1601,19 +1727,27 @@
             <tr><td class="mt-key">▶ PLAY</td><td>Plays the trim selection.</td></tr>
             <tr><td class="mt-key">■ STOP</td><td>Halts playback.</td></tr>
             <tr><td class="mt-key">⟳ LOOP</td><td>Repeats the trim selection indefinitely.</td></tr>
-            <tr><td class="mt-key">● RECORD</td><td>Records the armed track while the others play back. Press again, or STOP, to finish.</td></tr>
+            <tr><td class="mt-key">● RECORD</td><td>Records whatever is armed while the rest plays back. Press again, or STOP, to finish.</td></tr>
             <tr><td class="mt-key">MASTER</td><td>Overall output level, below the transport.</td></tr>
           </tbody>
         </table>
       </section>
 
       <section class="manual-section">
-        <div class="manual-sec-head"><span class="manual-sec-num">10</span><h2>Mixdown</h2></div>
+        <div class="manual-sec-head"><span class="manual-sec-num">10</span><h2>Bounce</h2></div>
         <p>
-          <b>MIXDOWN → WAV</b> renders the trim selection to a single stereo <code>.wav</code> file at
-          44.1 kHz, 16&#8209;bit. Track levels, panning, mutes and solos, the master level, the master
-          EQ, and any fades are all applied. Rendering is performed offline and is therefore faster
-          than real time.
+          The <b>BOUNCE</b> controls write the trim selection to <code>.wav</code> files.
+        </p>
+        <table class="manual-table">
+          <tbody>
+            <tr><td class="mt-key">⬇ MASTER</td><td>The mix as heard, in a single stereo file at 44.1 kHz, 16&#8209;bit. Track levels, panning, mutes and solos, the master level, the master EQ, and any fades are all applied.</td></tr>
+            <tr><td class="mt-key">⬇ STEMS</td><td>Each track in a file of its own, exactly as recorded — no level, pan, EQ or fade, and muted tracks included. Every stem is cut to the trim selection, and so is the same length as the master and lines up with it.</td></tr>
+            <tr><td class="mt-key">⬇ ALL</td><td>The stems and the master together.</td></tr>
+          </tbody>
+        </table>
+        <p>
+          Files take the name of the mix; stems add the number and title of their track. Rendering is
+          performed offline and is therefore faster than real time.
         </p>
         <div class="manual-note">
           <div class="manual-note-tag">Note</div>
@@ -1674,6 +1808,8 @@
             <tr><td class="mt-key"><kbd>↑</kbd> <kbd>↓</kbd></td><td>Raises or lowers the selected track's level.</td></tr>
             <tr><td class="mt-key"><kbd>←</kbd> <kbd>→</kbd></td><td>Pans the selected track.</td></tr>
             <tr><td class="mt-key"><kbd>Esc</kbd></td><td>Deselects.</td></tr>
+            <tr><td class="mt-key"><kbd>Space</kbd></td><td>Plays; pressed again, stops. Also ends a take.</td></tr>
+            <tr><td class="mt-key"><kbd>R</kbd></td><td>Begins recording onto whatever is armed.</td></tr>
           </tbody>
         </table>
         <p class="manual-margin-note">Keyboard control is suspended while typing in any text field.</p>
@@ -1690,11 +1826,13 @@
             <tr><td class="mt-key">A drop from Android File Transfer does nothing</td><td>Drag the files to your desktop first, then onto the page.</td></tr>
             <tr><td class="mt-key">Count-in will not run</td><td>No tempo is set. Enter a BPM or use TAP.</td></tr>
             <tr><td class="mt-key">K.O. AMP not listed</td><td>Press SHOW MY INPUTS and permit microphone access. Should it still be absent, try the amplifier's other USB&#8209;C port, and a cable that carries data.</td></tr>
-            <tr><td class="mt-key">Only Mix offered for the K.O. AMP</td><td>The browser is passing two of the amplifier's eight channels. Record from Mix, or try a current Chrome.</td></tr>
+            <tr><td class="mt-key">Only Amp mix available</td><td>The browser is passing two of the amplifier's eight channels, so its separate inputs cannot be reached. Record the Amp mix, or try a current Chrome.</td></tr>
+            <tr><td class="mt-key">Meters still in the K.O. view</td><td>The amplifier is offline. Press GO LIVE.</td></tr>
+            <tr><td class="mt-key">Only one file arrives from a bounce</td><td>The browser is withholding the rest. Permit this page to download multiple files when asked, or in its site settings.</td></tr>
             <tr><td class="mt-key">“Recorded only silence”</td><td>The chosen channels carried no signal, and the take was discarded to protect the track. Check the source under RECORD FROM against the input in use.</td></tr>
             <tr><td class="mt-key">Microphone denied</td><td>Permission was refused. Allow microphone access for this page in your browser's site settings, then arm the track again.</td></tr>
             <tr><td class="mt-key">Take sounds hollow, or doubled</td><td>The loudspeakers are being recorded along with the performance. Use headphones.</td></tr>
-            <tr><td class="mt-key">Mixdown refused</td><td>The trim selection is empty. Widen it and repeat.</td></tr>
+            <tr><td class="mt-key">Bounce refused</td><td>The trim selection is empty, or every track is muted. Widen the one or unmute the other, and repeat.</td></tr>
             <tr><td class="mt-key">Settings not retained</td><td>Private browsing, or a browser set to block site data, prevents storage. Use a session file instead.</td></tr>
             <tr><td class="mt-key">Reel export refused</td><td>Your browser does not provide the necessary video recorder. A current Chrome, Edge or Firefox is advised.</td></tr>
           </tbody>
@@ -1706,12 +1844,13 @@
         <dl class="manual-specs">
           <div><dt>Tracks</dt><dd>4</dd></div>
           <div><dt>Input format</dt><dd>WAV · AIFF · OP-1 tape folder</dd></div>
-          <div><dt>Recording</dt><dd>Live input, one track at a time</dd></div>
+          <div><dt>Recording</dt><dd>Live input · up to four tracks at once</dd></div>
           <div><dt>Inputs</dt><dd>Any audio input · mono or stereo</dd></div>
-          <div><dt>K.O. AMP sources</dt><dd>Mix · Guitar · Mic · Line in</dd></div>
+          <div><dt>K.O. view</dt><dd>4 sources at once · Guitar, Mic, Line in, Amp mix</dd></div>
           <div><dt>Capture</dt><dd>Uncompressed, at the device rate</dd></div>
           <div><dt>Count-in</dt><dd>4 bars, follows tempo and metre</dd></div>
-          <div><dt>Mixdown</dt><dd>44.1 kHz · 16-bit · stereo .wav</dd></div>
+          <div><dt>Master</dt><dd>44.1 kHz · 16-bit · stereo .wav</dd></div>
+          <div><dt>Stems</dt><dd>One .wav per track · as recorded</dd></div>
           <div><dt>Track level range</dt><dd>0 – 1.30</dd></div>
           <div><dt>Equalisation</dt><dd>3 band, master bus</dd></div>
           <div><dt>Tempo range</dt><dd>20 – 300 BPM</dd></div>
@@ -1740,6 +1879,7 @@
 (() => {
   const NUM_TRACKS = 4;
   const TRACK_COLORS = ['#d6402c', '#1f5fa8', '#e0821e', '#e8b32c'];
+  const KO_WAVE_COLOR = '#f2ede1';
   const tracksEl = document.getElementById('tracks');
   const globalFileInput = document.getElementById('globalFileInput');
   const folderInput = document.getElementById('folderInput');
@@ -1758,6 +1898,10 @@
   const inputSourceSelect = document.getElementById('inputSourceSelect');
   const inputFindBtn = document.getElementById('inputFindBtn');
   const inputHint = document.getElementById('inputHint');
+  const koLiveBtn = document.getElementById('koLiveBtn');
+  const viewToggleBtn = document.getElementById('viewToggleBtn');
+  const stemsBtn = document.getElementById('stemsBtn');
+  const bounceAllBtn = document.getElementById('bounceAllBtn');
   const bounceBtn = document.getElementById('bounceBtn');
   const clearBtn = document.getElementById('clearBtn');
   const masterFader = document.getElementById('masterFader');
@@ -1954,7 +2098,12 @@
   // stereo; channelCount is how many the device was last seen to deliver
   // (0 = not yet known). Kept per browser, not in session files: it describes
   // this machine's hardware, not the mix.
-  let inputPref = { deviceId: '', label: '', channels: [0], channelCount: 0 };
+  // deckView is the user's choice to stay in the full deck with a K.O. AMP.
+  let inputPref = { deviceId: '', label: '', channels: [0], channelCount: 0, deckView: false };
+  // True while the deck shows the K.O. view: one strip per amp source, each
+  // recording its own channel pair, any number armed at once.
+  let koView = false;
+  let tickTimer = null;
   let playStartCtxTime = 0;
   let elapsedBeforeStop = 0;
   let rafId = null;
@@ -2267,7 +2416,7 @@
       const [mn, mx] = viewBars[i];
       const x = i * bw;
       const inside = x >= startX && x <= endX;
-      masterWaveCtx.fillStyle = inside ? '#e8b32c' : 'rgba(242,237,225,0.3)';
+      masterWaveCtx.fillStyle = inside ? (koView ? KO_WAVE_COLOR : '#e8b32c') : 'rgba(242,237,225,0.3)';
       const yTop = mid + mx * (h/2 - barMargin);
       const yBot = mid + mn * (h/2 - barMargin);
       masterWaveCtx.fillRect(x, Math.min(yTop, yBot), Math.max(1, bw - 1), Math.max(1, Math.abs(yBot - yTop)));
@@ -2673,10 +2822,12 @@
     if(!t.meterEl) return;
     const segs = t.meterEl.children;
     let level = 0;
-    if(t.armed && monitorAnalyser){
-      const data = t.timeData.length === monitorAnalyser.fftSize ? t.timeData : new Uint8Array(monitorAnalyser.fftSize);
+    // An armed track meters its input. In the K.O. view every strip does
+    // while the tape is at rest, so all the amp's sources can be seen at once.
+    if(t.inputAnalyser && (t.armed || (koView && !isPlaying))){
+      const data = t.timeData.length === t.inputAnalyser.fftSize ? t.timeData : new Uint8Array(t.inputAnalyser.fftSize);
       t.timeData = data;
-      monitorAnalyser.getByteTimeDomainData(data);
+      t.inputAnalyser.getByteTimeDomainData(data);
       let sum = 0;
       for(let i=0;i<data.length;i++){
         const v = (data[i]-128)/128;
@@ -2705,7 +2856,8 @@
     const wrap = document.createElement('div');
     wrap.className = 'track';
     wrap.innerHTML = `
-      <div class="track-num">TRACK<b>${index+1}</b>
+      <div class="track-num"><span class="track-word">TRACK</span><b>${index+1}</b>
+        <span class="track-src" id="src-${index}"></span>
         <span class="key-select-hint">↑↓ VOL<br>←→ PAN</span>
         <input type="text" class="track-title" id="title-${index}" placeholder="untitled" maxlength="20">
       </div>
@@ -2714,7 +2866,7 @@
           <span class="track-filename" id="fname-${index}">no file loaded</span>
         </div>
         <div class="meter" id="meter-${index}"></div>
-        <div class="wave-canvas-wrap" title="Click or drag to seek. Ctrl/Cmd + scroll (or pinch) to zoom in on this track. Scroll to pan once zoomed.">
+        <div class="wave-canvas-wrap" title="Click or drag to seek. Ctrl/Cmd + scroll (or a trackpad pinch) to zoom in on this track. Scroll to pan once zoomed.">
           <canvas class="wave-canvas" id="wave-${index}" width="260" height="72"></canvas>
           <button class="track-zoom-reset" id="zoomReset-${index}" title="Reset zoom">FIT</button>
         </div>
@@ -2724,14 +2876,14 @@
           <label>VOL</label>
           <input type="range" class="fader" id="vol-${index}" min="0" max="1.3" step="0.01" value="1">
         </div>
-        <div class="fader-wrap">
+        <div class="fader-wrap pan-wrap">
           <label>PAN</label>
           <input type="range" class="fader pan-fader" id="pan-${index}" min="-1" max="1" step="0.01" value="0">
         </div>
-        <button class="mini-btn rec-arm" id="arm-${index}" title="Arm this track to record from your microphone">●</button>
-        <button class="mini-btn" id="mute-${index}">M</button>
-        <button class="mini-btn" id="solo-${index}">S</button>
-        <button class="mini-btn" id="dl-${index}" title="Download this track as WAV">⬇</button>
+        <button class="mini-btn rec-arm" id="arm-${index}" title="Arm this track to record" aria-label="Arm track ${index+1} for recording" aria-pressed="false">●</button>
+        <button class="mini-btn" id="mute-${index}" title="Mute" aria-label="Mute track ${index+1}" aria-pressed="false">M</button>
+        <button class="mini-btn" id="solo-${index}" title="Solo" aria-label="Solo track ${index+1}" aria-pressed="false">S</button>
+        <button class="mini-btn" id="dl-${index}" title="Download this track as WAV" aria-label="Download track ${index+1} as WAV">⬇</button>
       </div>
     `;
     tracksEl.appendChild(wrap);
@@ -2751,6 +2903,8 @@
       title:'',
       fileBytes:null,
       armed:false,
+      inputMerger:null,
+      inputAnalyser:null,
       wrapEl:wrap,
       level:0
     };
@@ -4223,7 +4377,8 @@
     const viewBars = t.viewPeaks || t.peaks;
     const playedX = trackTimeToX(t, elapsed, w);
     const mid = h / 2;
-    const trackColor = TRACK_COLORS[t.index % TRACK_COLORS.length];
+    // The K.O. view draws every waveform in the one screen colour.
+    const trackColor = koView ? KO_WAVE_COLOR : TRACK_COLORS[t.index % TRACK_COLORS.length];
     const margin = 3 * trackDpr;
 
     ctx.fillStyle = 'rgba(255,255,255,0.08)';
@@ -4321,9 +4476,9 @@
     visPhase += 0.045;
     drawVisualizer();
     // Armed tracks meter the live input so levels can be set before a take.
-    if(!isPlaying && monitorAnalyser){
+    if(!isPlaying && micSourceNode){
       for(const t of tracks){
-        if(t.armed) updateMeter(t);
+        if(t.armed || koView) updateMeter(t);
       }
     }
     requestAnimationFrame(visLoop);
@@ -4433,7 +4588,8 @@
           deviceId: data.input.deviceId,
           label: typeof data.input.label === 'string' ? data.input.label : '',
           channels: chans.length ? chans : [0],
-          channelCount: Number.isInteger(data.input.channelCount) ? data.input.channelCount : 0
+          channelCount: Number.isInteger(data.input.channelCount) ? data.input.channelCount : 0,
+          deckView: data.input.deckView === true
         };
       }
 
@@ -4617,6 +4773,7 @@
       }
     }
     if(rafId){ cancelAnimationFrame(rafId); rafId = null; }
+    if(tickTimer){ clearInterval(tickTimer); tickTimer = null; }
   }
 
   function play(){
@@ -4695,28 +4852,54 @@
   }
 
   function tickLoop(endAt){
-    const step = () => {
+    // Returns false once the transport has stopped or handed over.
+    const advance = (draw) => {
+      if(!isPlaying) return false;
       const elapsed = elapsedBeforeStop + Math.max(0, audioCtx.currentTime - playStartCtxTime);
-      counterEl.textContent = fmtCounter(elapsed);
-      const span = Math.max(0.0001, trimEnd - trimStart);
-      const pct = Math.min(100, Math.max(0, ((elapsed - trimStart) / span) * 100));
-      tapeStrip.style.setProperty('--progress', pct + '%');
-      for(const t of tracks) updateMeter(t);
-      renderAllWaves(elapsed);
-      renderMasterWave(elapsed);
-      drawVisualizer();
-      if(elapsed >= endAt){
+      if(draw){
+        counterEl.textContent = fmtCounter(elapsed);
+        const span = Math.max(0.0001, trimEnd - trimStart);
+        const pct = Math.min(100, Math.max(0, ((elapsed - trimStart) / span) * 100));
+        tapeStrip.style.setProperty('--progress', pct + '%');
+        for(const t of tracks) updateMeter(t);
+        renderAllWaves(elapsed);
+        renderMasterWave(elapsed);
+        drawVisualizer();
+      }
+      // A take rolls on past the end of what is already on tape, the way a
+      // deck does: only STOP ends it. Plain playback stops, or loops.
+      if(elapsed >= endAt && !isRecording){
         if(isLooping){
           elapsedBeforeStop = trimStart;
           play();
-          return;
+        }else{
+          stop();
         }
-        stop();
-        return;
+        return false;
       }
-      if(isPlaying) rafId = requestAnimationFrame(step);
+      return true;
+    };
+    const step = () => {
+      if(advance(true)) rafId = requestAnimationFrame(step);
     };
     rafId = requestAnimationFrame(step);
+    // requestAnimationFrame is suspended in a background tab, which would
+    // leave playback "running" long after the audio ended. A timer still
+    // fires there, so the end of the tape is always reached.
+    tickTimer = setInterval(() => { advance(false); }, 250);
+  }
+
+  // Starts the tape rolling with nothing to play back — a first take onto an
+  // empty deck — so the counter runs and the reels turn while recording.
+  function rollWithoutPlayback(){
+    ensureCtx();
+    stopAllSources();
+    isPlaying = true;
+    playStartCtxTime = audioCtx.currentTime;
+    reelL.classList.add('spin');
+    reelR.classList.add('spin');
+    playBtn.disabled = true;
+    tickLoop(Infinity);
   }
 
   function stop(){
@@ -4765,18 +4948,20 @@
 
   // ---- Recording from the browser's audio input ----
   //
-  // One input, so one armed track at a time — arming a track releases any
-  // other, the way a single-input deck behaves. Audio is captured as raw
-  // float samples through an AudioWorklet rather than through MediaRecorder,
-  // so a take arrives uncompressed and can join the existing WAV pipeline
-  // (per-track download, mixdown, and .4trk session files) unchanged.
+  // Audio is captured as raw float samples through an AudioWorklet rather
+  // than through MediaRecorder, so a take arrives uncompressed and can join
+  // the existing WAV pipeline (per-track download, bounce, and .4trk session
+  // files) unchanged. One worklet records every armed track at once: their
+  // channels are laid side by side on its input, and split apart afterwards.
   const RECORDER_WORKLET = `
     class RecProcessor extends AudioWorkletProcessor {
       process(inputs){
         const input = inputs[0];
         if(input && input.length){
           const channels = input.map(c => c.slice(0));
-          this.port.postMessage(channels, channels.map(c => c.buffer));
+          // currentFrame dates the block on the audio clock, so the take can
+          // be lined up against the moment the tape started rolling.
+          this.port.postMessage({ frame: currentFrame, channels }, channels.map(c => c.buffer));
         }
         return true;
       }
@@ -4786,29 +4971,38 @@
 
   let micStream = null;
   let micSourceNode = null;
+  let inputSplitter = null;
   let recorderNode = null;
   let recorderModuleLoaded = false;
-  let monitorAnalyser = null;
   let isRecording = false;
   let recordChunks = [];
-  let recordTargetIndex = null;
+  let recordTargets = [];
   let recordStartOffset = 0;
+  let recordRollStart = 0;
 
-  function armedTrack(){
-    return tracks.find(t => t.armed) || null;
-  }
+  const armedTracks = () => tracks.filter(t => t.armed);
+  const joinNames = (names) => names.length <= 1 ? (names[0] || '')
+    : names.slice(0, -1).join(', ') + ' and ' + names[names.length - 1];
 
   // ---- Choosing what to record from ----
   //
   // Any audio input the browser can see: the built-in microphone, an OP-1
   // field, or a K.O. AMP, which is a USB interface carrying each of its inputs
-  // on its own stereo pair. The chosen channels are tapped off the device with
-  // a splitter and merger, so the meter and the recorder both see exactly the
-  // channels selected and nothing else.
+  // on its own stereo pair. Every track taps its own channels off the device
+  // through a splitter and merger, so its meter and its take see exactly
+  // those channels and nothing else.
   const KO_AMP_RE = /ep[\s–-]?35|k\.?\s?o\.?[\s-]*amp/i;
   // Per the EP-35 guide: 1-2 stereo mixdown, 3-4 guitar, 5-6 microphone, 7-8 line-in.
   const KO_AMP_PAIRS = ['Mix', 'Guitar', 'Mic', 'Line in'];
-  let inputTap = null;
+  // The K.O. view gives each source a strip of its own: the three isolated
+  // inputs first, the amp's own mixdown last.
+  const KO_ROUTING = [
+    { name: 'Guitar',  channels: [2, 3] },
+    { name: 'Mic',     channels: [4, 5] },
+    { name: 'Line in', channels: [6, 7] },
+    { name: 'Amp mix', channels: [0, 1] }
+  ];
+  const KO_MIX_TRACK = 3;
   let inputDevicesSeen = [];
   let inputLabelsKnown = false;
 
@@ -4816,6 +5010,11 @@
   // Chrome appends the USB ids, "Name (2367:0012)"; they mean nothing to a person.
   const cleanInputLabel = (label) => (label || '').replace(/\s*\([0-9a-f]{4}:[0-9a-f]{4}\)\s*$/i, '');
   const inputDeviceName = () => inputPref.deviceId ? (cleanInputLabel(inputPref.label) || 'the chosen input') : 'the default input';
+  // Until a device has been opened its channel count is a guess: one for the
+  // system default, which is nearly always a microphone.
+  const knownChannelCount = () => inputPref.channelCount || (inputPref.deviceId ? 2 : 1);
+  const channelsAvailable = (channels) => Math.max(...channels) < knownChannelCount();
+  const trackChannels = (t) => koView ? KO_ROUTING[t.index].channels : inputPref.channels;
 
   function inputSourceName(channels){
     const pairName = isKoAmp() ? KO_AMP_PAIRS[Math.floor(channels[0] / 2)] : null;
@@ -4825,20 +5024,18 @@
     }
     return pairName ? `${pairName} · mono ${channels[0] + 1}` : `Mono ${channels[0] + 1}`;
   }
+  const trackSourceName = (t) => koView ? KO_ROUTING[t.index].name : inputSourceName(inputPref.channels);
+  const trackLabel = (t) => koView ? KO_ROUTING[t.index].name : `Track ${t.index + 1}`;
 
   function buildInputSourceOptions(){
-    // Until a device has been opened its channel count is a guess: one for
-    // the system default, which is nearly always a microphone.
-    const count = Math.min(32, inputPref.channelCount || (inputPref.deviceId ? 2 : 1));
+    const count = Math.min(32, knownChannelCount());
     const options = [];
     for(let c = 0; c + 1 < count; c += 2) options.push([c, c + 1]);
     for(let c = 0; c < count; c++) options.push([c]);
 
     let chosen = options.find(o => o.join() === inputPref.channels.join());
-    let fellBack = false;
     if(!chosen){
       chosen = options[0];
-      fellBack = true;
       inputPref.channels = chosen.slice();
     }
 
@@ -4854,19 +5051,75 @@
     if(groups[2].children.length) inputSourceSelect.appendChild(groups[2]);
     inputSourceSelect.appendChild(groups[1]);
     inputSourceSelect.value = chosen.join();
-    updateInputHint();
-    return fellBack;
   }
 
   function updateInputHint(){
-    if(!inputLabelsKnown){
+    const short = isKoAmp() && inputPref.channelCount > 0 && inputPref.channelCount < 8;
+    if(koView){
+      inputHint.textContent = short
+        ? `This browser is passing only ${inputPref.channelCount} of the K.O. AMP's 8 channels, so only Amp mix can be recorded here. The guitar, mic and line strips need all 8.`
+        : 'Each strip is one of the amp’s inputs. Arm the ones to capture and press RECORD; unarmed strips play back underneath.';
+    }else if(!inputLabelsKnown){
       inputHint.textContent = 'Recording uses your default microphone. Press SHOW MY INPUTS to pick another — a K.O. AMP or OP-1 field connected by USB appears here by name.';
-    }else if(isKoAmp() && inputPref.channelCount > 0 && inputPref.channelCount < 8){
+    }else if(short){
       inputHint.textContent = `This browser is passing only ${inputPref.channelCount} of the K.O. AMP's 8 channels, so Mix (everything the amp plays) is what can be recorded here. The separate guitar, mic and line channels need all 8.`;
     }else if(isKoAmp()){
-      inputHint.textContent = 'K.O. AMP: Mix is everything the amp plays. Guitar, Mic and Line in record that input alone — pick one of those when your backing tracks play through the amp, so they stay out of the take.';
+      inputHint.textContent = 'K.O. AMP, one source at a time: Mix is everything the amp plays; Guitar, Mic and Line in record that input alone. K.O. VIEW records them all at once.';
     }else{
       inputHint.textContent = 'What the ● arm buttons record from. Stereo keeps both channels of a pair; Mono records one.';
+    }
+  }
+
+  function setArmUI(t, armed){
+    t.armed = armed;
+    document.getElementById(`arm-${t.index}`).classList.toggle('armed', armed);
+    if(t.wrapEl) t.wrapEl.classList.toggle('armed', armed);
+  }
+
+  function setMuted(t, muted){
+    t.muted = muted;
+    document.getElementById(`mute-${t.index}`).classList.toggle('active-mute', muted);
+    refreshLiveGains();
+  }
+
+  // Brings the page in line with the chosen input: the K.O. view when the
+  // amp is the input (unless the full deck was asked for), the deck otherwise.
+  function updateView(){
+    const want = isKoAmp() && !inputPref.deckView;
+    const changed = want !== koView;
+    koView = want;
+    document.body.classList.toggle('ko-view', koView);
+    viewToggleBtn.hidden = !isKoAmp();
+    viewToggleBtn.textContent = koView ? 'FULL DECK' : 'K.O. VIEW';
+    koLiveBtn.hidden = !koView;
+    koLiveBtn.classList.toggle('live', !!micStream);
+    koLiveBtn.textContent = micStream ? '● LIVE' : 'GO LIVE';
+    koLiveBtn.setAttribute('aria-pressed', micStream ? 'true' : 'false');
+
+    for(const t of tracks){
+      const label = document.getElementById(`src-${t.index}`);
+      const arm = document.getElementById(`arm-${t.index}`);
+      if(koView){
+        const route = KO_ROUTING[t.index];
+        const ok = channelsAvailable(route.channels);
+        label.textContent = route.name;
+        label.title = ok
+          ? `USB channels ${route.channels[0] + 1}–${route.channels[1] + 1}`
+          : 'Not available: this browser is not passing these channels';
+        t.wrapEl.classList.toggle('src-missing', !ok);
+        arm.setAttribute('aria-label', `Arm ${route.name} for recording`);
+      }else{
+        label.textContent = '';
+        t.wrapEl.classList.remove('src-missing');
+        arm.setAttribute('aria-label', `Arm track ${t.index + 1} for recording`);
+      }
+    }
+    updateInputHint();
+
+    if(changed){
+      if(micSourceNode) buildInputTaps();
+      // The strips change height between views, so the waveforms refit.
+      window.dispatchEvent(new Event('resize'));
     }
   }
 
@@ -4907,6 +5160,7 @@
     inputDeviceSelect.value = inputPref.deviceId;
     inputFindBtn.hidden = inputLabelsKnown;
     buildInputSourceOptions();
+    updateView();
   }
 
   function inputConstraints(){
@@ -4929,25 +5183,39 @@
     return Number.isInteger(n) && n > 0 ? n : 2;
   }
 
-  function buildInputTap(){
-    if(inputTap){
-      inputTap.splitter.disconnect();
-      inputTap.merger.disconnect();
-      try{ micSourceNode.disconnect(inputTap.splitter); }catch(e){}
+  function teardownInputTaps(){
+    for(const t of tracks){
+      if(t.inputMerger) t.inputMerger.disconnect();
+      t.inputMerger = null;
+      t.inputAnalyser = null;
     }
-    const chans = inputPref.channels;
+    if(inputSplitter){
+      inputSplitter.disconnect();
+      try{ micSourceNode.disconnect(inputSplitter); }catch(e){}
+      inputSplitter = null;
+    }
+  }
+
+  function buildInputTaps(){
+    teardownInputTaps();
+    if(!micSourceNode) return;
     // A splitter treats channels as discrete, so nothing is folded together
     // and a channel the device lacks simply comes through silent.
-    const splitter = audioCtx.createChannelSplitter(Math.max(...chans) + 1);
-    const merger = audioCtx.createChannelMerger(chans.length);
-    micSourceNode.connect(splitter);
-    chans.forEach((c, i) => splitter.connect(merger, c, i));
-    // Monitoring is metering only — the input is never routed to the
-    // speakers, which would feed straight back into a microphone.
-    monitorAnalyser = audioCtx.createAnalyser();
-    monitorAnalyser.fftSize = 1024;
-    merger.connect(monitorAnalyser);
-    inputTap = { splitter, merger };
+    const outputs = Math.max(...tracks.map(t => Math.max(...trackChannels(t)))) + 1;
+    inputSplitter = audioCtx.createChannelSplitter(Math.min(32, outputs));
+    micSourceNode.connect(inputSplitter);
+    for(const t of tracks){
+      const channels = trackChannels(t);
+      const merger = audioCtx.createChannelMerger(channels.length);
+      channels.forEach((c, i) => inputSplitter.connect(merger, c, i));
+      // Monitoring is metering only — the input is never routed to the
+      // speakers, which would feed straight back into a microphone.
+      const analyser = audioCtx.createAnalyser();
+      analyser.fftSize = 1024;
+      merger.connect(analyser);
+      t.inputMerger = merger;
+      t.inputAnalyser = analyser;
+    }
   }
 
   async function ensureMic(){
@@ -4956,8 +5224,9 @@
       setStatus('This browser does not provide microphone access. Recording is unavailable.', true);
       return false;
     }
+    let stream;
     try{
-      micStream = await navigator.mediaDevices.getUserMedia(inputConstraints());
+      stream = await navigator.mediaDevices.getUserMedia(inputConstraints());
     }catch(err){
       const name = err && err.name;
       const denied = name === 'NotAllowedError' || name === 'SecurityError';
@@ -4968,20 +5237,27 @@
           : 'No audio input available to record from.', true);
       return false;
     }
+    // Two callers can race here while the permission prompt is up.
+    if(micStream){
+      for(const track of stream.getTracks()) track.stop();
+      return true;
+    }
+    micStream = stream;
 
     inputPref.channelCount = streamChannelCount(micStream);
-    // Access has now been granted, so the device names can be listed.
-    await refreshInputDevices();
-    saveSession();
-
     micStream.getAudioTracks()[0].addEventListener('ended', onInputLost);
     ensureCtx();
     micSourceNode = audioCtx.createMediaStreamSource(micStream);
-    buildInputTap();
+    // Access has now been granted, so the device names can be listed.
+    await refreshInputDevices();
+    saveSession();
+    if(!micStream) return false;   // unplugged while the list refreshed
+    buildInputTaps();
     return true;
   }
 
   function releaseMic(){
+    teardownInputTaps();
     if(micStream){
       for(const track of micStream.getTracks()){
         track.removeEventListener('ended', onInputLost);
@@ -4989,13 +5265,11 @@
       }
       micStream = null;
     }
-    if(inputTap){
-      inputTap.splitter.disconnect();
-      inputTap.merger.disconnect();
-      inputTap = null;
-    }
     if(micSourceNode){ micSourceNode.disconnect(); micSourceNode = null; }
-    monitorAnalyser = null;
+    koLiveBtn.classList.remove('live');
+    koLiveBtn.textContent = 'GO LIVE';
+    koLiveBtn.setAttribute('aria-pressed', 'false');
+    for(const t of tracks) updateMeter(t);
   }
 
   // The input was unplugged or switched off. Whatever was captured so far is
@@ -5003,29 +5277,49 @@
   function onInputLost(){
     const midTake = isRecording || countingIn;
     if(midTake) stop();
-    for(const t of tracks){
-      if(!t.armed) continue;
-      t.armed = false;
-      document.getElementById(`arm-${t.index}`).classList.remove('armed');
-      if(t.wrapEl) t.wrapEl.classList.remove('armed');
-      updateMeter(t);
-    }
+    for(const t of tracks) setArmUI(t, false);
     const lost = inputDeviceName();
     releaseMic();
     refreshInputDevices();
-    if(!midTake) setStatus(`${lost} was disconnected, so the track has been disarmed.`, true);
+    if(!midTake) setStatus(`${lost} was disconnected, so recording is disarmed.`, true);
+  }
+
+  // In the K.O. view the amp stays open while live, so every strip shows its
+  // level. Going live arms each empty strip that has a signal path, so the
+  // first take captures everything the amp sends.
+  async function setKoLive(on){
+    if(!on){
+      for(const t of tracks) setArmUI(t, false);
+      releaseMic();
+      setStatus('K.O. AMP offline. Press GO LIVE to see its inputs again.');
+      return true;
+    }
+    if(!(await ensureMic())){
+      updateView();
+      return false;
+    }
+    for(const t of tracks){
+      if(!t.buffer && channelsAvailable(trackChannels(t))) setArmUI(t, true);
+    }
+    updateView();
+    const armed = armedTracks().map(trackLabel);
+    setStatus(armed.length
+      ? `K.O. AMP live — ${joinNames(armed)} armed. Press RECORD to capture ${armed.length === 1 ? 'it' : 'them together'}.`
+      : 'K.O. AMP live. Arm a strip with its ● button to record onto it.');
+    return true;
   }
 
   // Opens the chosen device just long enough to learn how many channels it
-  // delivers, unless a track is armed, in which case it stays open for it.
+  // delivers, then restores whatever was live or armed on the new device.
   async function applyInputDevice(){
-    const armed = armedTrack();
+    const wasArmed = armedTracks().map(t => t.index);
+    for(const t of tracks) setArmUI(t, false);
     releaseMic();
     let stream = null;
     try{
       stream = await navigator.mediaDevices.getUserMedia(inputConstraints());
     }catch(err){
-      if(armed) await setArmed(armed.index, false);
+      updateView();
       setStatus(`Couldn't open ${inputDeviceName()}. Check it's connected and not in use by another application.`, true);
       return;
     }
@@ -5038,37 +5332,65 @@
     await refreshInputDevices();
     saveSession();
 
-    if(armed && !(await ensureMic())){
-      await setArmed(armed.index, false);
+    if(koView){
+      await setKoLive(true);
       return;
     }
-    setStatus(`Recording from ${inputDeviceName()} — ${inputSourceName(inputPref.channels)}.` +
-      (armed ? '' : ' Arm a track with its ● button to check the level.'));
+    if(wasArmed.length){
+      await setArmed(wasArmed[0], true);
+      return;
+    }
+    setStatus(`Recording from ${inputDeviceName()} — ${inputSourceName(inputPref.channels)}. Arm a track with its ● button to check the level.`);
   }
 
+  const takeInProgress = (what) => {
+    if(!(isRecording || countingIn)) return false;
+    setStatus(`Stop the current take before changing ${what}.`, true);
+    return true;
+  };
+
   inputDeviceSelect.addEventListener('change', async () => {
-    if(isRecording || countingIn){
+    if(takeInProgress('the input')){
       inputDeviceSelect.value = inputPref.deviceId;
-      setStatus('Stop the current take before changing the input.', true);
       return;
     }
     const picked = inputDevicesSeen.find(d => d.deviceId === inputDeviceSelect.value);
     inputPref.deviceId = picked ? picked.deviceId : '';
     inputPref.label = picked ? picked.label : '';
     inputPref.channelCount = 0;
+    inputPref.deckView = false;
     await applyInputDevice();
   });
 
   inputSourceSelect.addEventListener('change', () => {
-    if(isRecording || countingIn){
+    if(takeInProgress('the input')){
       inputSourceSelect.value = inputPref.channels.join();
-      setStatus('Stop the current take before changing the input.', true);
       return;
     }
     inputPref.channels = inputSourceSelect.value.split(',').map(Number);
-    if(micSourceNode) buildInputTap();
+    if(micSourceNode) buildInputTaps();
     saveSession();
     setStatus(`Recording from ${inputDeviceName()} — ${inputSourceName(inputPref.channels)}.`);
+  });
+
+  viewToggleBtn.addEventListener('click', async () => {
+    if(takeInProgress('the view')) return;
+    // Both views use the amp differently, so the input is let go in between.
+    for(const t of tracks) setArmUI(t, false);
+    releaseMic();
+    inputPref.deckView = koView;
+    updateView();
+    saveSession();
+    if(koView){
+      await setKoLive(true);
+    }else{
+      setStatus('Full deck. Here the K.O. AMP records one source at a time, chosen under RECORD FROM.');
+    }
+  });
+
+  koLiveBtn.addEventListener('click', () => {
+    if(takeInProgress('the input')) return;
+    setKoLive(!micStream);
   });
 
   // Device names stay hidden until microphone access is granted, so this asks
@@ -5102,26 +5424,37 @@
     if(!track) return;
 
     if(armed){
-      if(!(await ensureMic())) return;
-      // Single input: arming one track releases the rest.
-      for(const t of tracks){
-        if(t !== track && t.armed){
-          t.armed = false;
-          document.getElementById(`arm-${t.index}`).classList.remove('armed');
-          t.wrapEl && t.wrapEl.classList.remove('armed');
+      if(koView && !micStream){
+        // Arming a strip brings the amp live, which arms the empty ones too.
+        if(!(await setKoLive(true))) return;
+      }else if(!(await ensureMic())){
+        return;
+      }
+      if(!channelsAvailable(trackChannels(track))){
+        setStatus(`${trackLabel(track)} can't be recorded here — this browser is passing only ${knownChannelCount()} of the device's channels.`, true);
+        if(!koView && !armedTracks().length) releaseMic();
+        return;
+      }
+      // Outside the K.O. view there is one source, so one armed track.
+      if(!koView){
+        for(const t of tracks){
+          if(t !== track && t.armed) setArmUI(t, false);
         }
       }
     }
 
-    track.armed = armed;
-    document.getElementById(`arm-${index}`).classList.toggle('armed', armed);
-    if(track.wrapEl) track.wrapEl.classList.toggle('armed', armed);
+    setArmUI(track, armed);
 
     if(armed){
-      setStatus(`Track ${index+1} armed. Press RECORD to capture — the other tracks play back while you record.`);
+      setStatus(koView
+        ? `${trackLabel(track)} armed. RECORD captures every armed strip together.`
+        : `Track ${index+1} armed. Press RECORD to capture — the other tracks play back while you record.`);
     }else{
-      setStatus(`Track ${index+1} disarmed.`);
-      if(!armedTrack()) releaseMic();
+      setStatus(koView
+        ? `${trackLabel(track)} disarmed — it plays back during a take.`
+        : `Track ${index+1} disarmed.`);
+      // The K.O. view keeps the amp open for its meters until taken offline.
+      if(!koView && !armedTracks().length) releaseMic();
     }
   }
 
@@ -5211,14 +5544,18 @@
   });
 
   async function startRecording(){
-    const target = armedTrack();
-    if(!target){
-      setStatus('Arm a track first — press the ● button on the track you want to record onto.', true);
+    if(koView && !micStream && !(await setKoLive(true))) return;
+    const armed = armedTracks();
+    if(!armed.length){
+      setStatus(koView
+        ? 'Arm at least one strip first — press its ● button.'
+        : 'Arm a track first — press the ● button on the track you want to record onto.', true);
       return;
     }
     if(!(await ensureMic())) return;
 
-    if(target.buffer && !confirm(`Track ${target.index+1} already has audio. Recording will replace it. Continue?`)){
+    const occupied = armed.filter(t => t.buffer);
+    if(occupied.length && !confirm(`${joinNames(occupied.map(trackLabel))} already ${occupied.length === 1 ? 'has' : 'have'} audio. Recording will replace it. Continue?`)){
       return;
     }
 
@@ -5264,38 +5601,50 @@
         return;
       }
       // Four bars is long enough for things to have moved on — the input can
-      // be gone, or the armed track changed — and connecting a stale node
+      // be gone, or the armed tracks changed — and connecting a stale node
       // would leave the deck lit up recording nothing.
-      if(!micSourceNode || armedTrack() !== target){
+      const still = armedTracks();
+      if(!inputSplitter || still.length !== armed.length || still.some((t, i) => t !== armed[i])){
         recordBtn.classList.remove('recording');
         recordBtn.textContent = '● RECORD';
-        setStatus('Recording cancelled — the armed track or the input changed during the count-in.', true);
+        setStatus('Recording cancelled — the armed tracks or the input changed during the count-in.', true);
         return;
       }
     }
 
+    // Lay every armed track's channels side by side for one recorder.
+    let width = 0;
+    recordTargets = armed.map(t => {
+      const target = { index: t.index, channels: trackChannels(t).slice(), offset: width, label: trackLabel(t) };
+      width += target.channels.length;
+      return target;
+    });
     recordChunks = [];
-    recordTargetIndex = target.index;
     isRecording = true;
 
     // Where on the timeline this take begins, so it can be dropped into place
     // afterwards rather than always starting at zero.
     recordStartOffset = (elapsedBeforeStop >= trimStart && elapsedBeforeStop < trimEnd)
       ? elapsedBeforeStop : trimStart;
+    elapsedBeforeStop = recordStartOffset;
 
+    const takeMerger = audioCtx.createChannelMerger(width);
+    for(const target of recordTargets){
+      target.channels.forEach((c, i) => inputSplitter.connect(takeMerger, c, target.offset + i));
+    }
     recorderNode = new AudioWorkletNode(audioCtx, 'rec-processor', {
       numberOfInputs: 1,
       numberOfOutputs: 1,
       outputChannelCount: [1],
-      channelCount: inputPref.channels.length,
+      channelCount: width,
       channelCountMode: 'explicit',
       channelInterpretation: 'discrete'
     });
     recorderNode.port.onmessage = (e) => {
       if(isRecording) recordChunks.push(e.data);
     };
-    recorderNode._source = inputTap.merger;
-    inputTap.merger.connect(recorderNode);
+    recorderNode._merger = takeMerger;
+    takeMerger.connect(recorderNode);
     // An AudioWorklet only pulls input while something downstream pulls it;
     // a zero-gain node to the destination keeps it running without any sound.
     const sink = audioCtx.createGain();
@@ -5304,28 +5653,33 @@
     sink.connect(audioCtx.destination);
     recorderNode._sink = sink;
 
-    document.getElementById(`arm-${target.index}`).classList.add('recording');
+    for(const target of recordTargets) document.getElementById(`arm-${target.index}`).classList.add('recording');
     recordBtn.classList.add('recording');
     recordBtn.textContent = '● RECORDING';
 
-    // Play the other tracks underneath, so this is an overdub rather than a
-    // take in silence. playFrom skips whichever track is armed.
-    if(maxDuration() > 0) play();
+    // Play the unarmed tracks underneath, so this is an overdub rather than a
+    // take in silence; play() skips whatever is armed. With nothing to play,
+    // the tape still rolls so the counter runs.
+    if(maxDuration() > 0 && trimEnd > trimStart) play();
+    if(!isPlaying) rollWithoutPlayback();
+    // The moment on the audio clock that the timeline started moving.
+    recordRollStart = playStartCtxTime;
 
-    setStatus(`Recording onto Track ${target.index+1} from ${formatTime(recordStartOffset)}… press STOP to finish.`);
+    setStatus(`Recording onto ${joinNames(recordTargets.map(t => t.label))} from ${formatTime(recordStartOffset)}… press STOP to finish.`);
   }
 
-  async function finishRecording(){
+  function finishRecording(){
     if(!isRecording) return;
     isRecording = false;
 
-    const target = tracks[recordTargetIndex];
+    const targets = recordTargets;
+    const chunks = recordChunks;
+    recordTargets = [];
+    recordChunks = [];
+
     if(recorderNode){
-      try{ recorderNode._source.disconnect(recorderNode); }catch(e){}
-      if(recorderNode._sink){
-        recorderNode._sink.disconnect();
-        recorderNode._sink = null;
-      }
+      recorderNode._merger.disconnect();
+      if(recorderNode._sink) recorderNode._sink.disconnect();
       recorderNode.disconnect();
       recorderNode.port.onmessage = null;
       recorderNode = null;
@@ -5333,66 +5687,90 @@
 
     recordBtn.classList.remove('recording');
     recordBtn.textContent = '● RECORD';
-    if(target) document.getElementById(`arm-${target.index}`).classList.remove('recording');
+    for(const t of tracks) document.getElementById(`arm-${t.index}`).classList.remove('recording');
 
     // Each chunk is one block of every recorded channel.
-    const total = recordChunks.reduce((n, c) => n + c[0].length, 0);
-    if(!target || total === 0){
-      recordChunks = [];
+    const total = chunks.reduce((n, c) => n + c.channels[0].length, 0);
+    const rate = audioCtx.sampleRate;
+    // Capture begins a moment before the tape rolls, and the monitored
+    // playback reaches the ear a little after that: both put the take late
+    // against the timeline, so that much comes off its front.
+    const latency = (audioCtx.outputLatency || audioCtx.baseLatency || 0);
+    const preRoll = total ? Math.round(recordRollStart * rate) - chunks[0].frame : 0;
+    const skip = Math.max(0, Math.min(total, preRoll + Math.round(latency * rate)));
+    const length = total - skip;
+    if(!targets.length || length <= 0){
       setStatus(`Nothing was captured from ${inputDeviceName()} — check it under RECORD FROM.`, true);
       return;
     }
 
-    const rate = audioCtx.sampleRate;
-    const channels = recordChunks[0].length;
-    // Output latency puts the monitored playback slightly behind the take, so
-    // the recording sits late against it. Trim that much off the front.
-    const latency = (audioCtx.outputLatency || audioCtx.baseLatency || 0);
-    const skip = Math.min(total, Math.round(latency * rate));
     const leadIn = Math.round(recordStartOffset * rate);
-    const buffer = audioCtx.createBuffer(channels, leadIn + (total - skip), rate);
+    const stamp = new Date().toISOString().slice(11,19).replace(/:/g,'');
+    const kept = [], silent = [];
 
-    let heard = false;
-    for(let ch = 0; ch < channels; ch++){
-      const out = buffer.getChannelData(ch);
-      let written = leadIn, dropped = 0;
-      for(const chunk of recordChunks){
-        let c = chunk[ch];
-        if(dropped < skip){
-          const take = Math.min(skip - dropped, c.length);
-          dropped += take;
-          if(take === c.length) continue;
-          c = c.subarray(take);
-        }
-        out.set(c, written);
-        written += c.length;
-        if(!heard){
-          for(let i = 0; i < c.length; i++){ if(c[i] !== 0){ heard = true; break; } }
+    for(const target of targets){
+      const buffer = audioCtx.createBuffer(target.channels.length, leadIn + length, rate);
+      let peak = 0;
+      for(let ch = 0; ch < target.channels.length; ch++){
+        const out = buffer.getChannelData(ch);
+        let written = leadIn, dropped = 0;
+        for(const chunk of chunks){
+          let c = chunk.channels[target.offset + ch];
+          if(dropped < skip){
+            const take = Math.min(skip - dropped, c.length);
+            dropped += take;
+            if(take === c.length) continue;
+            c = c.subarray(take);
+          }
+          out.set(c, written);
+          written += c.length;
+          if(peak < SILENCE_THRESHOLD){
+            for(let i = 0; i < c.length; i++){
+              const v = c[i] < 0 ? -c[i] : c[i];
+              if(v > peak) peak = v;
+            }
+          }
         }
       }
-    }
-    recordChunks = [];
 
-    // Pure digital silence means the chosen channels carried nothing at all.
-    // Keeping it would replace whatever the track held with a blank take.
-    if(!heard){
-      const source = inputSourceName(inputPref.channels);
-      setStatus(`Recorded only silence from ${inputDeviceName()} — ${source}, so nothing was kept. ` +
-        (inputPref.channels[0] >= 2
+      // Nothing above the noise floor means that input carried no signal.
+      // Keeping it would replace whatever the track held with a blank take.
+      if(peak < SILENCE_THRESHOLD){
+        silent.push(target);
+        continue;
+      }
+
+      const track = tracks[target.index];
+      const slug = koView ? target.label.toLowerCase().replace(/\s+/g, '-') : 'take';
+      applyBufferToTrack(target.index, buffer, `${slug}-${stamp}.wav`, null);
+      // No source bytes are kept for a take: it is encoded when a session is
+      // saved, rather than held in memory twice until then.
+      track.fileBytes = null;
+      if(koView){
+        // The strip is named for its source, and so is its stem.
+        track.title = target.label.toLowerCase();
+        document.getElementById(`title-${target.index}`).value = track.title;
+      }
+      kept.push(target);
+    }
+
+    if(!kept.length){
+      const what = koView ? joinNames(silent.map(t => t.label)) : `${inputDeviceName()} — ${inputSourceName(inputPref.channels)}`;
+      setStatus(`Recorded only silence from ${what}, so nothing was kept. ` +
+        (!koView && inputPref.channels[0] >= 2
           ? 'This browser may be passing only the device’s first two channels; try the first stereo pair.'
           : 'Check the input is connected and turned up.'), true);
       return;
     }
 
-    const stamp = new Date().toISOString().slice(11,19).replace(/:/g,'');
-    const name = `take-${stamp}.wav`;
-    applyBufferToTrack(target.index, buffer, name, null);
-    // Keep WAV bytes so the take behaves like a loaded file — downloadable,
-    // and carried inside a saved .4trk session.
-    try{
-      target.fileBytes = await audioBufferToWavBlob(buffer).arrayBuffer();
-    }catch(err){
-      target.fileBytes = null;
+    // The amp's own mixdown already contains the inputs recorded beside it.
+    // Left audible it would double them in the master, so it is muted; its
+    // stem still bounces.
+    let note = '';
+    const mix = tracks[KO_MIX_TRACK];
+    if(koView && kept.length > 1 && kept.some(t => t.index === KO_MIX_TRACK) && !mix.muted){
+      setMuted(mix, true);
+      note = ' Amp mix is muted so the master isn’t doubled; it still bounces as its own stem.';
     }
 
     autoTrimToContent();
@@ -5400,7 +5778,14 @@
     renderMasterMinimap();
     drawReelFrame(0, 0);
     saveSession();
-    setStatus(`Recorded ${formatTime(buffer.duration - recordStartOffset)} onto Track ${target.index+1} from ${inputDeviceName()} — ${inputSourceName(inputPref.channels)}.`);
+
+    const took = formatTime(length / rate);
+    if(koView){
+      setStatus(`Recorded ${took} onto ${joinNames(kept.map(t => t.label))}.` +
+        (silent.length ? ` ${joinNames(silent.map(t => t.label))} ${silent.length === 1 ? 'was' : 'were'} silent and left as ${silent.length === 1 ? 'it was' : 'they were'}.` : '') + note);
+    }else{
+      setStatus(`Recorded ${took} onto Track ${kept[0].index+1} from ${inputDeviceName()} — ${inputSourceName(inputPref.channels)}.`);
+    }
   }
 
   recordBtn.addEventListener('click', () => {
@@ -5413,92 +5798,192 @@
     }
   });
 
+  // ---- Transport keys ----
+  // Space plays and stops, R records, as on any recorder. Ignored while
+  // typing, and while the manual is open over the deck.
+  document.addEventListener('keydown', (e) => {
+    if(e.repeat || e.metaKey || e.ctrlKey || e.altKey) return;
+    const el = document.activeElement;
+    const typing = el && (el.tagName === 'TEXTAREA' || el.tagName === 'SELECT' || el.isContentEditable ||
+      (el.tagName === 'INPUT' && el.type !== 'range'));
+    if(typing || manualOverlay.classList.contains('open')) return;
+
+    if(e.code === 'Space'){
+      // Also keeps Space from pressing whichever button was clicked last.
+      e.preventDefault();
+      if(isPlaying || isRecording || countingIn) stop();
+      else play();
+    }else if(e.key === 'r' || e.key === 'R'){
+      e.preventDefault();
+      recordBtn.click();
+    }
+  });
+
+  // Screen readers are told which toggles are on. The classes are flipped in
+  // many places (restore, sessions, clear), so this mirrors them in one.
+  new MutationObserver((records) => {
+    for(const r of records){
+      const el = r.target;
+      if(el.tagName !== 'BUTTON' || !el.hasAttribute('aria-pressed')) continue;
+      const on = el.classList.contains('armed') || el.classList.contains('active-mute') || el.classList.contains('active-solo');
+      if(el.getAttribute('aria-pressed') !== String(on)) el.setAttribute('aria-pressed', String(on));
+    }
+  }).observe(tracksEl, { subtree: true, attributes: true, attributeFilter: ['class'] });
+
   // ---- Mixdown / bounce to WAV ----
-  async function bounce(){
+  // Starts a download and hands back its object URL.
+  function saveBlob(blob, filename){
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    return url;
+  }
+
+  function setBounceBusy(busy){
+    stemsBtn.disabled = bounceBtn.disabled = bounceAllBtn.disabled = busy;
+  }
+
+  function bounceReady(what){
     if(maxDuration() === 0){
-      setStatus('Load at least one WAV file before mixing down.', true);
-      return;
+      setStatus(`Load or record at least one track before bouncing ${what}.`, true);
+      return false;
     }
+    if(trimEnd - trimStart <= 0){
+      setStatus('Trim selection is empty — widen the trim range before bouncing.', true);
+      return false;
+    }
+    return true;
+  }
+
+  const bounceRange = () => `${formatTime(trimStart)}–${formatTime(trimEnd)}`;
+
+  // The mix as heard: levels, pans, mutes and solos, master level, EQ and
+  // fades, over the trim selection. Rendered offline, faster than real time.
+  async function renderMaster(){
     const span = trimEnd - trimStart;
-    if(span <= 0){
-      setStatus('Trim selection is empty — widen the trim range before mixing down.', true);
-      return;
+    const sampleRate = 44100;
+    const offlineCtx = new OfflineAudioContext(2, Math.ceil(span * sampleRate) + 1, sampleRate);
+    const masterGain = offlineCtx.createGain();
+    masterGain.gain.value = parseFloat(masterFader.value);
+    const bounceEQ = buildEQChain(offlineCtx, eqLowGain, eqMidGain, eqHighGain);
+    masterGain.connect(bounceEQ.low);
+    bounceEQ.high.connect(offlineCtx.destination);
+
+    for(const t of tracks){
+      if(!t.buffer) continue;
+      const gainVal = effectiveGain(t);
+      if(gainVal === 0) continue;
+      const trackDur = t.buffer.duration;
+      if(trimStart >= trackDur) continue;
+      const playDuration = Math.min(trimEnd, trackDur) - trimStart;
+      if(playDuration <= 0) continue;
+      const src = offlineCtx.createBufferSource();
+      src.buffer = t.buffer;
+      const gain = offlineCtx.createGain();
+      applyMixFadeAutomation(gain, gainVal, mixFadeIn, mixFadeOut, 0, span, 0);
+      const panner = offlineCtx.createStereoPanner();
+      panner.pan.value = t.pan || 0;
+      src.connect(gain);
+      gain.connect(panner);
+      panner.connect(masterGain);
+      src.start(0, trimStart, playDuration);
     }
-    bounceBtn.disabled = true;
-    setStatus('Rendering trimmed mix…');
+    return audioBufferToWavBlob(await offlineCtx.startRendering());
+  }
 
+  // One track as recorded — no level, pan, EQ or fade — cut to the trim
+  // selection. Every stem comes out the same length as the master, so they
+  // line up when dropped into another program.
+  function stemBlob(t){
+    const src = t.buffer, rate = src.sampleRate;
+    const start = Math.round(trimStart * rate);
+    const length = Math.max(1, Math.round((trimEnd - trimStart) * rate));
+    const out = new AudioBuffer({ numberOfChannels: src.numberOfChannels, length, sampleRate: rate });
+    for(let ch = 0; ch < src.numberOfChannels; ch++){
+      const data = src.getChannelData(ch);
+      if(start < data.length) out.getChannelData(ch).set(data.subarray(start, Math.min(data.length, start + length)));
+    }
+    return audioBufferToWavBlob(out);
+  }
+
+  const stemFilename = (t) => `${mixFilenameBase()}-${t.index + 1}-${trackFilenameBase(t)}.wav`;
+
+  // Resolves true once the master has been handed to the browser.
+  async function bounce(){
+    if(!bounceReady('the master')) return false;
+    if(!tracks.some(t => t.buffer && effectiveGain(t) > 0)){
+      setStatus('Every track is muted or turned down, so the master would be silent. Unmute one first.', true);
+      return false;
+    }
+    setBounceBusy(true);
+    setStatus('Rendering the master…');
     try{
-      const sampleRate = 44100;
-      const channels = 2;
-      const length = Math.ceil(span * sampleRate) + 1;
-      const offlineCtx = new OfflineAudioContext(channels, length, sampleRate);
-      const masterGain = offlineCtx.createGain();
-      masterGain.gain.value = parseFloat(masterFader.value);
-      const bounceEQ = buildEQChain(offlineCtx, eqLowGain, eqMidGain, eqHighGain);
-      masterGain.connect(bounceEQ.low);
-      bounceEQ.high.connect(offlineCtx.destination);
-
-      for(const t of tracks){
-        if(!t.buffer) continue;
-        const gainVal = effectiveGain(t);
-        if(gainVal === 0) continue;
-        const trackDur = t.buffer.duration;
-        if(trimStart >= trackDur) continue;
-        const playDuration = Math.min(trimEnd, trackDur) - trimStart;
-        if(playDuration <= 0) continue;
-        const src = offlineCtx.createBufferSource();
-        src.buffer = t.buffer;
-        const gain = offlineCtx.createGain();
-        applyMixFadeAutomation(gain, gainVal, mixFadeIn, mixFadeOut, 0, span, 0);
-        const panner = offlineCtx.createStereoPanner();
-        panner.pan.value = t.pan || 0;
-        src.connect(gain);
-        gain.connect(panner);
-        panner.connect(masterGain);
-        src.start(0, trimStart, playDuration);
-      }
-
-      const rendered = await offlineCtx.startRendering();
-      const wavBlob = audioBufferToWavBlob(rendered);
-      const url = URL.createObjectURL(wavBlob);
       const baseName = mixFilenameBase();
       const filename = baseName + '.wav';
-
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = filename;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
+      const url = saveBlob(await renderMaster(), filename);
 
       const notes = notesInput.value.trim();
-      let statusMsg = `Mixdown complete (${formatTime(trimStart)}–${formatTime(trimEnd)}) — download started. `;
       if(notes){
-        const notesBlob = new Blob([notes], {type: 'text/plain'});
-        const notesUrl = URL.createObjectURL(notesBlob);
-        const notesA = document.createElement('a');
-        notesA.href = notesUrl;
-        notesA.download = baseName + '.txt';
-        document.body.appendChild(notesA);
-        notesA.click();
-        document.body.removeChild(notesA);
-        statusMsg = `Mixdown complete (${formatTime(trimStart)}–${formatTime(trimEnd)}) — WAV and notes .txt downloaded. `;
+        const notesUrl = saveBlob(new Blob([notes], {type: 'text/plain'}), baseName + '.txt');
+        setTimeout(() => URL.revokeObjectURL(notesUrl), 60000);
       }
 
-      setStatus(statusMsg);
+      setStatus(`Master bounced (${bounceRange()}) — ${notes ? 'WAV and notes .txt downloaded' : 'download started'}. `);
       const link = document.createElement('a');
       link.href = url;
       link.textContent = 'Click here if the download didn\'t start';
       link.download = filename;
       statusEl.appendChild(link);
+      return true;
     }catch(err){
-      setStatus('Mixdown failed: ' + err.message, true);
+      setStatus('Master bounce failed: ' + err.message, true);
+      return false;
     }finally{
-      bounceBtn.disabled = false;
+      setBounceBusy(false);
+    }
+  }
+
+  // Resolves with how many stems were handed to the browser.
+  async function bounceStems(){
+    if(!bounceReady('stems')) return 0;
+    const loaded = tracks.filter(t => t.buffer);
+    setBounceBusy(true);
+    try{
+      const names = [];
+      for(const t of loaded){
+        setStatus(`Bouncing stems — ${names.length + 1} of ${loaded.length}…`);
+        const name = stemFilename(t);
+        const url = saveBlob(stemBlob(t), name);
+        setTimeout(() => URL.revokeObjectURL(url), 60000);
+        names.push(name);
+        // Downloads fired in the same instant get dropped; space them out.
+        await new Promise(resolve => setTimeout(resolve, 300));
+      }
+      setStatus(`Bounced ${names.length} stem${names.length === 1 ? '' : 's'} (${bounceRange()}): ${names.join(', ')}.`);
+      return names.length;
+    }catch(err){
+      setStatus('Stem bounce failed: ' + err.message, true);
+      return 0;
+    }finally{
+      setBounceBusy(false);
+    }
+  }
+
+  async function bounceAll(){
+    const stems = await bounceStems();
+    if(!stems) return;
+    if(await bounce()){
+      setStatus(`Bounced ${stems} stem${stems === 1 ? '' : 's'} and the master (${bounceRange()}). If only one file arrived, allow this page to download multiple files in your browser.`);
     }
   }
 
   bounceBtn.addEventListener('click', bounce);
+  stemsBtn.addEventListener('click', bounceStems);
+  bounceAllBtn.addEventListener('click', bounceAll);
 
   // ---- Reels export: record canvas + audio to a 30s vertical video ----
   function pickReelMimeType(){
@@ -5813,23 +6298,26 @@
     return (bytes/(1024*1024)).toFixed(1) + ' MB';
   }
 
-  function saveSessionFile(){
+  async function saveSessionFile(){
     const header = collectSessionHeader();
 
     // Lay the audio out end to end, recording where each track's bytes land.
     const chunks = [];
     let offset = 0;
-    tracks.forEach((t, i) => {
-      if(!t.fileBytes) return;
-      const bytes = new Uint8Array(t.fileBytes);
-      header.tracks[i].audio = {
-        name: t.name || `track_${i+1}.wav`,
+    for(const t of tracks){
+      // A loaded file travels as the bytes it arrived in. A recorded take has
+      // no such bytes and is encoded here, on demand.
+      const source = t.fileBytes || (t.buffer ? await audioBufferToWavBlob(t.buffer).arrayBuffer() : null);
+      if(!source) continue;
+      const bytes = new Uint8Array(source);
+      header.tracks[t.index].audio = {
+        name: t.name || `track_${t.index+1}.wav`,
         offset,
         length: bytes.byteLength
       };
       chunks.push(bytes);
       offset += bytes.byteLength;
-    });
+    }
 
     const headerBytes = new TextEncoder().encode(JSON.stringify(header));
     const prefix = new ArrayBuffer(12);
